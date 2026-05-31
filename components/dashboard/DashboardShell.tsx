@@ -74,7 +74,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
       : pathname.startsWith(href);
 
   return (
-    <div className="min-h-screen bg-[#080d1a] flex">
+    <div className="min-h-screen bg-[#080d1a] flex w-full overflow-x-hidden">
 
       {/* ── Sidebar (desktop ≥768px) ────────────────────────────── */}
       <aside
@@ -221,15 +221,15 @@ export default function DashboardShell({ children, displayName, initials }: Prop
         </header>
 
         {/* Page content */}
-        <main className="flex-1 overflow-auto bg-[#080d1a] p-4 pb-[70px] md:p-5 md:pb-5">
+        <main className="flex-1 min-w-0 overflow-auto bg-[#080d1a] p-4 pb-[70px] md:p-5 md:pb-5">
           {children}
         </main>
       </div>
 
       {/* ── Bottom nav (mobile <768px) ────────────────────────────── */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 h-[60px] bg-[#0b1120] flex items-center justify-around z-50"
-        style={{ borderTop: "0.5px solid #162035" }}
+        className="md:hidden fixed bottom-0 left-0 h-[60px] bg-[#0b1120] flex items-center justify-around z-50"
+        style={{ borderTop: "0.5px solid #162035", width: "100%" }}
       >
         {bottomNavItems.map(({ label, href, icon: Icon }) => {
           const active = isActive(href);

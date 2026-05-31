@@ -115,13 +115,20 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
   }
   html {
     scroll-behavior: smooth;
     @apply font-sans;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
   body {
     background-color: #080d1a;
     color: #f1f5f9;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 }
