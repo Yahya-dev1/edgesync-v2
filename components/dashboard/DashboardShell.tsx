@@ -221,14 +221,14 @@ export default function DashboardShell({ children, displayName, initials }: Prop
         </header>
 
         {/* Page content */}
-        <main className="flex-1 min-w-0 overflow-auto bg-[#080d1a] p-4 pb-[70px] md:p-5 md:pb-5">
+        <main className="flex-1 min-w-0 overflow-auto bg-[#080d1a] p-4 pb-[76px] md:p-5 md:pb-5">
           {children}
         </main>
       </div>
 
       {/* ── Bottom nav (mobile <768px) ────────────────────────────── */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 h-[60px] bg-[#0b1120] flex items-center justify-around z-50"
+        className="md:hidden fixed bottom-0 left-0 h-[64px] bg-[#0b1120] flex items-center justify-around z-50"
         style={{ borderTop: "0.5px solid #162035", width: "100%" }}
       >
         {bottomNavItems.map(({ label, href, icon: Icon }) => {
@@ -237,8 +237,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
             <Link
               key={href}
               href={href}
-              aria-label={label}
-              className="flex flex-col items-center justify-center flex-1 h-full"
+              className="flex flex-col items-center justify-center flex-1 h-full min-w-[44px] gap-0.5"
             >
               <Icon
                 className={cn(
@@ -247,6 +246,14 @@ export default function DashboardShell({ children, displayName, initials }: Prop
                 )}
                 strokeWidth={1.5}
               />
+              <span
+                className={cn(
+                  "text-[10px] leading-tight font-medium transition-colors",
+                  active ? "text-[#00C896]" : "text-slate-500"
+                )}
+              >
+                {label}
+              </span>
             </Link>
           );
         })}
@@ -254,7 +261,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
 
       {/* ── Floating chat button ──────────────────────────────────── */}
       <button
-        className="fixed right-4 bottom-[76px] md:bottom-6 w-12 h-12 rounded-full bg-[#00C896] flex items-center justify-center shadow-lg shadow-[#00C896]/20 z-40 hover:bg-[#00b084] transition-colors"
+        className="fixed right-4 bottom-[80px] md:bottom-6 w-12 h-12 rounded-full bg-[#00C896] flex items-center justify-center shadow-lg shadow-[#00C896]/20 z-40 hover:bg-[#00b084] transition-colors"
         aria-label="Chat"
       >
         <MessageCircle className="w-5 h-5 text-[#080d1a]" strokeWidth={2} />
