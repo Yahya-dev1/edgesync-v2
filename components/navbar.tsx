@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, TrendingUp } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navLinks = [
   { label: "Copy Trading", href: "#trading-options" },
@@ -15,16 +16,16 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#080d1a]/90 backdrop-blur-md">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[#00C896]">
-              <TrendingUp className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
+            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary">
+              <TrendingUp className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">
-              EdgeSync <span className="text-[#00C896]">Markets</span>
+            <span className="text-foreground font-bold text-lg tracking-tight">
+              EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
 
@@ -34,7 +35,7 @@ export default function Navbar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-overlay rounded-lg transition-colors"
               >
                 {link.label}
               </Link>
@@ -42,42 +43,46 @@ export default function Navbar() {
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             <Link
               href="/login"
-              className="px-4 py-1.5 text-sm text-slate-300 border border-white/15 rounded-lg hover:border-white/30 hover:text-white transition-colors"
+              className="px-4 py-1.5 text-sm text-muted-foreground border border-border rounded-lg hover:border-border/60 hover:text-foreground transition-colors"
             >
               Login
             </Link>
             <Link
               href="/register"
-              className="px-4 py-1.5 text-sm font-semibold bg-[#00C896] text-[#080d1a] rounded-lg hover:bg-[#00b084] transition-colors"
+              className="px-4 py-1.5 text-sm font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 transition-colors"
             >
               Create Account
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setOpen(!open)}
-            className="md:hidden p-2 text-slate-300 hover:text-white"
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {/* Mobile: theme toggle + hamburger */}
+          <div className="md:hidden flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              onClick={() => setOpen(!open)}
+              className="p-2 text-muted-foreground hover:text-foreground"
+              aria-label="Toggle menu"
+            >
+              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-white/5 bg-[#080d1a]">
+        <div className="md:hidden border-t border-border bg-background">
           <div className="px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
                 onClick={() => setOpen(false)}
-                className="block px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                className="block px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-overlay rounded-lg transition-colors"
               >
                 {link.label}
               </Link>
@@ -86,14 +91,14 @@ export default function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
-                className="px-4 py-2.5 text-sm text-center text-slate-300 border border-white/15 rounded-lg hover:border-white/30 hover:text-white transition-colors"
+                className="px-4 py-2.5 text-sm text-center text-muted-foreground border border-border rounded-lg hover:text-foreground transition-colors"
               >
                 Login
               </Link>
               <Link
                 href="/register"
                 onClick={() => setOpen(false)}
-                className="px-4 py-2.5 text-sm text-center font-semibold bg-[#00C896] text-[#080d1a] rounded-lg hover:bg-[#00b084] transition-colors"
+                className="px-4 py-2.5 text-sm text-center font-semibold bg-primary text-primary-foreground rounded-lg hover:bg-primary/80 transition-colors"
               >
                 Create Account
               </Link>

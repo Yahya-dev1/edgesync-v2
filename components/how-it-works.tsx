@@ -30,34 +30,34 @@ export default function HowItWorks() {
     <section className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#00C896]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-primary">
             Get Started
           </span>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-white">
+          <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground">
             How It Works
           </h2>
-          <p className="mt-3 text-slate-400 max-w-lg mx-auto text-sm">
+          <p className="mt-3 text-muted-foreground max-w-lg mx-auto text-sm">
             Three simple steps to start trading with EdgeSync Markets.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/6 rounded-xl overflow-hidden border border-white/6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden border border-border">
           {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <div key={step.number} className="bg-[#0d1526] p-8">
+              <div key={step.number} className="bg-card p-8">
                 <div className="flex items-center gap-3 mb-5">
-                  <span className="text-xs font-bold text-[#00C896] font-mono">
+                  <span className="text-xs font-bold text-primary font-mono">
                     {step.number}
                   </span>
-                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5">
-                    <Icon className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-overlay">
+                    <Icon className="w-4 h-4 text-muted-foreground" strokeWidth={1.5} />
                   </div>
                 </div>
-                <h3 className="text-base font-semibold text-white mb-2">
+                <h3 className="text-base font-semibold text-foreground mb-2">
                   {step.title}
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {step.description}
                 </p>
               </div>
@@ -68,7 +68,7 @@ export default function HowItWorks() {
         <div className="text-center mt-10">
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-lg font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors text-sm"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-lg font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm"
           >
             Get Started Today
           </Link>

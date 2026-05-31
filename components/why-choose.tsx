@@ -32,13 +32,13 @@ export default function WhyChoose() {
     <section id="about" className="py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#00C896]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-primary">
             Why EdgeSync Markets
           </span>
-          <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-white">
+          <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground">
             Built for Serious Traders
           </h2>
-          <p className="mt-3 text-slate-400 max-w-lg mx-auto text-sm">
+          <p className="mt-3 text-muted-foreground max-w-lg mx-auto text-sm">
             Everything you need to trade with confidence — from regulation to execution.
           </p>
         </div>
@@ -49,15 +49,15 @@ export default function WhyChoose() {
             return (
               <div
                 key={feat.title}
-                className="p-6 rounded-xl border border-white/6 bg-[#0d1526] hover:border-white/12 transition-colors duration-200"
+                className="p-6 rounded-xl border border-border bg-card hover:border-border/60 transition-colors duration-200"
               >
-                <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/5 mb-5">
-                  <Icon className="w-4.5 h-4.5 text-[#00C896]" strokeWidth={1.5} />
+                <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-overlay mb-5">
+                  <Icon className="w-4.5 h-4.5 text-primary" strokeWidth={1.5} />
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-2">
+                <h3 className="text-sm font-semibold text-foreground mb-2">
                   {feat.title}
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {feat.description}
                 </p>
               </div>

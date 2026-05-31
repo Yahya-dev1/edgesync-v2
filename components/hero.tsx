@@ -6,7 +6,7 @@ const trustItems = ["No hidden fees", "Instant deposits", "24/7 support", "FSA r
 export default function Hero() {
   return (
     <section className="relative flex items-center justify-center overflow-hidden pt-16 pb-24">
-      {/* Subtle radial gradient, not a glow blob */}
+      {/* Subtle radial gradient */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -17,21 +17,21 @@ export default function Hero() {
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00C896]/20 bg-[#00C896]/8 mb-7">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00C896]" />
-          <span className="text-xs font-medium text-[#00C896]">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/8 mb-7">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+          <span className="text-xs font-medium text-primary">
             FSA Seychelles Regulated Broker
           </span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 leading-[1.1]">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground mb-5 leading-[1.1]">
           Trade Smarter.{" "}
-          <span className="text-[#00C896]">Earn Better.</span>
+          <span className="text-primary">Earn Better.</span>
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto mb-9 leading-relaxed">
+        <p className="text-base sm:text-lg text-muted-foreground max-w-xl mx-auto mb-9 leading-relaxed">
           Professional trading tools, tight spreads from 0.0 pips, and
           world-class execution — on 500+ instruments.
         </p>
@@ -40,13 +40,13 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/register"
-            className="px-7 py-3 rounded-lg font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors text-sm"
+            className="px-7 py-3 rounded-lg font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm"
           >
             Create Account Now
           </Link>
           <a
             href="#markets"
-            className="px-7 py-3 rounded-lg font-semibold border border-white/12 text-slate-300 hover:text-white hover:border-white/20 transition-colors text-sm"
+            className="px-7 py-3 rounded-lg font-semibold border border-border text-muted-foreground hover:text-foreground hover:border-border/60 transition-colors text-sm"
           >
             Explore Markets
           </a>
@@ -55,8 +55,8 @@ export default function Hero() {
         {/* Trust indicators */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
           {trustItems.map((item) => (
-            <span key={item} className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Check className="w-3.5 h-3.5 text-[#00C896]" strokeWidth={2.5} />
+            <span key={item} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Check className="w-3.5 h-3.5 text-primary" strokeWidth={2.5} />
               {item}
             </span>
           ))}

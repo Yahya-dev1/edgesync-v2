@@ -41,7 +41,7 @@ function StarRating({ stars }: { stars: number }) {
         <svg key={i} width="14" height="14" viewBox="0 0 24 24">
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-            fill={i < stars ? "#BA7517" : "#162035"}
+            style={{ fill: i < stars ? "#BA7517" : "var(--surface-border)" }}
           />
         </svg>
       ))}
@@ -62,12 +62,14 @@ function RiskBar({ level }: { level: string }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-xs text-slate-500 uppercase tracking-wide">Risk</span>
+        <span className="text-xs text-muted-foreground uppercase tracking-wide">Risk</span>
         <span className="text-xs font-semibold" style={{ color: cfg.color }}>
           {cfg.label}
         </span>
       </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#162035" }}>
+      <div className="h-1.5 rounded-full overflow-hidden bg-surface-border"
+        style={{ background: "var(--surface-border)" }}
+      >
         <div
           className="h-full rounded-full transition-all"
           style={{ width: cfg.fill, background: cfg.color }}
@@ -103,17 +105,16 @@ function TraderCard({
 
   return (
     <div
-      className="flex flex-col gap-4 p-4"
+      className="flex flex-col gap-4 p-4 bg-surface"
       style={{
-        background: "#0b1120",
-        border: isAmiinFx ? "1.5px solid #00C896" : "0.5px solid #162035",
+        border: isAmiinFx ? "1.5px solid #00C896" : "0.5px solid var(--surface-border)",
         borderRadius: "12px",
       }}
     >
       {/* Top performer badge */}
       {isAmiinFx && (
         <div>
-          <span className="text-xs font-semibold text-[#00C896] bg-[#00C896]/10 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
             Top performer
           </span>
         </div>
@@ -124,9 +125,9 @@ function TraderCard({
         <div className="flex items-start justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-2 min-w-0">
             {trader.flag && <FlagIcon code={trader.flag} />}
-            <span className="font-semibold text-white text-base leading-tight truncate">{trader.name}</span>
+            <span className="font-semibold text-foreground text-base leading-tight truncate">{trader.name}</span>
           </div>
-          <span className="text-xs text-slate-400 whitespace-nowrap tabular-nums shrink-0">
+          <span className="text-xs text-muted-foreground whitespace-nowrap tabular-nums shrink-0">
             {trader.followers.toLocaleString()} followers
           </span>
         </div>
@@ -143,11 +144,11 @@ function TraderCard({
         ].map(({ label, value }) => (
           <div
             key={label}
-            className="rounded-lg p-3"
-            style={{ background: "#08111d", border: "0.5px solid #162035" }}
+            className="rounded-lg p-3 bg-card-nested"
+            style={{ border: "0.5px solid var(--surface-border)" }}
           >
-            <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-            <p className="text-base font-semibold text-white">{value}</p>
+            <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+            <p className="text-base font-semibold text-foreground">{value}</p>
           </div>
         ))}
       </div>
@@ -168,15 +169,15 @@ function TraderCard({
           <button
             onClick={() => onCopy(trader.name)}
             disabled={copying}
-            className="w-full py-2.5 rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-2.5 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {copying ? "Starting…" : `Copy ${trader.name}`}
           </button>
         ) : (
           <button
             disabled
-            className="w-full py-2.5 rounded-lg text-base font-semibold text-slate-600 cursor-not-allowed"
-            style={{ background: "#08111d", border: "0.5px solid #162035" }}
+            className="w-full py-2.5 rounded-lg text-base font-semibold text-muted-foreground cursor-not-allowed bg-card-nested"
+            style={{ border: "0.5px solid var(--surface-border)" }}
           >
             Not available
           </button>

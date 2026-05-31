@@ -126,26 +126,29 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-xl md:text-2xl font-bold text-white">
-          Welcome, <span className="text-[#00C896]">{firstName}</span>!
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">
+          Welcome, <span className="text-primary">{firstName}</span>!
         </h1>
-        <p className="text-base text-slate-500 mt-1">Here&apos;s your trading overview.</p>
+        <p className="text-base text-muted-foreground mt-1">Here&apos;s your trading overview.</p>
       </div>
 
       {/* Balance card */}
-      <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6 mb-5">
-        <p className="text-sm font-medium text-slate-500 mb-1">Account Balance</p>
-        <p className="text-3xl font-bold text-white mb-5">{balance}</p>
+      <div
+        className="rounded-xl p-[16px] md:p-6 mb-5 bg-surface"
+        style={{ border: "0.5px solid var(--surface-border)" }}
+      >
+        <p className="text-sm font-medium text-muted-foreground mb-1">Account Balance</p>
+        <p className="text-3xl font-bold text-foreground mb-5">{balance}</p>
         <div className="flex gap-3">
           <Link
             href="/dashboard/deposit"
-            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
+            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
           >
             Deposit
           </Link>
           <Link
             href="/dashboard/withdraw"
-            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold border border-[#162035] text-slate-300 hover:bg-white/5 transition-colors"
+            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold border border-border text-muted-foreground hover:bg-overlay hover:text-foreground transition-colors"
           >
             Withdraw
           </Link>
@@ -155,12 +158,15 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
       {/* Option cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Copy Trading — active */}
-        <div className="rounded-xl border-2 border-[#00C896] bg-[#0b1120] p-[16px] md:p-6 flex flex-col">
+        <div
+          className="rounded-xl bg-surface p-[16px] md:p-6 flex flex-col"
+          style={{ border: "1.5px solid var(--primary)" }}
+        >
           <div className="flex items-center justify-between mb-3 md:mb-5">
-            <span className="text-xs font-semibold text-[#00C896] bg-[#00C896]/10 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
               Active
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-[#00C896]/10 flex items-center justify-center">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                 <circle cx="7" cy="11" r="3.5" stroke="#00C896" strokeWidth="1.5" />
                 <circle cx="14" cy="7" r="3" stroke="#00C896" strokeWidth="1.5" />
@@ -173,25 +179,28 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
               </svg>
             </div>
           </div>
-          <h3 className="text-lg font-bold text-white mb-2">Copy Trading</h3>
-          <p className="text-base text-slate-400 mb-4 md:mb-6 flex-1">
+          <h3 className="text-lg font-bold text-foreground mb-2">Copy Trading</h3>
+          <p className="text-base text-muted-foreground mb-4 md:mb-6 flex-1">
             Automatically mirror trades from verified expert traders.
           </p>
           <Link
             href="/dashboard/copy-trading"
-            className="block py-2.5 text-center rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
+            className="block py-2.5 text-center rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
           >
             Browse traders
           </Link>
         </div>
 
         {/* Self Trading — disabled */}
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6 flex flex-col opacity-50">
+        <div
+          className="rounded-xl bg-surface p-[16px] md:p-6 flex flex-col opacity-50"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
           <div className="flex items-center justify-between mb-3 md:mb-5">
-            <span className="text-xs font-semibold text-slate-500 bg-white/5 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-semibold text-muted-foreground bg-overlay px-2.5 py-1 rounded-full">
               Coming Soon
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 flex items-center justify-center">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-overlay flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                 <rect x="2" y="3" width="16" height="14" rx="2" stroke="#64748B" strokeWidth="1.5" />
                 <path
@@ -204,13 +213,13 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
               </svg>
             </div>
           </div>
-          <h3 className="text-lg font-bold text-white mb-2">Self Trading</h3>
-          <p className="text-base text-slate-400 mb-4 md:mb-6 flex-1">
+          <h3 className="text-lg font-bold text-foreground mb-2">Self Trading</h3>
+          <p className="text-base text-muted-foreground mb-4 md:mb-6 flex-1">
             Take full control and execute your own trades manually.
           </p>
           <button
             disabled
-            className="w-full py-2.5 text-center rounded-lg text-base font-semibold border border-[#162035] text-slate-500 cursor-not-allowed"
+            className="w-full py-2.5 text-center rounded-lg text-base font-semibold border border-border text-muted-foreground cursor-not-allowed"
           >
             Under Maintenance
           </button>
@@ -240,50 +249,62 @@ function State2({
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-xl md:text-2xl font-bold text-white">
-          Welcome back, <span className="text-[#00C896]">{firstName}</span>!
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">
+          Welcome back, <span className="text-primary">{firstName}</span>!
         </h1>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-        <div className="p-[16px] md:p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
-          <p className="text-sm text-slate-500 mb-1.5">Account Balance</p>
-          <p className="text-2xl font-bold text-white">{balance}</p>
+        <div
+          className="p-[16px] md:p-5 rounded-xl bg-surface"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <p className="text-sm text-muted-foreground mb-1.5">Account Balance</p>
+          <p className="text-2xl font-bold text-foreground">{balance}</p>
         </div>
-        <div className="p-[16px] md:p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
-          <p className="text-sm text-slate-500 mb-1.5">Total P&L</p>
-          <p className="text-2xl font-bold text-[#00C896]">+$0.00</p>
+        <div
+          className="p-[16px] md:p-5 rounded-xl bg-surface"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <p className="text-sm text-muted-foreground mb-1.5">Total P&L</p>
+          <p className="text-2xl font-bold text-primary">+$0.00</p>
         </div>
-        <div className="p-[16px] md:p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
-          <p className="text-sm text-slate-500 mb-1.5">Open Trades</p>
-          <p className="text-2xl font-bold text-white">0</p>
+        <div
+          className="p-[16px] md:p-5 rounded-xl bg-surface"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <p className="text-sm text-muted-foreground mb-1.5">Open Trades</p>
+          <p className="text-2xl font-bold text-foreground">0</p>
         </div>
       </div>
 
       {/* Two-column panel */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Copying panel */}
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">
+        <div
+          className="rounded-xl bg-surface p-[16px] md:p-6"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-5">
             Copying
           </p>
 
           {/* Trader header */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 rounded-full bg-[#00C896]/20 border border-[#00C896]/30 flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-bold text-[#00C896]">AF</span>
+            <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+              <span className="text-sm font-bold text-primary">AF</span>
             </div>
             <div>
-              <p className="text-base font-semibold text-white">{traderName}</p>
-              <p className="text-sm text-slate-500">Verified Master Trader</p>
+              <p className="text-base font-semibold text-foreground">{traderName}</p>
+              <p className="text-sm text-muted-foreground">Verified Master Trader</p>
             </div>
           </div>
 
           {/* Live pill */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00C896]/10 border border-[#00C896]/20 mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse flex-shrink-0" />
-            <span className="text-sm font-semibold text-[#00C896]">Live — copying active</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6">
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse flex-shrink-0" />
+            <span className="text-sm font-semibold text-primary">Live — copying active</span>
           </div>
 
           {/* Stats */}
@@ -297,8 +318,8 @@ function State2({
               ] as [string, string][]
             ).map(([label, value]) => (
               <div key={label} className="flex items-center justify-between text-base">
-                <span className="text-slate-400">{label}</span>
-                <span className="font-semibold text-white">{value}</span>
+                <span className="text-muted-foreground">{label}</span>
+                <span className="font-semibold text-foreground">{value}</span>
               </div>
             ))}
           </div>
@@ -307,8 +328,11 @@ function State2({
         </div>
 
         {/* Right: Running trades */}
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">
+        <div
+          className="rounded-xl bg-surface p-[16px] md:p-6"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-5">
             Running Trades
           </p>
 
@@ -316,25 +340,26 @@ function State2({
             {PLACEHOLDER_TRADES.map(({ symbol, direction, pnl, Icon }) => (
               <div
                 key={symbol}
-                className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.025] border border-[#162035]"
+                className="flex items-center gap-3 p-3 rounded-lg bg-subtle"
+                style={{ border: "0.5px solid var(--surface-border)" }}
               >
                 <Icon />
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-semibold text-white">{symbol}</p>
+                  <p className="text-base font-semibold text-foreground">{symbol}</p>
                   <p
                     className={`text-sm font-medium ${
-                      direction === "BUY" ? "text-[#00C896]" : "text-red-400"
+                      direction === "BUY" ? "text-primary" : "text-red-400"
                     }`}
                   >
                     {direction}
                   </p>
                 </div>
-                <span className="text-base font-semibold text-slate-300 tabular-nums">{pnl}</span>
+                <span className="text-base font-semibold text-muted-foreground tabular-nums">{pnl}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-sm text-slate-600 text-center mt-5">
+          <p className="text-sm text-muted-foreground text-center mt-5">
             Trades update when {traderName} opens positions
           </p>
         </div>

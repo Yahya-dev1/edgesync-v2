@@ -72,10 +72,8 @@ export default function RegisterPage() {
     }
 
     if (data.session) {
-      // Email confirmation disabled — session exists immediately
       router.push("/dashboard");
     } else {
-      // Email confirmation required
       setInfo(
         "Account created! Check your email and click the confirmation link to activate your account."
       );
@@ -98,30 +96,29 @@ export default function RegisterPage() {
       setError(oauthError.message);
       setGoogleLoading(false);
     }
-    // On success, browser is redirected — no cleanup needed
   };
 
   return (
-    <div className="min-h-screen bg-[#080d1a] flex items-center justify-center px-4 py-16">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-9 h-9 rounded-md bg-[#00C896]">
-              <TrendingUp className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
+            <div className="flex items-center justify-center w-9 h-9 rounded-md bg-primary">
+              <TrendingUp className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
             </div>
-            <span className="text-white font-bold text-xl tracking-tight">
-              EdgeSync <span className="text-[#00C896]">Markets</span>
+            <span className="text-foreground font-bold text-xl tracking-tight">
+              EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
         </div>
 
         {/* Card */}
-        <div className="bg-[#0d1526] border border-white/8 rounded-2xl p-8">
-          <h1 className="text-xl font-bold text-white mb-1">Create your account</h1>
-          <p className="text-sm text-slate-500 mb-7">
+        <div className="bg-card border border-border rounded-2xl p-8">
+          <h1 className="text-xl font-bold text-foreground mb-1">Create your account</h1>
+          <p className="text-sm text-muted-foreground mb-7">
             Already have an account?{" "}
-            <Link href="/login" className="text-[#00C896] hover:underline">
+            <Link href="/login" className="text-primary hover:underline">
               Sign in
             </Link>
           </p>
@@ -130,7 +127,7 @@ export default function RegisterPage() {
           <button
             onClick={handleGoogle}
             disabled={googleLoading || loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-white/10 bg-white/4 text-sm font-medium text-white hover:bg-white/8 hover:border-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-6"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg border border-border bg-subtle text-sm font-medium text-foreground hover:bg-overlay hover:border-border transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-6"
           >
             {googleLoading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -142,9 +139,9 @@ export default function RegisterPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-white/8" />
-            <span className="text-xs text-slate-600">or</span>
-            <div className="flex-1 h-px bg-white/8" />
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* Alerts */}
@@ -154,7 +151,7 @@ export default function RegisterPage() {
             </div>
           )}
           {info && (
-            <div className="mb-5 px-4 py-3 rounded-lg bg-[#00C896]/10 border border-[#00C896]/20 text-[#00C896] text-sm">
+            <div className="mb-5 px-4 py-3 rounded-lg bg-primary/10 border border-primary/20 text-primary text-sm">
               {info}
             </div>
           )}
@@ -162,7 +159,7 @@ export default function RegisterPage() {
           {/* Form */}
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Full Name
               </label>
               <input
@@ -171,12 +168,12 @@ export default function RegisterPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full bg-[#080d1a] border border-white/10 text-white placeholder-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00C896]/50 focus:ring-1 focus:ring-[#00C896]/20 transition-colors"
+                className="w-full bg-background border border-border text-foreground placeholder-muted-foreground rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Email Address
               </label>
               <input
@@ -185,12 +182,12 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="john@example.com"
-                className="w-full bg-[#080d1a] border border-white/10 text-white placeholder-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#00C896]/50 focus:ring-1 focus:ring-[#00C896]/20 transition-colors"
+                className="w-full bg-background border border-border text-foreground placeholder-muted-foreground rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -200,12 +197,12 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Min. 8 characters"
-                  className="w-full bg-[#080d1a] border border-white/10 text-white placeholder-slate-600 rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-[#00C896]/50 focus:ring-1 focus:ring-[#00C896]/20 transition-colors"
+                  className="w-full bg-background border border-border text-foreground placeholder-muted-foreground rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? (
                     <EyeOff className="w-4 h-4" />
@@ -217,7 +214,7 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
                 Confirm Password
               </label>
               <div className="relative">
@@ -227,12 +224,12 @@ export default function RegisterPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Re-enter your password"
-                  className="w-full bg-[#080d1a] border border-white/10 text-white placeholder-slate-600 rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-[#00C896]/50 focus:ring-1 focus:ring-[#00C896]/20 transition-colors"
+                  className="w-full bg-background border border-border text-foreground placeholder-muted-foreground rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 >
                   {showConfirm ? (
                     <EyeOff className="w-4 h-4" />
@@ -246,20 +243,20 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading || googleLoading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               Create Account
             </button>
           </form>
 
-          <p className="text-xs text-slate-600 text-center mt-6">
+          <p className="text-xs text-muted-foreground text-center mt-6">
             By creating an account you agree to our{" "}
-            <Link href="/terms" className="text-slate-400 hover:text-[#00C896]">
+            <Link href="/terms" className="text-foreground hover:text-primary">
               Terms & Conditions
             </Link>{" "}
             and{" "}
-            <Link href="/privacy-policy" className="text-slate-400 hover:text-[#00C896]">
+            <Link href="/privacy-policy" className="text-foreground hover:text-primary">
               Privacy Policy
             </Link>
             .

@@ -92,15 +92,18 @@ export default function DepositPage() {
   if (step === "success") {
     return (
       <div className="max-w-md mx-auto pt-8">
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-8 flex flex-col items-center text-center">
-          <div className="w-16 h-16 rounded-full bg-[#00C896]/10 flex items-center justify-center mb-5">
-            <CheckCircle className="w-8 h-8 text-[#00C896]" strokeWidth={1.5} />
+        <div
+          className="rounded-xl bg-surface p-8 flex flex-col items-center text-center"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+            <CheckCircle className="w-8 h-8 text-primary" strokeWidth={1.5} />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Deposit Confirmed!</h2>
-          <p className="text-base text-slate-400 mb-8">Your balance has been updated.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Deposit Confirmed!</h2>
+          <p className="text-base text-muted-foreground mb-8">Your balance has been updated.</p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="w-full py-3 rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
+            className="w-full py-3 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
           >
             Back to Dashboard
           </button>
@@ -113,15 +116,18 @@ export default function DepositPage() {
     return (
       <div className="max-w-md mx-auto pt-4">
         <div className="mb-5">
-          <h1 className="text-2xl font-bold text-white">Complete Payment</h1>
-          <p className="text-base text-slate-500 mt-1">Send USDT to the address below.</p>
+          <h1 className="text-2xl font-bold text-foreground">Complete Payment</h1>
+          <p className="text-base text-muted-foreground mt-1">Send USDT to the address below.</p>
         </div>
 
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6 space-y-6">
+        <div
+          className="rounded-xl bg-surface p-6 space-y-6"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
           {/* Network badge */}
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-slate-400">Network:</span>
-            <span className="px-2.5 py-1 rounded-full text-sm font-semibold bg-[#00C896]/10 text-[#00C896] border border-[#00C896]/20">
+            <span className="text-sm font-medium text-muted-foreground">Network:</span>
+            <span className="px-2.5 py-1 rounded-full text-sm font-semibold bg-primary/10 text-primary border border-primary/20">
               USDT TRC20
             </span>
           </div>
@@ -141,51 +147,57 @@ export default function DepositPage() {
 
           {/* Address */}
           <div>
-            <p className="text-sm text-slate-500 mb-1.5 font-medium">Wallet Address</p>
-            <div className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.03] border border-[#162035]">
-              <span className="flex-1 text-sm font-mono text-slate-200 break-all leading-relaxed">
+            <p className="text-sm text-muted-foreground mb-1.5 font-medium">Wallet Address</p>
+            <div
+              className="flex items-center gap-2 p-3 rounded-lg bg-subtle"
+              style={{ border: "0.5px solid var(--surface-border)" }}
+            >
+              <span className="flex-1 text-sm font-mono text-foreground break-all leading-relaxed">
                 {payment.pay_address}
               </span>
               <button
                 onClick={handleCopyAddress}
-                className="flex-shrink-0 p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="flex-shrink-0 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors"
                 aria-label="Copy address"
               >
                 {copied ? (
-                  <Check className="w-4 h-4 text-[#00C896]" />
+                  <Check className="w-4 h-4 text-primary" />
                 ) : (
                   <Copy className="w-4 h-4" />
                 )}
               </button>
             </div>
             {copied && (
-              <p className="text-sm text-[#00C896] mt-1">Address copied!</p>
+              <p className="text-sm text-primary mt-1">Address copied!</p>
             )}
           </div>
 
           {/* Amount to send */}
           <div>
-            <p className="text-sm text-slate-500 mb-1.5 font-medium">Amount to Send</p>
-            <p className="text-xl font-bold text-white">
+            <p className="text-sm text-muted-foreground mb-1.5 font-medium">Amount to Send</p>
+            <p className="text-xl font-bold text-foreground">
               {payment.pay_amount}{" "}
-              <span className="text-base font-medium text-slate-400 uppercase">
+              <span className="text-base font-medium text-muted-foreground uppercase">
                 {payment.pay_currency}
               </span>
             </p>
           </div>
 
           {/* Status */}
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.03] border border-[#162035]">
+          <div
+            className="flex items-center gap-2 p-3 rounded-lg bg-subtle"
+            style={{ border: "0.5px solid var(--surface-border)" }}
+          >
             <span
               className={`w-2 h-2 rounded-full flex-shrink-0 ${
                 paymentStatus === "waiting"
                   ? "bg-amber-400 animate-pulse"
                   : paymentStatus === "confirming"
                   ? "bg-blue-400 animate-pulse"
-                  : "bg-[#00C896]"
+                  : "bg-primary"
               }`}
             />
-            <span className="text-sm text-slate-300">
+            <span className="text-sm text-muted-foreground">
               {statusLabel[paymentStatus] ?? paymentStatus}
             </span>
           </div>
@@ -207,17 +219,20 @@ export default function DepositPage() {
   return (
     <div className="max-w-md mx-auto pt-4">
       <div className="mb-5">
-        <h1 className="text-2xl font-bold text-white">Deposit Funds</h1>
-        <p className="text-base text-slate-500 mt-1">Add funds to your trading account via USDT TRC20.</p>
+        <h1 className="text-2xl font-bold text-foreground">Deposit Funds</h1>
+        <p className="text-base text-muted-foreground mt-1">Add funds to your trading account via USDT TRC20.</p>
       </div>
 
-      <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6 space-y-5">
+      <div
+        className="rounded-xl bg-surface p-6 space-y-5"
+        style={{ border: "0.5px solid var(--surface-border)" }}
+      >
         <div>
-          <label className="block text-sm font-medium text-slate-400 mb-1.5">
+          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
             Amount (USD)
           </label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-base font-medium">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground text-base font-medium">
               $
             </span>
             <input
@@ -231,13 +246,13 @@ export default function DepositPage() {
               }}
               onKeyDown={(e) => e.key === "Enter" && handleContinue()}
               placeholder="0.00"
-              className="w-full bg-white/[0.04] border border-[#162035] rounded-lg pl-8 pr-4 py-3 text-white text-base placeholder:text-slate-600 focus:outline-none focus:border-[#00C896]/50 focus:bg-white/[0.06] transition-colors"
+              className="w-full bg-subtle border border-border rounded-lg pl-8 pr-4 py-3 text-foreground text-base placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-overlay transition-colors"
             />
           </div>
           {error && (
             <p className="text-sm text-red-400 mt-1.5">{error}</p>
           )}
-          <p className="text-sm text-slate-600 mt-1.5">Minimum varies by network — typically $1–5 USDT</p>
+          <p className="text-sm text-muted-foreground mt-1.5">Minimum varies by network — typically $1–5 USDT</p>
         </div>
 
         {/* Quick amount buttons */}
@@ -246,7 +261,7 @@ export default function DepositPage() {
             <button
               key={preset}
               onClick={() => { setAmount(String(preset)); setError(""); }}
-              className="py-2 rounded-lg text-sm font-semibold border border-[#162035] text-slate-300 hover:border-[#00C896]/40 hover:text-[#00C896] hover:bg-[#00C896]/5 transition-colors"
+              className="py-2 rounded-lg text-sm font-semibold border border-border text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors"
             >
               ${preset}
             </button>
@@ -256,7 +271,7 @@ export default function DepositPage() {
         <button
           onClick={handleContinue}
           disabled={loading || !amount}
-          className="w-full py-3 rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
           {loading ? (
             <>
@@ -268,7 +283,7 @@ export default function DepositPage() {
           )}
         </button>
 
-        <p className="text-sm text-slate-600 text-center">
+        <p className="text-sm text-muted-foreground text-center">
           Deposits are credited after 1 network confirmation.
         </p>
       </div>

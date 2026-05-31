@@ -49,18 +49,18 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/8 bg-[#080d1a] py-12 px-4 sm:px-6 lg:px-8">
+    <footer className="border-t border-border bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Top row */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-10">
           {/* Logo + social */}
           <div className="flex flex-col gap-5">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[#00C896]">
-                <TrendingUp className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
+              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary">
+                <TrendingUp className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
               </div>
-              <span className="text-white font-bold text-lg tracking-tight">
-                EdgeSync <span className="text-[#00C896]">Markets</span>
+              <span className="text-foreground font-bold text-lg tracking-tight">
+                EdgeSync <span className="text-primary">Markets</span>
               </span>
             </Link>
 
@@ -70,7 +70,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="flex items-center justify-center w-8 h-8 rounded-lg border border-white/8 text-slate-500 hover:text-white hover:border-white/20 transition-colors"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:border-border/60 transition-colors"
                 >
                   <Icon />
                 </a>
@@ -84,7 +84,7 @@ export default function Footer() {
               <Link
                 key={link.label}
                 href={link.href}
-                className="text-sm text-slate-400 hover:text-[#00C896] transition-colors"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 {link.label}
               </Link>
@@ -93,12 +93,12 @@ export default function Footer() {
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-white/6 mb-8" />
+        <div className="h-px bg-border mb-8" />
 
         {/* Disclaimer */}
         <div className="rounded-xl border border-amber-500/15 bg-amber-500/5 p-5 mb-8">
-          <p className="text-xs text-amber-200/60 leading-relaxed">
-            <strong className="text-amber-300/80">Risk Warning:</strong>{" "}
+          <p className="text-xs text-amber-700 dark:text-amber-200/60 leading-relaxed">
+            <strong className="text-amber-800 dark:text-amber-300/80">Risk Warning:</strong>{" "}
             EdgeSync Markets is incorporated in Seychelles (Company No.
             XXXXXXX) and is authorized and regulated by the Financial Services
             Authority of Seychelles (FSA). CFDs are complex instruments and
@@ -112,7 +112,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-600">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-muted-foreground">
           <p>
             © {new Date().getFullYear()} EdgeSync Markets Ltd. All rights
             reserved.

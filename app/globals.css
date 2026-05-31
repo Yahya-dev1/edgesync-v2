@@ -3,6 +3,7 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 
 @theme inline {
   --color-background: var(--background);
@@ -39,6 +40,11 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
+  --color-card-nested: var(--card-nested);
+  --color-overlay: var(--hover-overlay);
+  --color-subtle: var(--subtle-bg);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,6 +55,7 @@
 }
 
 :root {
+  /* Dark mode defaults */
   --background: #080d1a;
   --foreground: #f1f5f9;
   --card: #0d1526;
@@ -81,6 +88,12 @@
   --sidebar-accent-foreground: #f1f5f9;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: #00C896;
+  /* Extended dark tokens */
+  --surface: #0b1120;
+  --surface-border: #162035;
+  --card-nested: #08111d;
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --subtle-bg: rgba(255, 255, 255, 0.025);
 }
 
 .dark {
@@ -110,6 +123,50 @@
   --sidebar-accent-foreground: #f1f5f9;
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-ring: #00C896;
+  --surface: #0b1120;
+  --surface-border: #162035;
+  --card-nested: #08111d;
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --subtle-bg: rgba(255, 255, 255, 0.025);
+}
+
+.light {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #00C896;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #00C896;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00C896;
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #00C896;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #00C896;
+  --surface: #ffffff;
+  --surface-border: #e2e8f0;
+  --card-nested: #f1f5f9;
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+  --subtle-bg: rgba(0, 0, 0, 0.03);
 }
 
 @layer base {
@@ -126,8 +183,8 @@
     font-size: 18px;
   }
   body {
-    background-color: #080d1a;
-    color: #f1f5f9;
+    background-color: var(--background);
+    color: var(--foreground);
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;

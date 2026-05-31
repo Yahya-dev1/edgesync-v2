@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { label: "Dashboard",    href: "/dashboard",              icon: LayoutDashboard },
@@ -74,37 +75,37 @@ export default function DashboardShell({ children, displayName, initials }: Prop
       : pathname.startsWith(href);
 
   return (
-    <div className="min-h-screen bg-[#080d1a] flex w-full overflow-x-hidden">
+    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
 
       {/* ── Sidebar (desktop ≥768px) ────────────────────────────── */}
       <aside
         className={cn(
-          "hidden md:flex flex-col flex-shrink-0 bg-[#0b1120] transition-[width] duration-200 overflow-hidden",
+          "hidden md:flex flex-col flex-shrink-0 bg-surface transition-[width] duration-200 overflow-hidden",
           collapsed ? "w-[52px]" : "w-[186px]"
         )}
-        style={{ borderRight: "0.5px solid #162035" }}
+        style={{ borderRight: "0.5px solid var(--surface-border)" }}
       >
         {/* Logo row */}
         <div
           className="h-14 flex items-center flex-shrink-0"
-          style={{ borderBottom: "0.5px solid #162035" }}
+          style={{ borderBottom: "0.5px solid var(--surface-border)" }}
         >
           {collapsed ? (
             <Link
               href="/"
               className="flex w-full items-center justify-center"
             >
-              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-[#00C896]">
-                <TrendingUp className="w-4 h-4 text-[#080d1a]" strokeWidth={2.5} />
+              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary">
+                <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
               </div>
             </Link>
           ) : (
             <Link href="/" className="flex items-center gap-2 px-4 min-w-0">
-              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-[#00C896] flex-shrink-0">
-                <TrendingUp className="w-4 h-4 text-[#080d1a]" strokeWidth={2.5} />
+              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary flex-shrink-0">
+                <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
               </div>
-              <span className="text-white font-semibold text-sm tracking-tight whitespace-nowrap">
-                EdgeSync <span className="text-[#00C896]">Markets</span>
+              <span className="text-foreground font-semibold text-sm tracking-tight whitespace-nowrap">
+                EdgeSync <span className="text-primary">Markets</span>
               </span>
             </Link>
           )}
@@ -126,14 +127,14 @@ export default function DashboardShell({ children, displayName, initials }: Prop
                     "flex items-center rounded-lg transition-colors",
                     collapsed ? "justify-center h-10 w-full" : "gap-3 px-3 py-2.5 w-full",
                     active
-                      ? "bg-[rgba(0,200,150,0.07)] text-[#00C896]"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                      ? "bg-primary/[0.07] text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-overlay"
                   )}
                 >
                   <Icon
                     className={cn(
                       "w-4 h-4 flex-shrink-0",
-                      active ? "text-[#00C896]" : "text-slate-500"
+                      active ? "text-primary" : "text-muted-foreground"
                     )}
                     strokeWidth={1.5}
                   />
@@ -144,10 +145,10 @@ export default function DashboardShell({ children, displayName, initials }: Prop
 
                 {/* Active border — left when expanded, right when collapsed */}
                 {active && !collapsed && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-r bg-[#00C896]" />
+                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-r bg-primary" />
                 )}
                 {active && collapsed && (
-                  <span className="absolute right-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-l bg-[#00C896]" />
+                  <span className="absolute right-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-l bg-primary" />
                 )}
               </div>
             );
@@ -160,13 +161,13 @@ export default function DashboardShell({ children, displayName, initials }: Prop
 
         {/* Top bar */}
         <header
-          className="h-14 bg-[#0b1120] flex items-center px-4 gap-2 flex-shrink-0"
-          style={{ borderBottom: "0.5px solid #162035" }}
+          className="h-14 bg-surface flex items-center px-4 gap-2 flex-shrink-0"
+          style={{ borderBottom: "0.5px solid var(--surface-border)" }}
         >
           {/* Hamburger — desktop only */}
           <button
             onClick={toggle}
-            className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors flex-shrink-0"
+            className="hidden md:flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors flex-shrink-0"
             aria-label="Toggle sidebar"
           >
             <Menu className="w-[18px] h-[18px]" strokeWidth={1.5} />
@@ -174,19 +175,22 @@ export default function DashboardShell({ children, displayName, initials }: Prop
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-[#00C896]">
-              <TrendingUp className="w-4 h-4 text-[#080d1a]" strokeWidth={2.5} />
+            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary">
+              <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
             </div>
-            <span className="text-white font-semibold text-sm tracking-tight">
-              EdgeSync <span className="text-[#00C896]">Markets</span>
+            <span className="text-foreground font-semibold text-sm tracking-tight">
+              EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
 
           <div className="flex-1" />
 
+          {/* Theme toggle */}
+          <ThemeToggle />
+
           {/* Notification bell */}
           <button
-            className="relative flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
+            className="relative flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" strokeWidth={1.5} />
@@ -194,13 +198,13 @@ export default function DashboardShell({ children, displayName, initials }: Prop
           </button>
 
           {/* User avatar pill */}
-          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.07]">
-            <div className="w-5 h-5 rounded-full bg-[#00C896]/20 border border-[#00C896]/30 flex items-center justify-center flex-shrink-0">
-              <span className="text-[9px] font-bold text-[#00C896] leading-none">
+          <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-subtle border border-border">
+            <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+              <span className="text-[9px] font-bold text-primary leading-none">
                 {initials}
               </span>
             </div>
-            <span className="text-sm font-medium text-white hidden sm:block max-w-[90px] truncate">
+            <span className="text-sm font-medium text-foreground hidden sm:block max-w-[90px] truncate">
               {displayName.split(" ")[0]}
             </span>
           </div>
@@ -209,7 +213,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
           <button
             onClick={handleLogout}
             disabled={loggingOut}
-            className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors disabled:opacity-50"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors disabled:opacity-50"
             aria-label="Logout"
           >
             {loggingOut ? (
@@ -221,15 +225,15 @@ export default function DashboardShell({ children, displayName, initials }: Prop
         </header>
 
         {/* Page content */}
-        <main className="flex-1 min-w-0 overflow-auto bg-[#080d1a] p-[16px] pb-[80px] md:p-5 md:pb-5">
+        <main className="flex-1 min-w-0 overflow-auto bg-background p-[16px] pb-[80px] md:p-5 md:pb-5">
           {children}
         </main>
       </div>
 
       {/* ── Bottom nav (mobile <768px) ────────────────────────────── */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 h-[64px] bg-[#0b1120] flex items-center justify-around z-50"
-        style={{ borderTop: "0.5px solid #162035", width: "100%" }}
+        className="md:hidden fixed bottom-0 left-0 h-[64px] bg-surface flex items-center justify-around z-50"
+        style={{ borderTop: "0.5px solid var(--surface-border)", width: "100%" }}
       >
         {bottomNavItems.map(({ label, href, icon: Icon }) => {
           const active = isActive(href);
@@ -242,14 +246,14 @@ export default function DashboardShell({ children, displayName, initials }: Prop
               <Icon
                 className={cn(
                   "w-5 h-5 transition-colors",
-                  active ? "text-[#00C896]" : "text-slate-500"
+                  active ? "text-primary" : "text-muted-foreground"
                 )}
                 strokeWidth={1.5}
               />
               <span
                 className={cn(
                   "text-[10px] leading-none font-medium transition-colors whitespace-nowrap",
-                  active ? "text-[#00C896]" : "text-slate-500"
+                  active ? "text-primary" : "text-muted-foreground"
                 )}
               >
                 {label}
@@ -261,11 +265,11 @@ export default function DashboardShell({ children, displayName, initials }: Prop
 
       {/* ── Floating chat button ──────────────────────────────────── */}
       <button
-        className="fixed right-4 bottom-[80px] md:bottom-6 w-12 h-12 rounded-full bg-[#00C896] flex items-center justify-center shadow-lg shadow-[#00C896]/20 z-40 hover:bg-[#00b084] transition-colors"
+        className="fixed right-4 bottom-[80px] md:bottom-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 z-40 hover:bg-primary/80 transition-colors"
         aria-label="Chat"
       >
-        <MessageCircle className="w-5 h-5 text-[#080d1a]" strokeWidth={2} />
-        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-[#080d1a]" />
+        <MessageCircle className="w-5 h-5 text-primary-foreground" strokeWidth={2} />
+        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-background" />
       </button>
     </div>
   );
