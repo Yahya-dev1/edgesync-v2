@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import * as Flags from "country-flag-icons/react/3x2";
 
 type Trader = {
   id: string;
@@ -17,6 +18,19 @@ type Trader = {
   is_available: boolean;
   flag: string | null;
 };
+
+// ─── Flag Icon ────────────────────────────────────────────────
+
+function FlagIcon({ code }: { code: string }) {
+  const Flag = Flags[code as keyof typeof Flags];
+  if (!Flag) return null;
+  return (
+    <Flag
+      title={code}
+      style={{ width: 20, height: "auto", borderRadius: 3, display: "block", flexShrink: 0 }}
+    />
+  );
+}
 
 // ─── Star Rating ───────────────────────────────────────────────
 
@@ -108,10 +122,8 @@ function TraderCard({
       {/* Name + followers + stars */}
       <div>
         <div className="flex items-start justify-between gap-2 mb-1.5">
-          <div className="flex items-center gap-1.5 min-w-0">
-            {trader.flag && (
-              <span className="text-base leading-none shrink-0">{trader.flag}</span>
-            )}
+          <div className="flex items-center gap-2 min-w-0">
+            {trader.flag && <FlagIcon code={trader.flag} />}
             <span className="font-semibold text-white text-[15px] leading-tight truncate">{trader.name}</span>
           </div>
           <span className="text-[11px] text-slate-400 whitespace-nowrap tabular-nums shrink-0">
