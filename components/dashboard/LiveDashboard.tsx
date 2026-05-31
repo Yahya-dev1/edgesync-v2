@@ -4,6 +4,10 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import StopCopyingButton from "./StopCopyingButton";
 
+// Single stable client — createBrowserClient creates a new WebSocket each call,
+// so we keep one at module level to avoid missing events during connection setup.
+const supabase = createClient();
+
 // ─── Asset SVG Icons ───────────────────────────────────────────
 
 function XAUUSDIcon() {
@@ -124,8 +128,6 @@ export default function LiveDashboard({
   const [trades, setTrades] = useState<Trade[]>([]);
 
   useEffect(() => {
-    const supabase = createClient();
-
     async function fetchTrades() {
       const { data } = await supabase
         .from("master_trades")
@@ -138,11 +140,9 @@ export default function LiveDashboard({
 
     const channel = supabase
       .channel("master_trades_live")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "master_trades" },
-        fetchTrades
-      )
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "master_trades" }, fetchTrades)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "master_trades" }, fetchTrades)
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "master_trades" }, fetchTrades)
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
