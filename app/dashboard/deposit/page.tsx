@@ -47,8 +47,8 @@ export default function DepositPage() {
 
   async function handleContinue() {
     const num = parseFloat(amount);
-    if (!num || num < 10) {
-      setError("Minimum deposit amount is $10.");
+    if (!num || num < 1) {
+      setError("Enter a valid amount.");
       return;
     }
     setError("");
@@ -222,7 +222,7 @@ export default function DepositPage() {
             </span>
             <input
               type="number"
-              min="10"
+              min="1"
               step="1"
               value={amount}
               onChange={(e) => {
@@ -237,7 +237,7 @@ export default function DepositPage() {
           {error && (
             <p className="text-xs text-red-400 mt-1.5">{error}</p>
           )}
-          <p className="text-xs text-slate-600 mt-1.5">Minimum deposit: $10</p>
+          <p className="text-xs text-slate-600 mt-1.5">Minimum varies by network — typically $1–5 USDT</p>
         </div>
 
         {/* Quick amount buttons */}

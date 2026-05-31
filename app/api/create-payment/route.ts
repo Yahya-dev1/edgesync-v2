@@ -10,16 +10,39 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const amount = Number(body.amount);
-  if (!amount || amount < 10) {
-    return NextResponse.json({ error: "Minimum deposit is $10" }, { status: 400 });
+  if (!amount || amount <= 0) {
+    return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+  }
+
+  const API_KEY = process.env.NOWPAYMENTS_API_KEY!;
+  const NP_BASE = "https://api.nowpayments.io/v1";
+
+  // Check NOWPayments minimum before attempting payment creation
+  try {
+    const minRes = await fetch(
+      `${NP_BASE}/min-amount?currency_from=usd&currency_to=usdttrc20`,
+      { headers: { "x-api-key": API_KEY } }
+    );
+    if (minRes.ok) {
+      const minData = await minRes.json();
+      const minAmount = Number(minData.min_amount);
+      if (amount < minAmount) {
+        return NextResponse.json(
+          { error: `Minimum deposit is $${minAmount.toFixed(2)}` },
+          { status: 400 }
+        );
+      }
+    }
+  } catch {
+    // Non-fatal — let the main payment call surface any key/config errors
   }
 
   const orderId = `${user.id}-${Date.now()}`;
 
-  const npRes = await fetch("https://api.nowpayments.io/v1/payment", {
+  const npRes = await fetch(`${NP_BASE}/payment`, {
     method: "POST",
     headers: {
-      "x-api-key": process.env.NOWPAYMENTS_API_KEY!,
+      "x-api-key": API_KEY,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -28,13 +51,23 @@ export async function POST(req: NextRequest) {
       price_currency: "usd",
       order_id: orderId,
       order_description: "EdgeSync deposit",
+      is_fixed_rate: false,
+      is_fee_paid_by_user: false,
     }),
   });
 
   if (!npRes.ok) {
-    const err = await npRes.text();
-    console.error("NOWPayments error:", err);
-    return NextResponse.json({ error: "Payment provider error" }, { status: 502 });
+    const errText = await npRes.text();
+    console.error("NOWPayments error", npRes.status, errText);
+    let errMessage = "Payment provider error";
+    try {
+      const errJson = JSON.parse(errText);
+      errMessage = errJson.message ?? errJson.code ?? errMessage;
+    } catch { /* not JSON */ }
+    return NextResponse.json(
+      { error: errMessage, _debug: errText },
+      { status: 502 }
+    );
   }
 
   const payment = await npRes.json();
