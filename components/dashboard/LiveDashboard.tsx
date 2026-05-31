@@ -132,6 +132,7 @@ export default function LiveDashboard({
       const { data } = await supabase
         .from("master_trades")
         .select("id, symbol, direction, pnl_percentage")
+        .eq("trader_name", traderName)
         .eq("is_active", true);
       if (data) setTrades(data as Trade[]);
     }
@@ -146,7 +147,7 @@ export default function LiveDashboard({
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [traderName]);
 
   const totalPnl = trades.reduce(
     (sum, t) => sum + (userBalance * Number(t.pnl_percentage)) / 100,
@@ -286,7 +287,7 @@ export default function LiveDashboard({
                       </p>
                       <p
                         className={`text-sm font-medium ${
-                          trade.direction === "BUY" ? "text-primary" : "text-red-400"
+                          trade.direction?.toUpperCase() === "BUY" ? "text-primary" : "text-red-400"
                         }`}
                       >
                         {trade.direction ?? "—"}
