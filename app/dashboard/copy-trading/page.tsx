@@ -13,6 +13,7 @@ export default async function CopyTradingPage() {
   const { data: traders } = await supabase
     .from("traders")
     .select("id, name, followers, win_rate, roi, drawdown, trades_taken, stars, risk_level, is_available, flag")
+    .order("is_available", { ascending: false })
     .order("followers", { ascending: false });
 
   return (
