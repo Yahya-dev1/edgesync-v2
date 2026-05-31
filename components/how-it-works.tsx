@@ -14,7 +14,7 @@ const steps = [
     icon: Wallet,
     title: "Deposit Funds",
     description:
-      "Fund your account from $100 using bank transfer, card, or other supported payment methods.",
+      "Fund your account from $100 using USDT (TRC20) crypto deposits or other supported payment methods.",
   },
   {
     number: "03",
