@@ -14,7 +14,7 @@ export default async function DashboardPage() {
     supabase.from("profiles").select("full_name, balance").eq("id", user!.id).single(),
     supabase
       .from("user_copy_trading")
-      .select("id, trader_name")
+      .select("id, trader_name, original_deposit")
       .eq("user_id", user!.id)
       .eq("is_copying", true)
       .order("started_at", { ascending: false })
@@ -38,6 +38,7 @@ export default async function DashboardPage() {
     <State2
       firstName={firstName}
       userBalance={balanceNum}
+      originalDeposit={copyTrade.original_deposit != null ? Number(copyTrade.original_deposit) : null}
       copyId={copyTrade.id}
       traderName={copyTrade.trader_name}
       tradesTaken={tradesTaken ?? 0}
@@ -160,6 +161,7 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
 function State2({
   firstName,
   userBalance,
+  originalDeposit,
   copyId,
   traderName,
   tradesTaken,
@@ -167,6 +169,7 @@ function State2({
 }: {
   firstName: string;
   userBalance: number;
+  originalDeposit: number | null;
   copyId: string;
   traderName: string;
   tradesTaken: number;
@@ -182,6 +185,7 @@ function State2({
 
       <LiveDashboard
         userBalance={userBalance}
+        originalDeposit={originalDeposit}
         copyId={copyId}
         traderName={traderName}
         tradesTaken={tradesTaken}

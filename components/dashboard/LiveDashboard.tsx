@@ -4,99 +4,174 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import StopCopyingButton from "./StopCopyingButton";
 
-// Single stable client — createBrowserClient creates a new WebSocket each call,
-// so we keep one at module level to avoid missing events during connection setup.
 const supabase = createClient();
 
-// ─── Asset SVG Icons ───────────────────────────────────────────
+// ─── Flag primitives (26×26 drawn at top-left x,y) ────────────
+
+function FlagUS({ x, y }: { x: number; y: number }) {
+  const cx = x + 13;
+  const cy = y + 13;
+  return (
+    <g>
+      <rect x={x} y={y} width={26} height={26} fill="#B22234" />
+      {[2, 6, 10, 14, 18, 22].map((dy) => (
+        <rect key={dy} x={x} y={y + dy} width={26} height={2} fill="white" />
+      ))}
+      <rect x={x} y={y} width={11} height={11} fill="#3C3B6E" />
+      {[2, 5.5, 9].flatMap((dy) =>
+        [2, 5.5, 9].map((dx) => (
+          <circle key={`${dx}-${dy}`} cx={x + dx} cy={y + dy} r={0.75} fill="white" />
+        ))
+      )}
+    </g>
+  );
+}
+
+function FlagEU({ x, y }: { x: number; y: number }) {
+  const cx = x + 13;
+  const cy = y + 13;
+  return (
+    <g>
+      <rect x={x} y={y} width={26} height={26} fill="#003399" />
+      {Array.from({ length: 12 }, (_, i) => {
+        const a = (i * 30 - 90) * (Math.PI / 180);
+        return (
+          <circle
+            key={i}
+            cx={cx + 7 * Math.cos(a)}
+            cy={cy + 7 * Math.sin(a)}
+            r={1.3}
+            fill="#FFDD00"
+          />
+        );
+      })}
+    </g>
+  );
+}
+
+function FlagGB({ x, y }: { x: number; y: number }) {
+  const cx = x + 13;
+  const cy = y + 13;
+  return (
+    <g>
+      <rect x={x} y={y} width={26} height={26} fill="#012169" />
+      {/* St. Andrew diagonals (white wide) */}
+      <line x1={x} y1={y} x2={x + 26} y2={y + 26} stroke="white" strokeWidth={8} />
+      <line x1={x + 26} y1={y} x2={x} y2={y + 26} stroke="white" strokeWidth={8} />
+      {/* St. Patrick diagonals (red narrow) */}
+      <line x1={x} y1={y} x2={x + 26} y2={y + 26} stroke="#C8102E" strokeWidth={3.5} />
+      <line x1={x + 26} y1={y} x2={x} y2={y + 26} stroke="#C8102E" strokeWidth={3.5} />
+      {/* St. George cross (white) */}
+      <rect x={x} y={cy - 4} width={26} height={8} fill="white" />
+      <rect x={cx - 4} y={y} width={8} height={26} fill="white" />
+      {/* St. George cross (red) */}
+      <rect x={x} y={cy - 2.4} width={26} height={4.8} fill="#C8102E" />
+      <rect x={cx - 2.4} y={y} width={4.8} height={26} fill="#C8102E" />
+    </g>
+  );
+}
+
+function FlagJP({ x, y }: { x: number; y: number }) {
+  return (
+    <g>
+      <rect x={x} y={y} width={26} height={26} fill="white" />
+      <circle cx={x + 13} cy={y + 13} r={6} fill="#BC002D" />
+    </g>
+  );
+}
+
+// ─── Pair icon (40×26, left circle in front of right) ─────────
+
+function PairIcon({
+  id,
+  Left,
+  Right,
+}: {
+  id: string;
+  Left: React.ComponentType<{ x: number; y: number }>;
+  Right: React.ComponentType<{ x: number; y: number }>;
+}) {
+  return (
+    <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true">
+      <defs>
+        <clipPath id={`lc-${id}`}>
+          <circle cx="13" cy="13" r="13" />
+        </clipPath>
+        <clipPath id={`rc-${id}`}>
+          <circle cx="27" cy="13" r="13" />
+        </clipPath>
+      </defs>
+      {/* Right flag (behind) */}
+      <g clipPath={`url(#rc-${id})`}>
+        <Right x={14} y={0} />
+      </g>
+      {/* Left flag (in front) */}
+      <g clipPath={`url(#lc-${id})`}>
+        <Left x={0} y={0} />
+      </g>
+      {/* Thin separator ring around left circle */}
+      <circle cx="13" cy="13" r="13" fill="none" stroke="rgba(0,0,0,0.18)" strokeWidth="1" />
+    </svg>
+  );
+}
+
+// ─── Named pair icons ─────────────────────────────────────────
 
 function XAUUSDIcon() {
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="XAUUSD">
-      <rect x="4" y="20" width="24" height="7" rx="2" fill="#F59E0B" />
-      <rect x="4" y="20" width="24" height="2.5" rx="0" fill="#92400E" opacity="0.4" />
-      <rect x="6" y="13" width="20" height="8" rx="2" fill="#FBBF24" />
-      <rect x="6" y="13" width="20" height="2.5" rx="0" fill="#92400E" opacity="0.3" />
-      <rect x="8" y="6" width="16" height="8" rx="2" fill="#FCD34D" />
-      <rect x="8" y="6" width="16" height="2.5" rx="0" fill="#92400E" opacity="0.2" />
+    <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true">
+      <circle cx="20" cy="13" r="13" fill="#B45309" />
+      <circle cx="20" cy="13" r="13" fill="url(#xau-shine)" />
+      <defs>
+        <radialGradient id="xau-shine" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#FCD34D" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#92400E" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      {/* Stacked gold bars */}
+      <rect x="11" y="7" width="18" height="4" rx="1" fill="white" opacity="0.92" />
+      <rect x="11" y="12.5" width="18" height="4" rx="1" fill="white" opacity="0.92" />
+      <rect x="13" y="18" width="14" height="3.5" rx="1" fill="white" opacity="0.55" />
     </svg>
   );
 }
 
 function EURUSDIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="EURUSD">
-      <circle cx="16" cy="16" r="14" fill="#1D4ED8" />
-      <text
-        x="16"
-        y="22"
-        textAnchor="middle"
-        fontSize="17"
-        fontWeight="700"
-        fill="#FCD34D"
-        fontFamily="Georgia, serif"
-      >
-        €
-      </text>
-    </svg>
-  );
+  return <PairIcon id="eurusd" Left={FlagEU} Right={FlagUS} />;
 }
-
 function GBPUSDIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="GBPUSD">
-      <defs>
-        <clipPath id="gbp-c">
-          <circle cx="16" cy="16" r="14" />
-        </clipPath>
-      </defs>
-      <g clipPath="url(#gbp-c)">
-        <rect width="32" height="32" fill="#012169" />
-        <line x1="-2" y1="-2" x2="34" y2="34" stroke="white" strokeWidth="8" />
-        <line x1="34" y1="-2" x2="-2" y2="34" stroke="white" strokeWidth="8" />
-        <line x1="-2" y1="-2" x2="34" y2="34" stroke="#C8102E" strokeWidth="4.5" />
-        <line x1="34" y1="-2" x2="-2" y2="34" stroke="#C8102E" strokeWidth="4.5" />
-        <rect x="0" y="12.5" width="32" height="7" fill="white" />
-        <rect x="12.5" y="0" width="7" height="32" fill="white" />
-        <rect x="0" y="14" width="32" height="4" fill="#C8102E" />
-        <rect x="14" y="0" width="4" height="32" fill="#C8102E" />
-      </g>
-    </svg>
-  );
+  return <PairIcon id="gbpusd" Left={FlagGB} Right={FlagUS} />;
 }
-
 function USDJPYIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-label="USDJPY">
-      <circle cx="16" cy="16" r="14" fill="#DC2626" />
-      <circle cx="16" cy="16" r="5.5" fill="white" />
-    </svg>
-  );
+  return <PairIcon id="usdjpy" Left={FlagUS} Right={FlagJP} />;
+}
+function GBPJPYIcon() {
+  return <PairIcon id="gbpjpy" Left={FlagGB} Right={FlagJP} />;
 }
 
 function GenericIcon() {
   return (
-    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
-      <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-        <rect x="2" y="3" width="16" height="14" rx="2" stroke="#94a3b8" strokeWidth="1.5" />
-        <path
-          d="M3 14.5l4-4 3 3 4-4.5 3 2.5"
-          stroke="#94a3b8"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
+    <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true">
+      <circle cx="20" cy="13" r="13" fill="#374151" />
+      <rect x="13" y="8" width="14" height="11" rx="1.5" stroke="#94A3B8" strokeWidth="1.2" fill="none" />
+      <path
+        d="M14 17l3-3 2.5 2.5 3-4 2.5 2"
+        stroke="#94A3B8"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
 function AssetIcon({ symbol }: { symbol: string | null }) {
-  switch (symbol) {
+  switch (symbol?.toUpperCase()) {
     case "XAUUSD": return <XAUUSDIcon />;
     case "EURUSD": return <EURUSDIcon />;
     case "GBPUSD": return <GBPUSDIcon />;
     case "USDJPY": return <USDJPYIcon />;
+    case "GBPJPY": return <GBPJPYIcon />;
     default:       return <GenericIcon />;
   }
 }
@@ -115,18 +190,23 @@ type Trade = {
 
 export default function LiveDashboard({
   userBalance,
+  originalDeposit,
   copyId,
   traderName,
   tradesTaken,
   userId,
 }: {
   userBalance: number;
+  originalDeposit: number | null;
   copyId: string;
   traderName: string;
   tradesTaken: number;
   userId: string;
 }) {
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [liveBalance, setLiveBalance] = useState(userBalance);
+
+  const base = originalDeposit ?? liveBalance;
 
   useEffect(() => {
     async function fetchTrades() {
@@ -140,55 +220,83 @@ export default function LiveDashboard({
 
     fetchTrades();
 
-    const channel = supabase
+    const tradesChannel = supabase
       .channel("master_trades_live")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "master_trades" }, fetchTrades)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "master_trades" }, fetchTrades)
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "master_trades" }, fetchTrades)
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [traderName]);
+    const profileChannel = supabase
+      .channel("profile_balance")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${userId}` },
+        (payload) => {
+          const updated = payload.new as { balance: number };
+          if (updated?.balance !== undefined) setLiveBalance(Number(updated.balance));
+        }
+      )
+      .subscribe();
 
-  const totalPnl = trades.reduce(
-    (sum, t) => sum + (userBalance * Number(t.pnl_percentage)) / 100,
-    0
-  );
-  const pnlPositive = totalPnl >= 0;
-  const formattedPnl =
-    (pnlPositive ? "+" : "-") + "$" + Math.abs(totalPnl).toFixed(2);
+    return () => {
+      supabase.removeChannel(tradesChannel);
+      supabase.removeChannel(profileChannel);
+    };
+  }, [traderName, userId]);
+
+  // P&L calculated from active trades against the original deposit
+  const floatingPnl = originalDeposit != null
+    ? liveBalance - originalDeposit
+    : trades
+        .filter((t) => t.is_active)
+        .reduce((sum, t) => sum + (base * Number(t.pnl_percentage)) / 100, 0);
+
+  const pnlPositive = floatingPnl >= 0;
+  const formattedPnl = (pnlPositive ? "+" : "-") + "$" + Math.abs(floatingPnl).toFixed(2);
+
+  // Per-trade P&L uses original deposit as the base (not compounding)
+  function tradePnlAmount(pnl: number) {
+    return (base * pnl) / 100;
+  }
 
   return (
     <>
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        {/* Balance */}
         <div
           className="p-[16px] md:p-5 rounded-xl bg-surface"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
           <p className="text-sm text-muted-foreground mb-1.5">Account Balance</p>
           <p className="text-2xl font-bold text-foreground">
-            ${userBalance.toFixed(2)}
+            ${base.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
+          {originalDeposit != null && (
+            <p className={`text-sm font-semibold mt-1 ${pnlPositive ? "text-primary" : "text-red-400"}`}>
+              {formattedPnl}
+            </p>
+          )}
         </div>
+
+        {/* Floating P&L */}
         <div
           className="p-[16px] md:p-5 rounded-xl bg-surface"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
-          <p className="text-sm text-muted-foreground mb-1.5">Total P&L</p>
-          <p
-            className={`text-2xl font-bold ${
-              pnlPositive ? "text-primary" : "text-red-400"
-            }`}
-          >
+          <p className="text-sm text-muted-foreground mb-1.5">Floating P&L</p>
+          <p className={`text-2xl font-bold ${pnlPositive ? "text-primary" : "text-red-400"}`}>
             {formattedPnl}
           </p>
         </div>
+
+        {/* Copied trades count */}
         <div
           className="p-[16px] md:p-5 rounded-xl bg-surface"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
-          <p className="text-sm text-muted-foreground mb-1.5">Total Trades</p>
+          <p className="text-sm text-muted-foreground mb-1.5">Copied Trades</p>
           <p className="text-2xl font-bold text-foreground">{trades.length}</p>
         </div>
       </div>
@@ -223,14 +331,22 @@ export default function LiveDashboard({
             {(
               [
                 ["Trades taken", String(tradesTaken)],
-                ["Today's P&L", "$0.00"],
-                ["This week", "$0.00"],
                 ["Floating P&L", formattedPnl],
               ] as [string, string][]
             ).map(([label, value]) => (
               <div key={label} className="flex items-center justify-between text-base">
                 <span className="text-muted-foreground">{label}</span>
-                <span className="font-semibold text-foreground">{value}</span>
+                <span
+                  className={`font-semibold ${
+                    label === "Floating P&L"
+                      ? pnlPositive
+                        ? "text-primary"
+                        : "text-red-400"
+                      : "text-foreground"
+                  }`}
+                >
+                  {value}
+                </span>
               </div>
             ))}
           </div>
@@ -238,13 +354,13 @@ export default function LiveDashboard({
           <StopCopyingButton copyId={copyId} userId={userId} traderName={traderName} />
         </div>
 
-        {/* Right: Running trades */}
+        {/* Right: Copied trades */}
         <div
           className="rounded-xl bg-surface p-[16px] md:p-6"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-5">
-            Trades
+            Copied Trades
           </p>
 
           {trades.length === 0 ? (
@@ -269,10 +385,9 @@ export default function LiveDashboard({
           ) : (
             <div className="space-y-3">
               {trades.map((trade) => {
-                const tradePnl = (userBalance * Number(trade.pnl_percentage)) / 100;
-                const positive = tradePnl >= 0;
-                const pnlStr =
-                  (positive ? "+" : "-") + "$" + Math.abs(tradePnl).toFixed(2);
+                const pnl = tradePnlAmount(Number(trade.pnl_percentage));
+                const positive = pnl >= 0;
+                const pnlStr = (positive ? "+" : "-") + "$" + Math.abs(pnl).toFixed(2);
                 const isOpen = trade.is_active === true;
                 return (
                   <div

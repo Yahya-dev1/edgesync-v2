@@ -227,6 +227,14 @@ export default function TraderGrid({
     const { error: rpcError } = await supabase.rpc("increment_followers", { p_trader_name: traderName });
     if (rpcError) console.error("[copy] increment_followers failed:", rpcError);
 
+    // Snapshot the user's current approved-deposit total as their baseline
+    const { data: depositRows } = await supabase
+      .from("deposits")
+      .select("amount")
+      .eq("user_id", userId)
+      .eq("status", "approved");
+    const originalDeposit = depositRows?.reduce((sum, d) => sum + Number(d.amount), 0) ?? 0;
+
     // Deactivate any existing active rows before inserting to prevent duplicate true rows
     const { error: deactivateError } = await supabase
       .from("user_copy_trading")
@@ -240,6 +248,7 @@ export default function TraderGrid({
       trader_name: traderName,
       is_copying: true,
       started_at: new Date().toISOString(),
+      original_deposit: originalDeposit,
     });
     if (insertError) {
       console.error("[copy] user_copy_trading insert failed:", insertError);
