@@ -200,7 +200,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
                 {initials}
               </span>
             </div>
-            <span className="text-xs font-medium text-white hidden sm:block max-w-[90px] truncate">
+            <span className="text-sm font-medium text-white hidden sm:block max-w-[90px] truncate">
               {displayName.split(" ")[0]}
             </span>
           </div>
@@ -248,7 +248,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
               />
               <span
                 className={cn(
-                  "text-[10px] leading-tight font-medium transition-colors",
+                  "text-[0.75rem] leading-tight font-medium transition-colors",
                   active ? "text-[#00C896]" : "text-slate-500"
                 )}
               >

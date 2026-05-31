@@ -62,8 +62,8 @@ function RiskBar({ level }: { level: string }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] text-slate-500 uppercase tracking-wide">Risk</span>
-        <span className="text-[10px] font-semibold" style={{ color: cfg.color }}>
+        <span className="text-xs text-slate-500 uppercase tracking-wide">Risk</span>
+        <span className="text-xs font-semibold" style={{ color: cfg.color }}>
           {cfg.label}
         </span>
       </div>
@@ -113,7 +113,7 @@ function TraderCard({
       {/* Top performer badge */}
       {isAmiinFx && (
         <div>
-          <span className="text-[10px] font-semibold text-[#00C896] bg-[#00C896]/10 px-2.5 py-1 rounded-full">
+          <span className="text-xs font-semibold text-[#00C896] bg-[#00C896]/10 px-2.5 py-1 rounded-full">
             Top performer
           </span>
         </div>
@@ -124,9 +124,9 @@ function TraderCard({
         <div className="flex items-start justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-2 min-w-0">
             {trader.flag && <FlagIcon code={trader.flag} />}
-            <span className="font-semibold text-white text-[15px] leading-tight truncate">{trader.name}</span>
+            <span className="font-semibold text-white text-base leading-tight truncate">{trader.name}</span>
           </div>
-          <span className="text-[11px] text-slate-400 whitespace-nowrap tabular-nums shrink-0">
+          <span className="text-xs text-slate-400 whitespace-nowrap tabular-nums shrink-0">
             {trader.followers.toLocaleString()} followers
           </span>
         </div>
@@ -146,8 +146,8 @@ function TraderCard({
             className="rounded-lg p-3"
             style={{ background: "#08111d", border: "0.5px solid #162035" }}
           >
-            <p className="text-[10px] text-slate-500 mb-0.5">{label}</p>
-            <p className="text-sm font-semibold text-white">{value}</p>
+            <p className="text-xs text-slate-500 mb-0.5">{label}</p>
+            <p className="text-base font-semibold text-white">{value}</p>
           </div>
         ))}
       </div>
@@ -160,7 +160,7 @@ function TraderCard({
         {!trader.is_available && (
           <div className="flex items-center justify-center gap-1.5 mb-2">
             <LockIcon />
-            <span className="text-[11px] font-semibold text-red-400">Geo restricted</span>
+            <span className="text-xs font-semibold text-red-400">Geo restricted</span>
           </div>
         )}
 
@@ -168,14 +168,14 @@ function TraderCard({
           <button
             onClick={() => onCopy(trader.name)}
             disabled={copying}
-            className="w-full py-2.5 rounded-lg text-sm font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-2.5 rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {copying ? "Starting…" : `Copy ${trader.name}`}
           </button>
         ) : (
           <button
             disabled
-            className="w-full py-2.5 rounded-lg text-sm font-semibold text-slate-600 cursor-not-allowed"
+            className="w-full py-2.5 rounded-lg text-base font-semibold text-slate-600 cursor-not-allowed"
             style={{ background: "#08111d", border: "0.5px solid #162035" }}
           >
             Not available

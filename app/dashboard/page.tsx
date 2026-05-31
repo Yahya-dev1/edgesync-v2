@@ -129,23 +129,23 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
         <h1 className="text-2xl font-bold text-white">
           Welcome, <span className="text-[#00C896]">{firstName}</span>!
         </h1>
-        <p className="text-sm text-slate-500 mt-1">Here&apos;s your trading overview.</p>
+        <p className="text-base text-slate-500 mt-1">Here&apos;s your trading overview.</p>
       </div>
 
       {/* Balance card */}
       <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6 mb-5">
-        <p className="text-xs font-medium text-slate-500 mb-1">Account Balance</p>
+        <p className="text-sm font-medium text-slate-500 mb-1">Account Balance</p>
         <p className="text-3xl font-bold text-white mb-5">{balance}</p>
         <div className="flex gap-3">
           <Link
             href="/dashboard/deposit"
-            className="flex-1 py-2.5 text-center rounded-lg text-sm font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
+            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
           >
             Deposit
           </Link>
           <Link
             href="/dashboard/withdraw"
-            className="flex-1 py-2.5 text-center rounded-lg text-sm font-semibold border border-[#162035] text-slate-300 hover:bg-white/5 transition-colors"
+            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold border border-[#162035] text-slate-300 hover:bg-white/5 transition-colors"
           >
             Withdraw
           </Link>
@@ -173,13 +173,13 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
               </svg>
             </div>
           </div>
-          <h3 className="text-base font-bold text-white mb-2">Copy Trading</h3>
-          <p className="text-sm text-slate-400 mb-6 flex-1">
+          <h3 className="text-lg font-bold text-white mb-2">Copy Trading</h3>
+          <p className="text-base text-slate-400 mb-6 flex-1">
             Automatically mirror trades from verified expert traders.
           </p>
           <Link
             href="/dashboard/copy-trading"
-            className="block py-2.5 text-center rounded-lg text-sm font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
+            className="block py-2.5 text-center rounded-lg text-base font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors"
           >
             Browse traders
           </Link>
@@ -204,13 +204,13 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
               </svg>
             </div>
           </div>
-          <h3 className="text-base font-bold text-white mb-2">Self Trading</h3>
-          <p className="text-sm text-slate-400 mb-6 flex-1">
+          <h3 className="text-lg font-bold text-white mb-2">Self Trading</h3>
+          <p className="text-base text-slate-400 mb-6 flex-1">
             Take full control and execute your own trades manually.
           </p>
           <button
             disabled
-            className="w-full py-2.5 text-center rounded-lg text-sm font-semibold border border-[#162035] text-slate-500 cursor-not-allowed"
+            className="w-full py-2.5 text-center rounded-lg text-base font-semibold border border-[#162035] text-slate-500 cursor-not-allowed"
           >
             Under Maintenance
           </button>
@@ -248,15 +248,15 @@ function State2({
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
         <div className="p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
-          <p className="text-xs text-slate-500 mb-1.5">Account Balance</p>
+          <p className="text-sm text-slate-500 mb-1.5">Account Balance</p>
           <p className="text-2xl font-bold text-white">{balance}</p>
         </div>
         <div className="p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
-          <p className="text-xs text-slate-500 mb-1.5">Total P&L</p>
+          <p className="text-sm text-slate-500 mb-1.5">Total P&L</p>
           <p className="text-2xl font-bold text-[#00C896]">+$0.00</p>
         </div>
         <div className="p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
-          <p className="text-xs text-slate-500 mb-1.5">Open Trades</p>
+          <p className="text-sm text-slate-500 mb-1.5">Open Trades</p>
           <p className="text-2xl font-bold text-white">0</p>
         </div>
       </div>
@@ -265,7 +265,7 @@ function State2({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Copying panel */}
         <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6">
-          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-5">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">
             Copying
           </p>
 
@@ -275,15 +275,15 @@ function State2({
               <span className="text-sm font-bold text-[#00C896]">AF</span>
             </div>
             <div>
-              <p className="font-semibold text-white">{traderName}</p>
-              <p className="text-xs text-slate-500">Verified Master Trader</p>
+              <p className="text-base font-semibold text-white">{traderName}</p>
+              <p className="text-sm text-slate-500">Verified Master Trader</p>
             </div>
           </div>
 
           {/* Live pill */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#00C896]/10 border border-[#00C896]/20 mb-6">
             <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse flex-shrink-0" />
-            <span className="text-xs font-semibold text-[#00C896]">Live — copying active</span>
+            <span className="text-sm font-semibold text-[#00C896]">Live — copying active</span>
           </div>
 
           {/* Stats */}
@@ -296,7 +296,7 @@ function State2({
                 ["Floating P&L", "$0.00"],
               ] as [string, string][]
             ).map(([label, value]) => (
-              <div key={label} className="flex items-center justify-between text-sm">
+              <div key={label} className="flex items-center justify-between text-base">
                 <span className="text-slate-400">{label}</span>
                 <span className="font-semibold text-white">{value}</span>
               </div>
@@ -308,7 +308,7 @@ function State2({
 
         {/* Right: Running trades */}
         <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6">
-          <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-5">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">
             Running Trades
           </p>
 
@@ -320,21 +320,21 @@ function State2({
               >
                 <Icon />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white">{symbol}</p>
+                  <p className="text-base font-semibold text-white">{symbol}</p>
                   <p
-                    className={`text-xs font-medium ${
+                    className={`text-sm font-medium ${
                       direction === "BUY" ? "text-[#00C896]" : "text-red-400"
                     }`}
                   >
                     {direction}
                   </p>
                 </div>
-                <span className="text-sm font-semibold text-slate-300 tabular-nums">{pnl}</span>
+                <span className="text-base font-semibold text-slate-300 tabular-nums">{pnl}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-xs text-slate-600 text-center mt-5">
+          <p className="text-sm text-slate-600 text-center mt-5">
             Trades update when {traderName} opens positions
           </p>
         </div>

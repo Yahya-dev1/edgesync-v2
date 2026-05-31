@@ -20,7 +20,7 @@ export default async function CopyTradingPage() {
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Choose a master trader</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <p className="text-base text-slate-400 mt-1">
           Select a trader to automatically copy their strategy
         </p>
       </div>
@@ -41,7 +41,7 @@ export default async function CopyTradingPage() {
           <path d="M8 7v4" stroke="#3B82F6" strokeWidth="1.4" strokeLinecap="round" />
           <circle cx="8" cy="5" r="0.75" fill="#3B82F6" />
         </svg>
-        <p className="text-[13px] text-blue-300 leading-relaxed">
+        <p className="text-sm text-blue-300 leading-relaxed">
           <span className="font-semibold text-blue-200">Country restriction applies.</span>{" "}
           You can only copy trade traders from your own country. Traders outside your region
           are marked as geo restricted.
