@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import * as Flags from "country-flag-icons/react/3x2";
 
@@ -198,7 +197,6 @@ export default function TraderGrid({
 }) {
   const [traders, setTraders] = useState<Trader[]>(initialTraders);
   const [copying, setCopying] = useState(false);
-  const router = useRouter();
 
   // Realtime follower updates
   useEffect(() => {
@@ -226,13 +224,16 @@ export default function TraderGrid({
     setCopying(true);
     const supabase = createClient();
 
-    console.log("[copy] calling increment_followers for:", traderName);
     const { error: rpcError } = await supabase.rpc("increment_followers", { p_trader_name: traderName });
-    if (rpcError) {
-      console.error("[copy] increment_followers failed:", rpcError);
-    } else {
-      console.log("[copy] increment_followers succeeded");
-    }
+    if (rpcError) console.error("[copy] increment_followers failed:", rpcError);
+
+    // Deactivate any existing active rows before inserting to prevent duplicate true rows
+    const { error: deactivateError } = await supabase
+      .from("user_copy_trading")
+      .update({ is_copying: false })
+      .eq("user_id", userId)
+      .eq("is_copying", true);
+    if (deactivateError) console.error("[copy] deactivate existing failed:", deactivateError);
 
     const { error: insertError } = await supabase.from("user_copy_trading").insert({
       user_id: userId,
@@ -242,11 +243,12 @@ export default function TraderGrid({
     });
     if (insertError) {
       console.error("[copy] user_copy_trading insert failed:", insertError);
-    } else {
-      console.log("[copy] user_copy_trading insert succeeded");
+      setCopying(false);
+      return;
     }
 
-    router.push("/dashboard");
+    // Hard navigate to bust the Next.js Router Cache so the dashboard re-renders fresh
+    window.location.href = "/dashboard";
   };
 
   return (

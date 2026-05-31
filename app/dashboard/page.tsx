@@ -92,6 +92,8 @@ export default async function DashboardPage() {
       .select("id, trader_name")
       .eq("user_id", user!.id)
       .eq("is_copying", true)
+      .order("started_at", { ascending: false })
+      .limit(1)
       .maybeSingle(),
   ]);
 
