@@ -285,7 +285,7 @@ export default function LiveDashboard({
           className="p-[16px] md:p-5 rounded-xl bg-surface"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
-          <p className="text-sm text-muted-foreground mb-1.5">Floating P&L</p>
+          <p className="text-sm text-muted-foreground mb-1.5">P&L</p>
           <p className={`text-2xl font-bold ${pnlPositive ? "text-primary" : "text-red-400"}`}>
             {formattedPnl}
           </p>
@@ -331,14 +331,14 @@ export default function LiveDashboard({
             {(
               [
                 ["Trades taken", String(tradesTaken)],
-                ["Floating P&L", formattedPnl],
+                ["P&L", formattedPnl],
               ] as [string, string][]
             ).map(([label, value]) => (
               <div key={label} className="flex items-center justify-between text-base">
                 <span className="text-muted-foreground">{label}</span>
                 <span
                   className={`font-semibold ${
-                    label === "Floating P&L"
+                    label === "P&L"
                       ? pnlPositive
                         ? "text-primary"
                         : "text-red-400"
