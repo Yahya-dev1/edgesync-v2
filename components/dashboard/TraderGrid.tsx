@@ -15,6 +15,7 @@ type Trader = {
   stars: number;
   risk_level: string;
   is_available: boolean;
+  flag: string | null;
 };
 
 // ─── Star Rating ───────────────────────────────────────────────
@@ -107,8 +108,13 @@ function TraderCard({
       {/* Name + followers + stars */}
       <div>
         <div className="flex items-start justify-between gap-2 mb-1.5">
-          <span className="font-semibold text-white text-[15px] leading-tight">{trader.name}</span>
-          <span className="text-[11px] text-slate-400 whitespace-nowrap tabular-nums">
+          <div className="flex items-center gap-1.5 min-w-0">
+            {trader.flag && (
+              <span className="text-base leading-none shrink-0">{trader.flag}</span>
+            )}
+            <span className="font-semibold text-white text-[15px] leading-tight truncate">{trader.name}</span>
+          </div>
+          <span className="text-[11px] text-slate-400 whitespace-nowrap tabular-nums shrink-0">
             {trader.followers.toLocaleString()} followers
           </span>
         </div>
