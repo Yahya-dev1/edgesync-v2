@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { UserPlus, Wallet, LineChart } from "lucide-react";
 
 const steps = [
@@ -6,63 +7,57 @@ const steps = [
     icon: UserPlus,
     title: "Create Account",
     description:
-      "Sign up in minutes with your email. Complete identity verification to unlock full access.",
+      "Sign up in minutes with your email and complete identity verification to unlock full access.",
   },
   {
     number: "02",
     icon: Wallet,
     title: "Deposit Funds",
     description:
-      "Fund your account from $100 using bank transfer, card, or supported payment methods.",
+      "Fund your account from $100 using bank transfer, card, or other supported payment methods.",
   },
   {
     number: "03",
     icon: LineChart,
     title: "Start Trading",
     description:
-      "Pick a master trader to copy or explore our markets. Your journey to smarter trading starts now.",
+      "Pick a master trader to copy or explore markets directly. Your journey starts now.",
   },
 ];
 
 export default function HowItWorks() {
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Section header */}
-        <div className="text-center mb-16">
+    <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-12">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#00C896]">
             Get Started
           </span>
           <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-white">
             How It Works
           </h2>
-          <p className="mt-4 text-slate-400 max-w-xl mx-auto">
+          <p className="mt-3 text-slate-400 max-w-lg mx-auto text-sm">
             Three simple steps to start trading with EdgeSync Markets.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connecting line (desktop) */}
-          <div className="hidden md:block absolute top-14 left-1/3 right-1/3 h-px bg-gradient-to-r from-[#00C896]/20 via-[#00C896]/40 to-[#00C896]/20" />
-
-          {steps.map((step, i) => {
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/6 rounded-xl overflow-hidden border border-white/6">
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <div key={step.number} className="flex flex-col items-center text-center relative">
-                {/* Step number bubble */}
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-[#0d1526] border border-[#00C896]/30 flex items-center justify-center relative z-10">
-                    <Icon className="w-7 h-7 text-[#00C896]" strokeWidth={1.5} />
-                  </div>
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#00C896] text-[#080d1a] text-xs font-bold flex items-center justify-center">
-                    {i + 1}
+              <div key={step.number} className="bg-[#0d1526] p-8">
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="text-xs font-bold text-[#00C896] font-mono">
+                    {step.number}
                   </span>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-white/5">
+                    <Icon className="w-4 h-4 text-slate-400" strokeWidth={1.5} />
+                  </div>
                 </div>
-
-                <h3 className="text-xl font-semibold text-white mb-3">
+                <h3 className="text-base font-semibold text-white mb-2">
                   {step.title}
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed max-w-xs">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   {step.description}
                 </p>
               </div>
@@ -70,14 +65,13 @@ export default function HowItWorks() {
           })}
         </div>
 
-        {/* CTA */}
-        <div className="text-center mt-14">
-          <a
+        <div className="text-center mt-10">
+          <Link
             href="/register"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-all shadow-lg shadow-[#00C896]/20 text-base"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-lg font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors text-sm"
           >
             Get Started Today
-          </a>
+          </Link>
         </div>
       </div>
     </section>

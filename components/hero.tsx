@@ -1,73 +1,65 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
+
+const trustItems = ["No hidden fees", "Instant deposits", "24/7 support", "FSA regulated"];
 
 export default function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-      {/* Background grid */}
+    <section className="relative flex items-center justify-center overflow-hidden pt-16 pb-24">
+      {/* Subtle radial gradient, not a glow blob */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage:
-            "linear-gradient(rgba(0,200,150,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,200,150,0.03) 1px, transparent 1px)",
-          backgroundSize: "60px 60px",
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,200,150,0.06) 0%, transparent 70%)",
         }}
       />
 
-      {/* Radial glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#00C896]/5 blur-[120px] pointer-events-none" />
-
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#00C896]/30 bg-[#00C896]/10 mb-8">
-          <span className="w-2 h-2 rounded-full bg-[#00C896] animate-pulse" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[#00C896]/20 bg-[#00C896]/8 mb-7">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00C896]" />
           <span className="text-xs font-medium text-[#00C896]">
             FSA Seychelles Regulated Broker
           </span>
         </div>
 
         {/* Headline */}
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-5 leading-[1.1]">
           Trade Smarter.{" "}
           <span className="text-[#00C896]">Earn Better.</span>
         </h1>
 
         {/* Sub-headline */}
-        <p className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-base sm:text-lg text-slate-400 max-w-xl mx-auto mb-9 leading-relaxed">
           Professional trading tools, tight spreads from 0.0 pips, and
-          world-class execution. Copy top traders automatically or build your
-          own strategy on 500+ instruments.
+          world-class execution — on 500+ instruments.
         </p>
 
         {/* CTA buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-all shadow-lg shadow-[#00C896]/20 text-base"
+            className="px-7 py-3 rounded-lg font-semibold bg-[#00C896] text-[#080d1a] hover:bg-[#00b084] transition-colors text-sm"
           >
             Create Account Now
           </Link>
           <a
             href="#markets"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold border border-white/15 text-white hover:bg-white/5 hover:border-white/30 transition-all text-base"
+            className="px-7 py-3 rounded-lg font-semibold border border-white/12 text-slate-300 hover:text-white hover:border-white/20 transition-colors text-sm"
           >
             Explore Markets
           </a>
         </div>
 
         {/* Trust indicators */}
-        <div className="mt-14 flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
-          <span className="flex items-center gap-1.5">
-            <span className="text-[#00C896]">✓</span> No hidden fees
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="text-[#00C896]">✓</span> Instant deposits
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="text-[#00C896]">✓</span> 24/7 support
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="text-[#00C896]">✓</span> FSA regulated
-          </span>
+        <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
+          {trustItems.map((item) => (
+            <span key={item} className="flex items-center gap-1.5 text-xs text-slate-500">
+              <Check className="w-3.5 h-3.5 text-[#00C896]" strokeWidth={2.5} />
+              {item}
+            </span>
+          ))}
         </div>
       </div>
     </section>

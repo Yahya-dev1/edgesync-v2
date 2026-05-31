@@ -13,12 +13,12 @@ export default function StatsBar() {
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="flex flex-col items-center justify-center py-8 px-6"
+              className="flex flex-col items-center justify-center py-6 px-6"
             >
-              <span className="text-3xl font-extrabold text-[#00C896]">
+              <span className="text-2xl font-bold text-[#00C896]">
                 {stat.value}
               </span>
-              <span className="text-sm text-slate-400 mt-1">{stat.label}</span>
+              <span className="text-xs text-slate-500 mt-1">{stat.label}</span>
             </div>
           ))}
         </div>
