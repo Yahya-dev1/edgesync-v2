@@ -225,14 +225,25 @@ export default function TraderGrid({
     setCopying(true);
     const supabase = createClient();
 
-    await supabase.rpc("increment_followers", { p_trader_name: traderName });
+    console.log("[copy] calling increment_followers for:", traderName);
+    const { error: rpcError } = await supabase.rpc("increment_followers", { p_trader_name: traderName });
+    if (rpcError) {
+      console.error("[copy] increment_followers failed:", rpcError);
+    } else {
+      console.log("[copy] increment_followers succeeded");
+    }
 
-    await supabase.from("user_copy_trading").insert({
+    const { error: insertError } = await supabase.from("user_copy_trading").insert({
       user_id: userId,
       trader_name: traderName,
       is_copying: true,
       started_at: new Date().toISOString(),
     });
+    if (insertError) {
+      console.error("[copy] user_copy_trading insert failed:", insertError);
+    } else {
+      console.log("[copy] user_copy_trading insert succeeded");
+    }
 
     router.push("/dashboard");
   };
