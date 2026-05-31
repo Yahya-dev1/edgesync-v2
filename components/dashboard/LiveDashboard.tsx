@@ -108,6 +108,7 @@ type Trade = {
   symbol: string | null;
   direction: string | null;
   pnl_percentage: number;
+  is_active: boolean | null;
 };
 
 // ─── Component ────────────────────────────────────────────────
@@ -131,9 +132,9 @@ export default function LiveDashboard({
     async function fetchTrades() {
       const { data } = await supabase
         .from("master_trades")
-        .select("id, symbol, direction, pnl_percentage")
+        .select("id, symbol, direction, pnl_percentage, is_active")
         .eq("trader_name", traderName)
-        .eq("is_active", true);
+        .order("created_at", { ascending: false });
       if (data) setTrades(data as Trade[]);
     }
 
@@ -187,7 +188,7 @@ export default function LiveDashboard({
           className="p-[16px] md:p-5 rounded-xl bg-surface"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
-          <p className="text-sm text-muted-foreground mb-1.5">Open Trades</p>
+          <p className="text-sm text-muted-foreground mb-1.5">Total Trades</p>
           <p className="text-2xl font-bold text-foreground">{trades.length}</p>
         </div>
       </div>
@@ -243,7 +244,7 @@ export default function LiveDashboard({
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-5">
-            Running Trades
+            Trades
           </p>
 
           {trades.length === 0 ? (
@@ -260,9 +261,9 @@ export default function LiveDashboard({
                   />
                 </svg>
               </div>
-              <p className="text-base font-medium text-muted-foreground">No active positions</p>
+              <p className="text-base font-medium text-muted-foreground">No trades yet</p>
               <p className="text-sm text-muted-foreground/60 mt-1">
-                Trades will appear here when {traderName} opens positions
+                Trades will appear here when {traderName} enters positions
               </p>
             </div>
           ) : (
@@ -272,6 +273,7 @@ export default function LiveDashboard({
                 const positive = tradePnl >= 0;
                 const pnlStr =
                   (positive ? "+" : "-") + "$" + Math.abs(tradePnl).toFixed(2);
+                const isOpen = trade.is_active === true;
                 return (
                   <div
                     key={trade.id}
@@ -282,15 +284,26 @@ export default function LiveDashboard({
                       <AssetIcon symbol={trade.symbol} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-base font-semibold text-foreground">
-                        {trade.symbol ?? "—"}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-base font-semibold text-foreground">
+                          {trade.symbol ?? "—"}
+                        </p>
+                        <span
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                            isOpen
+                              ? "bg-primary/10 text-primary"
+                              : "bg-muted text-muted-foreground"
+                          }`}
+                        >
+                          {isOpen ? "Open" : "Closed"}
+                        </span>
+                      </div>
                       <p
                         className={`text-sm font-medium ${
                           trade.direction?.toUpperCase() === "BUY" ? "text-primary" : "text-red-400"
                         }`}
                       >
-                        {trade.direction ?? "—"}
+                        {trade.direction?.toUpperCase() ?? "—"}
                       </p>
                     </div>
                     <span
