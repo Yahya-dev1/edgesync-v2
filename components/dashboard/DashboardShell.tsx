@@ -221,7 +221,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
         </header>
 
         {/* Page content */}
-        <main className="flex-1 min-w-0 overflow-auto bg-[#080d1a] p-4 pb-[76px] md:p-5 md:pb-5">
+        <main className="flex-1 min-w-0 overflow-auto bg-[#080d1a] p-[16px] pb-[80px] md:p-5 md:pb-5">
           {children}
         </main>
       </div>
@@ -248,7 +248,7 @@ export default function DashboardShell({ children, displayName, initials }: Prop
               />
               <span
                 className={cn(
-                  "text-[0.75rem] leading-tight font-medium transition-colors",
+                  "text-[10px] leading-none font-medium transition-colors whitespace-nowrap",
                   active ? "text-[#00C896]" : "text-slate-500"
                 )}
               >

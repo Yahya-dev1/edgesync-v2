@@ -126,14 +126,14 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-xl md:text-2xl font-bold text-white">
           Welcome, <span className="text-[#00C896]">{firstName}</span>!
         </h1>
         <p className="text-base text-slate-500 mt-1">Here&apos;s your trading overview.</p>
       </div>
 
       {/* Balance card */}
-      <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6 mb-5">
+      <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6 mb-5">
         <p className="text-sm font-medium text-slate-500 mb-1">Account Balance</p>
         <p className="text-3xl font-bold text-white mb-5">{balance}</p>
         <div className="flex gap-3">
@@ -155,13 +155,13 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
       {/* Option cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Copy Trading — active */}
-        <div className="rounded-xl border-2 border-[#00C896] bg-[#0b1120] p-6 flex flex-col">
-          <div className="flex items-center justify-between mb-5">
+        <div className="rounded-xl border-2 border-[#00C896] bg-[#0b1120] p-[16px] md:p-6 flex flex-col">
+          <div className="flex items-center justify-between mb-3 md:mb-5">
             <span className="text-xs font-semibold text-[#00C896] bg-[#00C896]/10 px-2.5 py-1 rounded-full">
               Active
             </span>
-            <div className="w-10 h-10 rounded-lg bg-[#00C896]/10 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-[#00C896]/10 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                 <circle cx="7" cy="11" r="3.5" stroke="#00C896" strokeWidth="1.5" />
                 <circle cx="14" cy="7" r="3" stroke="#00C896" strokeWidth="1.5" />
                 <path
@@ -174,7 +174,7 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
             </div>
           </div>
           <h3 className="text-lg font-bold text-white mb-2">Copy Trading</h3>
-          <p className="text-base text-slate-400 mb-6 flex-1">
+          <p className="text-base text-slate-400 mb-4 md:mb-6 flex-1">
             Automatically mirror trades from verified expert traders.
           </p>
           <Link
@@ -186,13 +186,13 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
         </div>
 
         {/* Self Trading — disabled */}
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6 flex flex-col opacity-50">
-          <div className="flex items-center justify-between mb-5">
+        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6 flex flex-col opacity-50">
+          <div className="flex items-center justify-between mb-3 md:mb-5">
             <span className="text-xs font-semibold text-slate-500 bg-white/5 px-2.5 py-1 rounded-full">
               Coming Soon
             </span>
-            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/5 flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
                 <rect x="2" y="3" width="16" height="14" rx="2" stroke="#64748B" strokeWidth="1.5" />
                 <path
                   d="M3 14.5l4-4 3 3 4-4.5 3 2.5"
@@ -205,7 +205,7 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
             </div>
           </div>
           <h3 className="text-lg font-bold text-white mb-2">Self Trading</h3>
-          <p className="text-base text-slate-400 mb-6 flex-1">
+          <p className="text-base text-slate-400 mb-4 md:mb-6 flex-1">
             Take full control and execute your own trades manually.
           </p>
           <button
@@ -240,22 +240,22 @@ function State2({
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-xl md:text-2xl font-bold text-white">
           Welcome back, <span className="text-[#00C896]">{firstName}</span>!
         </h1>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
-        <div className="p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
+        <div className="p-[16px] md:p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
           <p className="text-sm text-slate-500 mb-1.5">Account Balance</p>
           <p className="text-2xl font-bold text-white">{balance}</p>
         </div>
-        <div className="p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
+        <div className="p-[16px] md:p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
           <p className="text-sm text-slate-500 mb-1.5">Total P&L</p>
           <p className="text-2xl font-bold text-[#00C896]">+$0.00</p>
         </div>
-        <div className="p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
+        <div className="p-[16px] md:p-5 rounded-xl border border-[#162035] bg-[#0b1120]">
           <p className="text-sm text-slate-500 mb-1.5">Open Trades</p>
           <p className="text-2xl font-bold text-white">0</p>
         </div>
@@ -264,7 +264,7 @@ function State2({
       {/* Two-column panel */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: Copying panel */}
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6">
+        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">
             Copying
           </p>
@@ -307,7 +307,7 @@ function State2({
         </div>
 
         {/* Right: Running trades */}
-        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-6">
+        <div className="rounded-xl border border-[#162035] bg-[#0b1120] p-[16px] md:p-6">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-5">
             Running Trades
           </p>
