@@ -233,7 +233,17 @@ export default function TraderGrid({
       .select("amount")
       .eq("user_id", userId)
       .eq("status", "approved");
-    const originalDeposit = depositRows?.reduce((sum, d) => sum + Number(d.amount), 0) ?? 0;
+    const depositSum = depositRows?.reduce((sum, d) => sum + Number(d.amount), 0) ?? 0;
+
+    let originalDeposit = depositSum;
+    if (!originalDeposit) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("balance")
+        .eq("id", userId)
+        .single();
+      originalDeposit = Number(profile?.balance ?? 0);
+    }
 
     // Deactivate any existing active rows before inserting to prevent duplicate true rows
     const { error: deactivateError } = await supabase
