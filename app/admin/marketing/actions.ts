@@ -42,7 +42,7 @@ function pick<T>(arr: T[]): T {
 }
 
 function bigPnl() {
-  return Math.round((Math.random() * 19000 + 1000) * 100) / 100;
+  return Math.round((Math.random() * 7000 + 1000) * 100) / 100;
 }
 
 function normalPnl() {
