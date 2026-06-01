@@ -22,11 +22,19 @@ export default function SupportChat({ userId }: Props) {
   const [open, setOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
+  const openRef = useRef(false);
+  const lastReadKey = `support-last-read-${userId}`;
+
+  // Keep ref in sync so realtime callback can read current open state
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -59,16 +67,28 @@ export default function SupportChat({ userId }: Props) {
         .eq("conversation_id", convId)
         .order("created_at", { ascending: true });
 
-      setMessages(msgs ?? []);
+      const loaded = msgs ?? [];
+      setMessages(loaded);
+
+      // Calculate initial unread count from admin messages after lastReadAt
+      const lastRead = localStorage.getItem(lastReadKey);
+      if (lastRead) {
+        const count = loaded.filter(
+          (m) => m.is_admin && new Date(m.created_at) > new Date(lastRead)
+        ).length;
+        setUnreadCount(count);
+      }
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, lastReadKey]);
 
+  // Load conversation on mount (to show unread badge before user opens chat)
   useEffect(() => {
-    if (open) loadOrCreate();
-  }, [open, loadOrCreate]);
+    loadOrCreate();
+  }, [loadOrCreate]);
 
+  // Wire up realtime once we have the conversation id
   useEffect(() => {
     if (!conversationId) return;
 
@@ -84,11 +104,14 @@ export default function SupportChat({ userId }: Props) {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
+          const msg = payload.new as Message;
           setMessages((prev) =>
-            prev.some((m) => m.id === payload.new.id)
-              ? prev
-              : [...prev, payload.new as Message]
+            prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
           );
+          // Only count as unread when the chat panel is closed
+          if (!openRef.current && msg.is_admin) {
+            setUnreadCount((prev) => prev + 1);
+          }
         }
       )
       .subscribe();
@@ -97,6 +120,12 @@ export default function SupportChat({ userId }: Props) {
       supabase.removeChannel(channel);
     };
   }, [conversationId]);
+
+  const openChat = () => {
+    setOpen(true);
+    setUnreadCount(0);
+    localStorage.setItem(lastReadKey, new Date().toISOString());
+  };
 
   const sendMessage = async () => {
     if (!input.trim() || !conversationId || sending) return;
@@ -121,12 +150,20 @@ export default function SupportChat({ userId }: Props) {
     <>
       {/* Floating button */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={openChat}
         className="fixed right-4 bottom-[80px] md:bottom-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 z-40 hover:bg-primary/80 transition-colors"
         aria-label="Open support chat"
       >
         <MessageCircle className="w-5 h-5 text-primary-foreground" strokeWidth={2} />
-        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-background" />
+        {unreadCount > 0 ? (
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 border-2 border-background flex items-center justify-center">
+            <span className="text-[9px] font-bold text-white leading-none">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          </span>
+        ) : (
+          <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-background" />
+        )}
       </button>
 
       {/* Backdrop (mobile) */}
