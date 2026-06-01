@@ -30,8 +30,8 @@ test.describe("Dashboard (copying active)", () => {
 
   test("Balance card, P&L card, and Copied Trades card are visible", async ({ page }) => {
     await expect(page.getByText("Account Balance")).toBeVisible();
-    await expect(page.getByText("P&L")).toBeVisible();
-    await expect(page.getByText("Copied Trades")).toBeVisible();
+    await expect(page.getByText("P&L").first()).toBeVisible();
+    await expect(page.getByText("Copied Trades").first()).toBeVisible();
   });
 
   test("copied trades list renders when trades exist", async ({ page }) => {

@@ -17,16 +17,15 @@ test.describe("Copy Trading", () => {
   test("AmiinFx card is visible with Copy button enabled", async ({ page }) => {
     await page.goto("/dashboard/copy-trading");
     // AmiinFx card: look for the trader name and the enabled Copy button
-    await expect(page.getByText("AmiinFx")).toBeVisible({ timeout: 10_000 });
     const copyBtn = page.getByRole("button", { name: "Copy AmiinFx" });
-    await expect(copyBtn).toBeVisible();
+    await expect(copyBtn).toBeVisible({ timeout: 10_000 });
     await expect(copyBtn).toBeEnabled();
   });
 
   test("other trader cards show geo-restricted badge with disabled button", async ({ page }) => {
     await page.goto("/dashboard/copy-trading");
     // Wait for the grid to load
-    await expect(page.getByText("AmiinFx")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("AmiinFx", { exact: true })).toBeVisible({ timeout: 10_000 });
     // At least one geo-restricted badge and one disabled "Not available" button should exist
     await expect(page.getByText("Geo restricted").first()).toBeVisible();
     const disabledBtn = page.getByRole("button", { name: "Not available" }).first();
@@ -36,7 +35,7 @@ test.describe("Copy Trading", () => {
 
   test("clicking Copy AmiinFx redirects to /dashboard and shows copying state", async ({ page }) => {
     await page.goto("/dashboard/copy-trading");
-    await expect(page.getByText("AmiinFx")).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByText("AmiinFx", { exact: true })).toBeVisible({ timeout: 10_000 });
 
     await page.getByRole("button", { name: "Copy AmiinFx" }).click();
 
