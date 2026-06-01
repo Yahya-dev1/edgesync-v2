@@ -3,19 +3,36 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
-const FIRST_NAMES = [
-  "Kofi", "Amara", "Fatima", "Omar", "Hassan",
-  "Yusuf", "Aisha", "Tariq", "Moussa", "Kwame",
-  "Nadia", "Ibrahim", "Rania", "Ahmed", "Layla",
-  "Abena", "Chidi", "Zara", "Malik", "Sana",
+// Kenyan first names (Kikuyu, Luo, Kalenjin, Kamba, Luhya)
+const KENYAN_FIRST = [
+  "Wanjiru", "Kamau", "Njeri", "Akinyi", "Otieno",
+  "Wanjiku", "Adhiambo", "Muthoni", "Chebet", "Ochieng",
+  "Nyambura", "Kimani", "Kipchoge", "Auma", "Waweru",
 ];
 
-const LAST_NAMES = [
-  "Osei", "Mensah", "Diallo", "Kamara", "Al-Rashid",
-  "Mansour", "Khalil", "Traore", "Asante", "Haddad",
-  "Boateng", "Sesay", "Farouk", "Nkrumah", "Al-Hassan",
-  "Owusu", "Qasim", "Conteh", "Nasser", "Bah",
+// Somali first names
+const SOMALI_FIRST = [
+  "Fadumo", "Hodan", "Ilhan", "Faisal", "Sagal",
+  "Deeqa", "Ayan", "Fartuun", "Najma", "Haybe",
+  "Ifrah", "Hamdi", "Zahra", "Mahad", "Abdi",
 ];
+
+// Kenyan surnames
+const KENYAN_LAST = [
+  "Kamau", "Mwangi", "Njoroge", "Otieno", "Ochieng",
+  "Waweru", "Kariuki", "Mutua", "Kiprotich", "Wambua",
+  "Ndungu", "Njenga", "Kimani", "Koech", "Rotich",
+];
+
+// Somali surnames
+const SOMALI_LAST = [
+  "Hassan", "Osman", "Farah", "Jama", "Warsame",
+  "Nur", "Hirsi", "Omar", "Aden", "Ibrahim",
+  "Mohamud", "Salah", "Ahmed", "Ali", "Abdi",
+];
+
+const FIRST_NAMES = [...KENYAN_FIRST, ...SOMALI_FIRST];
+const LAST_NAMES  = [...KENYAN_LAST,  ...SOMALI_LAST];
 
 const COLORS = ["green", "blue", "amber", "purple"] as const;
 
