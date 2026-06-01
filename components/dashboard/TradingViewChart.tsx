@@ -16,7 +16,7 @@ export default function TradingViewChart() {
     script.async = true;
     script.innerHTML = JSON.stringify({
       width: "100%",
-      height: 460,
+      height: 500,
       symbol: "OANDA:XAUUSD",
       interval: "D",
       timezone: "Etc/UTC",
@@ -38,15 +38,16 @@ export default function TradingViewChart() {
   }, []);
 
   return (
-    <div style={{ width: "90%", margin: "0 auto", height: "460px", minHeight: "460px" }}>
+    /* full-width on mobile, 90% centered on md+ */
+    <div className="w-full md:w-[90%] md:mx-auto" style={{ height: "500px", minHeight: "500px" }}>
       <div
         ref={containerRef}
         className="tradingview-widget-container"
-        style={{ height: "460px", width: "100%" }}
+        style={{ height: "500px", width: "100%" }}
       >
         <div
           className="tradingview-widget-container__widget"
-          style={{ height: "460px", width: "100%" }}
+          style={{ height: "500px", width: "100%" }}
         />
       </div>
     </div>
