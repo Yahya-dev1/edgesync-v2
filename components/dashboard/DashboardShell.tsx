@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -42,17 +42,50 @@ interface Props {
   children: React.ReactNode;
   displayName: string;
   initials: string;
+  userId: string;
 }
 
-export default function DashboardShell({ children, displayName, initials }: Props) {
+export default function DashboardShell({ children, displayName, initials, userId }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     if (localStorage.getItem("sidebar-collapsed") === "true") setCollapsed(true);
   }, []);
+
+  const fetchUnreadCount = useCallback(async () => {
+    const supabase = createClient();
+    const { count } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .eq("is_read", false);
+    setUnreadCount(count ?? 0);
+  }, [userId]);
+
+  useEffect(() => {
+    fetchUnreadCount();
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel("notifications-badge")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        () => setUnreadCount((prev) => prev + 1)
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        fetchUnreadCount
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [userId, fetchUnreadCount]);
 
   const toggle = () => {
     setCollapsed((prev) => {
@@ -189,13 +222,20 @@ export default function DashboardShell({ children, displayName, initials }: Prop
           <ThemeToggle />
 
           {/* Notification bell */}
-          <button
+          <Link
+            href="/dashboard/notifications"
             className="relative flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" strokeWidth={1.5} />
-            <span className="absolute top-[7px] right-[7px] w-[6px] h-[6px] rounded-full bg-red-500" />
-          </button>
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 rounded-full bg-red-500 border-2 border-background flex items-center justify-center">
+                <span className="text-[9px] font-bold text-white leading-none">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              </span>
+            )}
+          </Link>
 
           {/* User avatar pill */}
           <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-subtle border border-border">

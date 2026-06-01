@@ -36,7 +36,7 @@ export default async function DashboardLayout({
     .slice(0, 2);
 
   return (
-    <DashboardShell displayName={displayName} initials={initials}>
+    <DashboardShell displayName={displayName} initials={initials} userId={user.id}>
       {children}
     </DashboardShell>
   );
