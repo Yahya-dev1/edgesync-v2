@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const activeLinks = [
   { label: "Trades", href: "/admin/trades", icon: LineChart },
@@ -179,6 +180,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           <div className="flex-1" />
+
+          <ThemeToggle />
 
           <Link
             href="/dashboard"
