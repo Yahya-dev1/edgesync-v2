@@ -16,6 +16,7 @@ import {
   MessageCircle,
   LogOut,
   Loader2,
+  BarChart2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -24,6 +25,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const navItems = [
   { label: "Dashboard",    href: "/dashboard",              icon: LayoutDashboard },
   { label: "Copy Trading", href: "/dashboard/copy-trading", icon: Users },
+  { label: "Markets",      href: "/dashboard/markets",      icon: BarChart2 },
   { label: "Deposit",      href: "/dashboard/deposit",      icon: ArrowDownToLine },
   { label: "Transactions", href: "/dashboard/transactions", icon: List },
   { label: "Withdraw",     href: "/dashboard/withdraw",     icon: ArrowUpFromLine },
