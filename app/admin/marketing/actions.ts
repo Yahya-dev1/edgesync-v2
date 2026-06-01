@@ -1,79 +1,90 @@
 "use server";
 
+import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
-// Kenyan first names (Kikuyu, Luo, Kalenjin, Kamba, Luhya)
-const KENYAN_FIRST = [
-  "Wanjiru", "Kamau", "Njeri", "Akinyi", "Otieno",
-  "Wanjiku", "Adhiambo", "Muthoni", "Chebet", "Ochieng",
-  "Nyambura", "Kimani", "Kipchoge", "Auma", "Waweru",
-];
-
-// Somali first names
-const SOMALI_FIRST = [
-  "Fadumo", "Hodan", "Ilhan", "Faisal", "Sagal",
-  "Deeqa", "Ayan", "Fartuun", "Najma", "Haybe",
-  "Ifrah", "Hamdi", "Zahra", "Mahad", "Abdi",
-];
-
-// Kenyan surnames
-const KENYAN_LAST = [
-  "Kamau", "Mwangi", "Njoroge", "Otieno", "Ochieng",
-  "Waweru", "Kariuki", "Mutua", "Kiprotich", "Wambua",
-  "Ndungu", "Njenga", "Kimani", "Koech", "Rotich",
-];
-
-// Somali surnames
-const SOMALI_LAST = [
-  "Hassan", "Osman", "Farah", "Jama", "Warsame",
-  "Nur", "Hirsi", "Omar", "Aden", "Ibrahim",
-  "Mohamud", "Salah", "Ahmed", "Ali", "Abdi",
-];
-
-const FIRST_NAMES = [...KENYAN_FIRST, ...SOMALI_FIRST];
-const LAST_NAMES  = [...KENYAN_LAST,  ...SOMALI_LAST];
-
 const COLORS = ["green", "blue", "amber", "purple"] as const;
 
-function pick<T>(arr: readonly T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+// ─── Name generation via Claude ───────────────────────────────────
+
+async function fetchNames(): Promise<string[]> {
+  const client = new Anthropic();
+
+  const msg = await client.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 256,
+    messages: [
+      {
+        role: "user",
+        content: `Generate exactly 5 authentic Kenyan full names and 5 authentic Somali full names for fictional trader profiles.
+
+Rules:
+- Kenyan names must only use real Kenyan given names and Kenyan surnames (Kikuyu, Luo, Kalenjin, Kamba, Luhya, Meru, etc.)
+- Somali names must only use real Somali given names and Somali family names
+- Each name must be fully from its own nationality — no mixing
+- All 10 names must be distinct
+- Return ONLY a raw JSON object, no markdown, no explanation
+
+Format: {"kenyan":["Full Name","Full Name","Full Name","Full Name","Full Name"],"somali":["Full Name","Full Name","Full Name","Full Name","Full Name"]}`,
+      },
+    ],
+  });
+
+  const raw =
+    msg.content[0].type === "text" ? msg.content[0].text.trim() : "{}";
+  const json = JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] ?? "{}") as {
+    kenyan?: string[];
+    somali?: string[];
+  };
+
+  const kenyan = (json.kenyan ?? []).slice(0, 5);
+  const somali = (json.somali ?? []).slice(0, 5);
+
+  // Interleave so both nationalities appear across both P&L tiers
+  // Result order: k0,s0,k1,s1,k2,s2,k3,s3,k4,s4
+  return kenyan.flatMap((k, i) => [k, somali[i] ?? k]);
 }
 
-// Normal accounts: -$50 to +$500
-function normalPnl(): number {
-  return Math.round((Math.random() * 550 - 50) * 100) / 100;
-}
+// ─── P&L helpers ─────────────────────────────────────────────────
 
-// Big accounts: +$1,000 to +$20,000 (always positive — these are the star traders)
-function bigPnl(): number {
+function bigPnl() {
   return Math.round((Math.random() * 19000 + 1000) * 100) / 100;
 }
 
+function normalPnl() {
+  return Math.round((Math.random() * 550 - 50) * 100) / 100;
+}
+
+// ─── Generate action ─────────────────────────────────────────────
+
 export async function generateMarketingAccounts(): Promise<{ error?: string }> {
   try {
-    const supabase = createAdminClient();
+    const [names, supabase] = await Promise.all([
+      fetchNames(),
+      Promise.resolve(createAdminClient()),
+    ]);
 
-    // Delete all existing rows
     await supabase.from("marketing_accounts").delete().not("id", "is", null);
 
-    // Indices 0-4 → big P&L, indices 5-9 → normal P&L
-    const accounts = Array.from({ length: 10 }, (_, i) => {
-      const isBig = i < 5;
-      const firstName = pick(FIRST_NAMES);
-      const lastName  = pick(LAST_NAMES);
-      const tradeCount = Math.floor(Math.random() * 3) + 1; // 1-3
+    const accounts = names.map((fullName, i) => {
+      const parts    = fullName.trim().split(/\s+/);
+      const initials = ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
+      const isBig    = i % 2 === 0; // even index → big P&L, odd → normal
+      const tradeCount = Math.floor(Math.random() * 3) + 1;
+
       const trades = Array.from({ length: tradeCount }, () => ({
         symbol:     "XAUUSD",
         direction:  Math.random() < 0.5 ? "BUY" : "SELL",
         pnl_amount: isBig ? bigPnl() : normalPnl(),
       }));
+
       const total_pnl =
         Math.round(trades.reduce((s, t) => s + t.pnl_amount, 0) * 100) / 100;
 
       return {
-        full_name:    `${firstName} ${lastName}`,
-        initials:     `${firstName[0]}${lastName[0]}`,
+        full_name:    fullName,
+        initials,
         avatar_color: COLORS[i % COLORS.length],
         trades,
         total_pnl,
