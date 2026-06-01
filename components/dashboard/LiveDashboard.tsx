@@ -193,14 +193,12 @@ export default function LiveDashboard({
   originalDeposit,
   copyId,
   traderName,
-  tradesTaken,
   userId,
 }: {
   userBalance: number;
   originalDeposit: number | null;
   copyId: string;
   traderName: string;
-  tradesTaken: number;
   userId: string;
 }) {
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -271,7 +269,7 @@ export default function LiveDashboard({
         >
           <p className="text-sm text-muted-foreground mb-1.5">Account Balance</p>
           <p className="text-2xl font-bold text-foreground">
-            ${base.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            ${liveBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </p>
           {originalDeposit != null && (
             <p className={`text-sm font-semibold mt-1 ${pnlPositive ? "text-primary" : "text-red-400"}`}>
@@ -330,7 +328,7 @@ export default function LiveDashboard({
           <div className="space-y-3.5 mb-6">
             {(
               [
-                ["Trades taken", String(tradesTaken)],
+                ["Trades taken", String(trades.length)],
                 ["P&L", formattedPnl],
               ] as [string, string][]
             ).map(([label, value]) => (

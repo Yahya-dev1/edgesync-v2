@@ -29,11 +29,6 @@ export default async function DashboardPage() {
     return <State1 firstName={firstName} balance={`$${balanceNum.toFixed(2)}`} />;
   }
 
-  const { count: tradesTaken } = await supabase
-    .from("master_trades")
-    .select("id", { count: "exact", head: true })
-    .eq("trader_name", copyTrade.trader_name);
-
   return (
     <State2
       firstName={firstName}
@@ -41,7 +36,6 @@ export default async function DashboardPage() {
       originalDeposit={copyTrade.original_deposit != null ? Number(copyTrade.original_deposit) : null}
       copyId={copyTrade.id}
       traderName={copyTrade.trader_name}
-      tradesTaken={tradesTaken ?? 0}
       userId={user!.id}
     />
   );
@@ -164,7 +158,6 @@ function State2({
   originalDeposit,
   copyId,
   traderName,
-  tradesTaken,
   userId,
 }: {
   firstName: string;
@@ -172,7 +165,6 @@ function State2({
   originalDeposit: number | null;
   copyId: string;
   traderName: string;
-  tradesTaken: number;
   userId: string;
 }) {
   return (
@@ -188,7 +180,6 @@ function State2({
         originalDeposit={originalDeposit}
         copyId={copyId}
         traderName={traderName}
-        tradesTaken={tradesTaken}
         userId={userId}
       />
     </div>
