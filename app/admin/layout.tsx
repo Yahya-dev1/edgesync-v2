@@ -10,6 +10,7 @@ import {
   ArrowUpFromLine,
   ShieldCheck,
   MessageSquare,
+  Megaphone,
   Menu,
   LogOut,
   Loader2,
@@ -19,10 +20,11 @@ import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 const activeLinks = [
-  { label: "Trades", href: "/admin/trades", icon: LineChart },
-  { label: "Users", href: "/admin/users", icon: Users },
-  { label: "Withdrawals", href: "/admin/withdrawals", icon: ArrowUpFromLine },
-  { label: "Support", href: "/admin/support", icon: MessageSquare },
+  { label: "Trades",      href: "/admin/trades",      icon: LineChart },
+  { label: "Users",       href: "/admin/users",        icon: Users },
+  { label: "Withdrawals", href: "/admin/withdrawals",  icon: ArrowUpFromLine },
+  { label: "Support",     href: "/admin/support",      icon: MessageSquare },
+  { label: "Marketing",   href: "/admin/marketing",    icon: Megaphone },
 ];
 
 const comingSoonLinks = [
