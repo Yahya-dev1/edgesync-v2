@@ -204,10 +204,54 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </header>
 
-        <main className="flex-1 min-w-0 overflow-auto bg-background p-5">
+        <main className="flex-1 min-w-0 overflow-auto bg-background p-5 pb-[80px] md:pb-5">
           {children}
         </main>
       </div>
+
+      {/* ── Bottom nav (mobile <768px) ────────────────────────────── */}
+      <nav
+        className="md:hidden fixed bottom-0 left-0 h-[64px] bg-surface flex items-center justify-around z-50"
+        style={{ borderTop: "0.5px solid var(--surface-border)", width: "100%" }}
+      >
+        {activeLinks.map(({ label, href, icon: Icon }) => {
+          const active = pathname.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center justify-center flex-1 h-full min-w-[44px] gap-0.5"
+            >
+              <Icon
+                className={cn(
+                  "w-5 h-5 transition-colors",
+                  active ? "text-primary" : "text-muted-foreground"
+                )}
+                strokeWidth={1.5}
+              />
+              <span
+                className={cn(
+                  "text-[10px] leading-none font-medium transition-colors whitespace-nowrap",
+                  active ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                {label}
+              </span>
+            </Link>
+          );
+        })}
+        {comingSoonLinks.map(({ label, icon: Icon }) => (
+          <div
+            key={label}
+            className="flex flex-col items-center justify-center flex-1 h-full min-w-[44px] gap-0.5 opacity-40 cursor-not-allowed"
+          >
+            <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+            <span className="text-[10px] leading-none font-medium text-muted-foreground whitespace-nowrap">
+              {label}
+            </span>
+          </div>
+        ))}
+      </nav>
     </div>
   );
 }
