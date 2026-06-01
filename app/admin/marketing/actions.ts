@@ -1,52 +1,45 @@
 "use server";
 
-import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
-const COLORS = ["green", "blue", "amber", "purple"] as const;
+// ─── Name pools ───────────────────────────────────────────────────
 
-// ─── Name generation via Claude ───────────────────────────────────
+const SOMALI_FIRST = [
+  "Abdi", "Farah", "Hodan", "Ifrah", "Liban", "Nimo", "Saado", "Xamdi",
+  "Yusuf", "Faadumo", "Bile", "Deeqa", "Fowsia", "Guled", "Hibo", "Idiris",
+  "Khadar", "Luul", "Mahad", "Nasra", "Osman", "Qali", "Rahma", "Sahra",
+  "Timiro", "Ubah", "Warsan", "Xasan", "Zahra", "Aamina", "Barkhad", "Cawo",
+  "Dalmar", "Ebyan", "Feisal", "Gacalo", "Hamdi", "Ilays", "Jama", "Kiin",
+];
 
-async function fetchNames(): Promise<string[]> {
-  const client = new Anthropic();
+const SOMALI_LAST = [
+  "Abdi", "Ahmed", "Ali", "Bashir", "Duale", "Elmi", "Farah", "Garad",
+  "Hassan", "Ibrahim", "Jama", "Khalif", "Liban", "Mohamed", "Noor", "Omar",
+  "Qasim", "Rage", "Salah", "Warsame", "Xirsi", "Yusuf", "Adan", "Barre",
+  "Diriye", "Egal", "Hirsi", "Ismail", "Jirdeh", "Khayre", "Muse", "Nur",
+  "Roble", "Sheikh", "Waris",
+];
 
-  const msg = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 256,
-    messages: [
-      {
-        role: "user",
-        content: `Generate exactly 5 authentic Kenyan full names and 5 authentic Somali full names for fictional trader profiles.
+const KENYAN_FIRST = [
+  "Wanjiru", "Kamau", "Akinyi", "Otieno", "Wambui", "Kipchoge", "Zawadi",
+  "Baraka", "Imani", "Makena", "Njoroge", "Adhiambo", "Chebet", "Mutua",
+  "Wangari", "Odhiambo", "Nyambura", "Kariuki", "Awino", "Muthoni",
+  "Kipkoech", "Zuri", "Amani", "Nduta", "Ochieng", "Waweru", "Jelimo",
+  "Kimani", "Auma", "Ng'ang'a",
+];
 
-Rules:
-- Kenyan names must only use real Kenyan given names and Kenyan surnames (Kikuyu, Luo, Kalenjin, Kamba, Luhya, Meru, etc.)
-- Somali names must only use real Somali given names and Somali family names
-- Each name must be fully from its own nationality — no mixing
-- All 10 names must be distinct
-- Return ONLY a raw JSON object, no markdown, no explanation
+const KENYAN_LAST = [
+  "Kamau", "Otieno", "Waweru", "Mwangi", "Njoroge", "Odhiambo", "Kariuki",
+  "Mutua", "Kimani", "Achieng", "Koech", "Wangari", "Omondi", "Njenga",
+  "Kipchoge", "Mugo", "Owino", "Gathoni", "Ndungu", "Chege",
+];
 
-Format: {"kenyan":["Full Name","Full Name","Full Name","Full Name","Full Name"],"somali":["Full Name","Full Name","Full Name","Full Name","Full Name"]}`,
-      },
-    ],
-  });
+// ─── Helpers ─────────────────────────────────────────────────────
 
-  const raw =
-    msg.content[0].type === "text" ? msg.content[0].text.trim() : "{}";
-  const json = JSON.parse(raw.match(/\{[\s\S]*\}/)?.[0] ?? "{}") as {
-    kenyan?: string[];
-    somali?: string[];
-  };
-
-  const kenyan = (json.kenyan ?? []).slice(0, 5);
-  const somali = (json.somali ?? []).slice(0, 5);
-
-  // Interleave so both nationalities appear across both P&L tiers
-  // Result order: k0,s0,k1,s1,k2,s2,k3,s3,k4,s4
-  return kenyan.flatMap((k, i) => [k, somali[i] ?? k]);
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
-
-// ─── P&L helpers ─────────────────────────────────────────────────
 
 function bigPnl() {
   return Math.round((Math.random() * 19000 + 1000) * 100) / 100;
@@ -56,21 +49,26 @@ function normalPnl() {
   return Math.round((Math.random() * 550 - 50) * 100) / 100;
 }
 
+const COLORS = ["green", "blue", "amber", "purple"] as const;
+
 // ─── Generate action ─────────────────────────────────────────────
 
 export async function generateMarketingAccounts(): Promise<{ error?: string }> {
   try {
-    const [names, supabase] = await Promise.all([
-      fetchNames(),
-      Promise.resolve(createAdminClient()),
-    ]);
+    const supabase = createAdminClient();
 
     await supabase.from("marketing_accounts").delete().not("id", "is", null);
 
-    const accounts = names.map((fullName, i) => {
-      const parts    = fullName.trim().split(/\s+/);
-      const initials = ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase();
-      const isBig    = i % 2 === 0; // even index → big P&L, odd → normal
+    const accounts = Array.from({ length: 10 }, (_, i) => {
+      // Randomly pick nationality for this account — never mixed
+      const isSomali   = Math.random() < 0.5;
+      const firstName  = isSomali ? pick(SOMALI_FIRST) : pick(KENYAN_FIRST);
+      const lastName   = isSomali ? pick(SOMALI_LAST)  : pick(KENYAN_LAST);
+      const fullName   = `${firstName} ${lastName}`;
+      const initials   = `${firstName[0]}${lastName[0]}`.toUpperCase();
+
+      // Even indices → big P&L, odd → normal
+      const isBig      = i % 2 === 0;
       const tradeCount = Math.floor(Math.random() * 3) + 1;
 
       const trades = Array.from({ length: tradeCount }, () => ({
