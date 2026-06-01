@@ -20,10 +20,10 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const activeLinks = [
   { label: "Trades", href: "/admin/trades", icon: LineChart },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Withdrawals", href: "/admin/withdrawals", icon: ArrowUpFromLine },
 ];
 
 const comingSoonLinks = [
-  { label: "Withdrawals", icon: ArrowUpFromLine },
   { label: "KYC", icon: ShieldCheck },
 ];
 
