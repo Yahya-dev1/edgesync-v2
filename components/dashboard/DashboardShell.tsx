@@ -13,7 +13,6 @@ import {
   Settings,
   Menu,
   Bell,
-  MessageCircle,
   LogOut,
   Loader2,
   BarChart2,
@@ -22,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import SupportChat from "@/components/dashboard/SupportChat";
 
 const navItems = [
   { label: "Dashboard",    href: "/dashboard",              icon: LayoutDashboard },
@@ -427,14 +427,8 @@ export default function DashboardShell({ children, displayName, initials, userId
         </div>
       </div>
 
-      {/* ── Floating chat button ──────────────────────────────── */}
-      <button
-        className="fixed right-4 bottom-[80px] md:bottom-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/20 z-40 hover:bg-primary/80 transition-colors"
-        aria-label="Chat"
-      >
-        <MessageCircle className="w-5 h-5 text-primary-foreground" strokeWidth={2} />
-        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-background" />
-      </button>
+      {/* ── Support chat ─────────────────────────────────────── */}
+      <SupportChat userId={userId} />
     </>
   );
 }

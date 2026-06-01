@@ -9,6 +9,7 @@ import {
   Users,
   ArrowUpFromLine,
   ShieldCheck,
+  MessageSquare,
   Menu,
   LogOut,
   Loader2,
@@ -21,6 +22,7 @@ const activeLinks = [
   { label: "Trades", href: "/admin/trades", icon: LineChart },
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Withdrawals", href: "/admin/withdrawals", icon: ArrowUpFromLine },
+  { label: "Support", href: "/admin/support", icon: MessageSquare },
 ];
 
 const comingSoonLinks = [
