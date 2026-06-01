@@ -59,3 +59,17 @@ export async function rejectWithdrawal(withdrawalId: string): Promise<{ error?: 
     return { error: (e as Error).message };
   }
 }
+
+export async function saveProfitTarget(value: number): Promise<{ error?: string }> {
+  try {
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("platform_settings")
+      .upsert({ key: "profit_target_percentage", value: String(value) }, { onConflict: "key" });
+    if (error) return { error: error.message };
+    revalidatePath("/admin/withdrawals");
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}

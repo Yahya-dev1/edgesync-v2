@@ -27,7 +27,16 @@ export default async function AdminWithdrawalsPage({ searchParams }: Props) {
 
   query = query.range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
-  const { data: rows, count, error } = await query;
+  const [{ data: rows, count, error }, { data: settings }] = await Promise.all([
+    query,
+    supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "profit_target_percentage")
+      .single(),
+  ]);
+
+  const profitTarget = Number(settings?.value ?? 10) || 10;
 
   if (error) {
     return (
@@ -72,6 +81,7 @@ export default async function AdminWithdrawalsPage({ searchParams }: Props) {
       page={page}
       totalPages={totalPages}
       status={status}
+      profitTarget={profitTarget}
     />
   );
 }
