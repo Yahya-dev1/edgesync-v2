@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, LockKeyhole } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { initSupportConversation } from "@/app/dashboard/support-actions";
@@ -21,6 +21,7 @@ interface Props {
 export default function SupportChat({ userId }: Props) {
   const [open, setOpen] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [convStatus, setConvStatus] = useState<"open" | "closed">("open");
   const [messages, setMessages] = useState<Message[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [input, setInput] = useState("");
@@ -31,7 +32,6 @@ export default function SupportChat({ userId }: Props) {
   const openRef = useRef(false);
   const lastReadKey = `support-last-read-${userId}`;
 
-  // Keep ref in sync so realtime callback can read current open state
   useEffect(() => {
     openRef.current = open;
   }, [open]);
@@ -50,14 +50,20 @@ export default function SupportChat({ userId }: Props) {
 
       const { data: existing } = await supabase
         .from("support_conversations")
-        .select("id")
+        .select("id, status")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      const convId =
-        existing?.id ?? (await initSupportConversation(userId)).conversationId;
+      let convId: string;
+      if (existing) {
+        convId = existing.id;
+        setConvStatus(existing.status === "closed" ? "closed" : "open");
+      } else {
+        convId = (await initSupportConversation(userId)).conversationId;
+        setConvStatus("open");
+      }
 
       setConversationId(convId);
 
@@ -70,7 +76,6 @@ export default function SupportChat({ userId }: Props) {
       const loaded = msgs ?? [];
       setMessages(loaded);
 
-      // Calculate initial unread count from admin messages after lastReadAt
       const lastRead = localStorage.getItem(lastReadKey);
       if (lastRead) {
         const count = loaded.filter(
@@ -83,12 +88,11 @@ export default function SupportChat({ userId }: Props) {
     }
   }, [userId, lastReadKey]);
 
-  // Load conversation on mount (to show unread badge before user opens chat)
   useEffect(() => {
     loadOrCreate();
   }, [loadOrCreate]);
 
-  // Wire up realtime once we have the conversation id
+  // Realtime: new messages
   useEffect(() => {
     if (!conversationId) return;
 
@@ -108,7 +112,6 @@ export default function SupportChat({ userId }: Props) {
           setMessages((prev) =>
             prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
           );
-          // Only count as unread when the chat panel is closed
           if (!openRef.current && msg.is_admin) {
             setUnreadCount((prev) => prev + 1);
           }
@@ -121,6 +124,39 @@ export default function SupportChat({ userId }: Props) {
     };
   }, [conversationId]);
 
+  // Realtime: conversation status changes (admin closes/reopens)
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`support-conv-status-${conversationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "support_conversations",
+          filter: `id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const updated = payload.new as { status: string };
+          setConvStatus(updated.status === "closed" ? "closed" : "open");
+          // Auto-open the chat so the user sees the status change
+          if (updated.status === "closed" && !openRef.current) {
+            setOpen(true);
+            setUnreadCount(0);
+            localStorage.setItem(lastReadKey, new Date().toISOString());
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [conversationId, lastReadKey]);
+
   const openChat = () => {
     setOpen(true);
     setUnreadCount(0);
@@ -128,7 +164,7 @@ export default function SupportChat({ userId }: Props) {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || !conversationId || sending) return;
+    if (!input.trim() || !conversationId || sending || convStatus === "closed") return;
     const text = input.trim();
     setInput("");
     setSending(true);
@@ -232,36 +268,50 @@ export default function SupportChat({ userId }: Props) {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
-        <div
-          className="p-3 flex gap-2 flex-shrink-0"
-          style={{ borderTop: "0.5px solid var(--surface-border)" }}
-        >
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            placeholder="Type a message..."
-            disabled={loading}
-            className="flex-1 bg-background rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary/50 transition-colors disabled:opacity-50"
-          />
-          <button
-            onClick={sendMessage}
-            disabled={!input.trim() || sending || loading}
-            className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/80 transition-colors disabled:opacity-50 flex-shrink-0"
+        {/* Closed banner */}
+        {convStatus === "closed" && (
+          <div className="flex items-center gap-2 px-4 py-2.5 bg-overlay flex-shrink-0"
+            style={{ borderTop: "0.5px solid var(--surface-border)" }}
           >
-            {sending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Send className="w-4 h-4" strokeWidth={2} />
-            )}
-          </button>
-        </div>
+            <LockKeyhole className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" strokeWidth={1.5} />
+            <p className="text-xs text-muted-foreground">
+              This conversation has been closed by support.
+            </p>
+          </div>
+        )}
+
+        {/* Input — hidden when closed */}
+        {convStatus === "open" && (
+          <div
+            className="p-3 flex gap-2 flex-shrink-0"
+            style={{ borderTop: "0.5px solid var(--surface-border)" }}
+          >
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  sendMessage();
+                }
+              }}
+              placeholder="Type a message..."
+              disabled={loading}
+              className="flex-1 bg-background rounded-xl px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none border border-border focus:border-primary/50 transition-colors disabled:opacity-50"
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!input.trim() || sending || loading}
+              className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/80 transition-colors disabled:opacity-50 flex-shrink-0"
+            >
+              {sending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" strokeWidth={2} />
+              )}
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
