@@ -23,9 +23,14 @@ function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function randomPnl(): number {
-  // -50 to +500, rounded to 2 dp
+// Normal accounts: -$50 to +$500
+function normalPnl(): number {
   return Math.round((Math.random() * 550 - 50) * 100) / 100;
+}
+
+// Big accounts: +$1,000 to +$20,000 (always positive — these are the star traders)
+function bigPnl(): number {
+  return Math.round((Math.random() * 19000 + 1000) * 100) / 100;
 }
 
 export async function generateMarketingAccounts(): Promise<{ error?: string }> {
@@ -35,14 +40,16 @@ export async function generateMarketingAccounts(): Promise<{ error?: string }> {
     // Delete all existing rows
     await supabase.from("marketing_accounts").delete().not("id", "is", null);
 
+    // Indices 0-4 → big P&L, indices 5-9 → normal P&L
     const accounts = Array.from({ length: 10 }, (_, i) => {
+      const isBig = i < 5;
       const firstName = pick(FIRST_NAMES);
       const lastName  = pick(LAST_NAMES);
       const tradeCount = Math.floor(Math.random() * 3) + 1; // 1-3
       const trades = Array.from({ length: tradeCount }, () => ({
         symbol:     "XAUUSD",
         direction:  Math.random() < 0.5 ? "BUY" : "SELL",
-        pnl_amount: randomPnl(),
+        pnl_amount: isBig ? bigPnl() : normalPnl(),
       }));
       const total_pnl =
         Math.round(trades.reduce((s, t) => s + t.pnl_amount, 0) * 100) / 100;
