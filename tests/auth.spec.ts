@@ -28,7 +28,7 @@ test.describe("Auth", () => {
   });
 
   test("user can register with email/password and is redirected to /dashboard", async ({ page }) => {
-    const uniqueEmail = `test+${Date.now()}@mailinator.com`;
+    const uniqueEmail = `test+${Date.now()}@gmail.com`;
     await page.goto("/register");
     await page.getByPlaceholder("John Doe").fill("Test User");
     await page.getByPlaceholder("john@example.com").fill(uniqueEmail);
