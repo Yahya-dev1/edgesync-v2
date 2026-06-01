@@ -163,6 +163,32 @@ export default function SupportChat({ userId }: Props) {
     localStorage.setItem(lastReadKey, new Date().toISOString());
   };
 
+  const [startingNew, setStartingNew] = useState(false);
+
+  const startNewConversation = async () => {
+    if (startingNew) return;
+    setStartingNew(true);
+    try {
+      const { conversationId: newId } = await initSupportConversation(userId);
+      setConversationId(newId);
+      setConvStatus("open");
+      setMessages([]);
+      setUnreadCount(0);
+      localStorage.setItem(lastReadKey, new Date().toISOString());
+
+      // Load the welcome messages for the new conversation
+      const supabase = createClient();
+      const { data: msgs } = await supabase
+        .from("support_messages")
+        .select("id, message, is_admin, sender_id, created_at")
+        .eq("conversation_id", newId)
+        .order("created_at", { ascending: true });
+      setMessages(msgs ?? []);
+    } finally {
+      setStartingNew(false);
+    }
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || !conversationId || sending || convStatus === "closed") return;
     const text = input.trim();
@@ -270,13 +296,28 @@ export default function SupportChat({ userId }: Props) {
 
         {/* Closed banner */}
         {convStatus === "closed" && (
-          <div className="flex items-center gap-2 px-4 py-2.5 bg-overlay flex-shrink-0"
+          <div
+            className="flex flex-col gap-2.5 px-4 py-3 bg-overlay flex-shrink-0"
             style={{ borderTop: "0.5px solid var(--surface-border)" }}
           >
-            <LockKeyhole className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" strokeWidth={1.5} />
-            <p className="text-xs text-muted-foreground">
-              This conversation has been closed by support.
-            </p>
+            <div className="flex items-center gap-2">
+              <LockKeyhole className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" strokeWidth={1.5} />
+              <p className="text-xs text-muted-foreground">
+                This conversation has been closed by support.
+              </p>
+            </div>
+            <button
+              onClick={startNewConversation}
+              disabled={startingNew}
+              className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors disabled:opacity-50"
+            >
+              {startingNew ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <MessageCircle className="w-3.5 h-3.5" strokeWidth={2} />
+              )}
+              {startingNew ? "Starting…" : "Start new conversation"}
+            </button>
           </div>
         )}
 
