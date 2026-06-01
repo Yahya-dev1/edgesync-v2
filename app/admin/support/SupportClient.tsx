@@ -194,9 +194,34 @@ export default function SupportClient({ initialConversations, adminUserId }: Pro
   const handleSend = () => {
     if (!input.trim() || !selectedId || selectedConv?.status === "closed") return;
     const text = input.trim();
+    const convId = selectedId; // capture before async gap
     setInput("");
+
     startTransition(async () => {
-      await sendAdminMessage(selectedId, adminUserId, text);
+      await sendAdminMessage(convId, adminUserId, text);
+
+      // Silently reload the thread so the sent message appears without
+      // relying on the unfiltered realtime subscription (service-role
+      // inserts aren't reliably delivered back to the inserter's channel).
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("support_messages")
+        .select("id, conversation_id, sender_id, is_admin, message, created_at")
+        .eq("conversation_id", convId)
+        .order("created_at", { ascending: true });
+      if (data) setMessages(data);
+
+      // Also update the conversation list preview immediately
+      const now = new Date().toISOString();
+      setConversations((prev) =>
+        prev
+          .map((c) =>
+            c.id === convId
+              ? { ...c, last_message: text, last_is_admin: true, last_message_at: now, updated_at: now }
+              : c
+          )
+          .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      );
     });
   };
 
