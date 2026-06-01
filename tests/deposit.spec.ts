@@ -1,26 +1,34 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { loginAs } from "./helpers/auth";
 
 const USER_EMAIL = process.env.TEST_USER_EMAIL!;
 const USER_PASSWORD = process.env.TEST_USER_PASSWORD!;
+
+// Click through the method selection screen to reach the amount entry step.
+async function selectUsdt(page: Page) {
+  await page.getByRole("button", { name: /Tether \(USDT TRC20\)/ }).click();
+}
 
 test.describe("Deposit", () => {
   test.beforeEach(async ({ page }) => {
     await loginAs(page, USER_EMAIL, USER_PASSWORD);
   });
 
-  test("logged-in user can navigate to /dashboard/deposit", async ({ page }) => {
+  test("logged-in user can navigate to /dashboard/deposit and sees method selection", async ({ page }) => {
     await page.goto("/dashboard/deposit");
     await expect(page.getByRole("heading", { name: "Deposit Funds" })).toBeVisible();
-    await expect(page.getByLabel("Amount (USD)")).toBeVisible();
+    // All payment method cards are rendered
+    await expect(page.getByRole("button", { name: /Tether \(USDT TRC20\)/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Bank Card/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Bitcoin/ })).toBeVisible();
   });
 
   test("entering an amount below the minimum shows a validation error", async ({ page }) => {
     await page.goto("/dashboard/deposit");
-    // Enter 0 — the API minimum is $1; entering 0 or empty triggers "Enter a valid amount."
-    await page.getByLabel("Amount (USD)").fill("0");
+    await selectUsdt(page);
+    await page.getByPlaceholder("0.00").fill("0");
     await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByText("Enter a valid amount.")).toBeVisible();
+    await expect(page.getByText("Minimum deposit amount is $10.")).toBeVisible();
   });
 
   test("entering a valid amount progresses to payment instructions with wallet address and QR code", async ({ page }) => {
@@ -39,7 +47,8 @@ test.describe("Deposit", () => {
     });
 
     await page.goto("/dashboard/deposit");
-    await page.getByLabel("Amount (USD)").fill("50");
+    await selectUsdt(page);
+    await page.getByPlaceholder("0.00").fill("50");
     await page.getByRole("button", { name: "Continue" }).click();
 
     // Should advance to the payment step

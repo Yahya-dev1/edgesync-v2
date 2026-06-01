@@ -30,11 +30,10 @@ test.describe("Auth", () => {
   test("user can register with email/password and is redirected to /dashboard", async ({ page }) => {
     const uniqueEmail = `test+${Date.now()}@mailinator.com`;
     await page.goto("/register");
-    await page.getByLabel("Full Name").fill("Test User");
-    await page.getByLabel("Email Address").fill(uniqueEmail);
-    // Two password fields — use exact match on "Password" to avoid matching "Confirm Password"
-    await page.getByLabel("Password", { exact: true }).fill("TestPassword123!");
-    await page.getByLabel("Confirm Password").fill("TestPassword123!");
+    await page.getByPlaceholder("John Doe").fill("Test User");
+    await page.getByPlaceholder("john@example.com").fill(uniqueEmail);
+    await page.getByPlaceholder("Min. 8 characters").fill("TestPassword123!");
+    await page.getByPlaceholder("Re-enter your password").fill("TestPassword123!");
     await page.getByRole("button", { name: "Create Account" }).click();
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 20_000 });
   });
