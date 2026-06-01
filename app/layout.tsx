@@ -34,7 +34,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col w-full overflow-x-hidden">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={false}
           storageKey="edgesync-theme"
         >
