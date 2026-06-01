@@ -35,6 +35,7 @@ const navItems = [
 const bottomNavItems = [
   { label: "Dashboard",    href: "/dashboard",              icon: LayoutDashboard },
   { label: "Copy Trading", href: "/dashboard/copy-trading", icon: Users },
+  { label: "Markets",      href: "/dashboard/markets",      icon: BarChart2 },
   { label: "Deposit",      href: "/dashboard/deposit",      icon: ArrowDownToLine },
   { label: "Transactions", href: "/dashboard/transactions", icon: List },
   { label: "Settings",     href: "/dashboard/settings",     icon: Settings },

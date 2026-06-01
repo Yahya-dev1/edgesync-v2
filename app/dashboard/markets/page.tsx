@@ -51,8 +51,8 @@ export default async function MarketsPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* ── TradingView Chart ─────────────────────────────────── */}
       <div
-        className="rounded-xl overflow-hidden bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
+        className="rounded-xl bg-surface"
+        style={{ border: "0.5px solid var(--surface-border)", overflow: "hidden", height: "620px" }}
       >
         <TradingViewChart />
       </div>
