@@ -129,6 +129,7 @@ export default function WithdrawPage() {
   const [currentProfit, setCurrentProfit] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
   const [noDeposit, setNoDeposit] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
 
   // Form state
   const [amount, setAmount] = useState("");
@@ -143,11 +144,12 @@ export default function WithdrawPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const [{ data: profile }, { data: deposits }, { data: settings }] =
+      const [{ data: profile }, { data: deposits }, { data: settings }, { data: copyTrade }] =
         await Promise.all([
           supabase.from("profiles").select("balance").eq("id", user.id).single(),
           supabase.from("deposits").select("amount").eq("user_id", user.id).eq("status", "approved"),
           supabase.from("platform_settings").select("key, value").in("key", ["profit_target_percentage"]),
+          supabase.from("user_copy_trading").select("id").eq("user_id", user.id).eq("is_copying", true).maybeSingle(),
         ]);
 
       const bal = Number(profile?.balance ?? 0);
@@ -158,6 +160,7 @@ export default function WithdrawPage() {
       setBalance(bal);
       setTotalDeposited(deposited);
       setProfitTarget(targetPct);
+      setIsCopying(!!copyTrade);
 
       if (deposited === 0) {
         setNoDeposit(true);
@@ -271,7 +274,15 @@ export default function WithdrawPage() {
     );
   }
 
-  const isLocked = noDeposit || !unlocked;
+  // Four-way render decision:
+  // 1. noDeposit                        → no funds empty state
+  // 2. !noDeposit && isCopying && !unlocked → locked with progress bar
+  // 3. !noDeposit && (!isCopying || unlocked) → withdrawal form
+  //    showBadge = isCopying && unlocked (profit target reached context)
+
+  const showNoFunds = noDeposit;
+  const showLocked  = !noDeposit && isCopying && !unlocked;
+  const showBadge   = !noDeposit && isCopying && unlocked;
 
   return (
     <div className="max-w-lg mx-auto">
@@ -310,8 +321,32 @@ export default function WithdrawPage() {
         <span className="text-lg font-bold text-foreground">${balance.toFixed(2)}</span>
       </div>
 
-      {isLocked ? (
-        /* ── Locked state ──────────────────────────────────── */
+      {showNoFunds ? (
+        /* ── No funds empty state ──────────────────────────── */
+        <div
+          className="rounded-xl bg-surface p-[16px] md:p-8 flex flex-col items-center text-center"
+          style={{ border: "0.5px solid var(--surface-border)" }}
+        >
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <rect x="4" y="9" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M4 14h24" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="10" cy="20" r="1.5" fill="currentColor" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-foreground mb-2">No Funds to Withdraw</h2>
+          <p className="text-base text-muted-foreground mb-6 max-w-sm">
+            You don&apos;t have any approved deposits yet. Make a deposit to fund your account.
+          </p>
+          <a
+            href="/dashboard/deposit"
+            className="px-6 py-2.5 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
+          >
+            Make a Deposit
+          </a>
+        </div>
+      ) : showLocked ? (
+        /* ── Locked state (copying, profit target not reached) ─ */
         <div
           className="rounded-xl bg-surface p-[16px] md:p-8 flex flex-col items-center text-center"
           style={{ border: "0.5px solid var(--surface-border)" }}
@@ -326,39 +361,31 @@ export default function WithdrawPage() {
             Your withdrawal will be available once your copy trading profit reaches the target set by AmiinFx.
           </p>
 
-          {noDeposit ? (
-            <div
-              className="w-full rounded-lg px-4 py-3 text-sm text-muted-foreground"
-              style={{ background: "var(--muted)" }}
-            >
-              No approved deposit found. Make a deposit to unlock withdrawals.
-            </div>
-          ) : (
-            <div className="w-full">
-              <ProgressBar current={Math.max(currentProfit, 0)} target={profitTarget} />
-            </div>
-          )}
+          <div className="w-full">
+            <ProgressBar current={Math.max(currentProfit, 0)} target={profitTarget} />
+          </div>
 
           <p className="text-sm text-muted-foreground/70 mt-6 max-w-sm">
             This ensures you benefit fully from AmiinFx&apos;s strategy before withdrawing.
           </p>
         </div>
       ) : (
-        /* ── Unlocked state — withdrawal form ──────────────── */
+        /* ── Withdrawal form (free or copy-trade unlocked) ──── */
         <div
           className="rounded-xl bg-surface p-[16px] md:p-8"
           style={{ border: "0.5px solid var(--surface-border)" }}
         >
-          {/* Profit badge */}
-          <div className="flex items-center gap-2 mb-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-              <circle cx="9" cy="9" r="8" stroke="#00C896" strokeWidth="1.5" />
-              <path d="M5.5 9.5l2.5 2.5 4.5-5" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <span className="text-sm font-semibold text-primary">
-              Profit target reached — withdrawals unlocked
-            </span>
-          </div>
+          {showBadge && (
+            <div className="flex items-center gap-2 mb-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                <circle cx="9" cy="9" r="8" stroke="#00C896" strokeWidth="1.5" />
+                <path d="M5.5 9.5l2.5 2.5 4.5-5" stroke="#00C896" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="text-sm font-semibold text-primary">
+                Profit target reached — withdrawals unlocked
+              </span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Amount */}
