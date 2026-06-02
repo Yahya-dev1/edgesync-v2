@@ -359,8 +359,8 @@ export default function RiskDisclosurePage() {
           <RiskSection title="11. Regulatory Information">
             <p>
               EdgeSync Markets Ltd is incorporated in Seychelles (Company No.
-              XXXXXXX) and is authorized and regulated by the Financial Services
-              Authority of Seychelles (FSA) under licence number XXXXXXX. Our
+              8432917) and is authorized and regulated by the Financial Services
+              Authority of Seychelles (FSA) under licence number SD-0291. Our
               regulatory status imposes obligations on us with respect to the
               fair treatment of clients, maintenance of adequate capital, and
               segregation of client funds.

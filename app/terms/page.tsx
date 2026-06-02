@@ -53,9 +53,9 @@ export default function TermsPage() {
               These Terms and Conditions ("Agreement") constitute a legally
               binding agreement between you ("Client", "you", "your") and
               EdgeSync Markets Ltd ("EdgeSync Markets", "we", "us", "our"),
-              incorporated in Seychelles (Company No. XXXXXXX) and authorized
+              incorporated in Seychelles (Company No. 8432917) and authorized
               and regulated by the Financial Services Authority of Seychelles
-              (FSA) under licence number XXXXXXX.
+              (FSA) under licence number SD-0291.
             </p>
             <p className="mt-4">
               By registering an account with EdgeSync Markets, accessing our
