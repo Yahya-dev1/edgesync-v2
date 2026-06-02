@@ -47,13 +47,13 @@ export default function RiskDisclosurePage() {
         </div>
 
         {/* High-visibility warning */}
-        <div className="flex items-start gap-4 p-5 rounded-2xl border border-amber-500/30 bg-amber-500/8 mb-10">
-          <AlertTriangle className="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-4 p-5 rounded-2xl border border-amber-500/40 bg-amber-50 dark:bg-amber-500/8 mb-10">
+          <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-amber-300 mb-1">
+            <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-1">
               Important Risk Warning
             </p>
-            <p className="text-sm text-amber-200/70 leading-relaxed">
+            <p className="text-sm text-amber-900/80 dark:text-amber-200/70 leading-relaxed">
               CFDs are complex financial instruments and come with a high risk of
               losing money rapidly due to leverage.{" "}
               <strong>
