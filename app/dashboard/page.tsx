@@ -11,7 +11,7 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: profile }, { data: copyTrade }, { data: kyc }] = await Promise.all([
+  const [{ data: profile }, { data: copyTrade }] = await Promise.all([
     supabase.from("profiles").select("full_name, balance").eq("id", user!.id).single(),
     supabase
       .from("user_copy_trading")
@@ -21,14 +21,19 @@ export default async function DashboardPage() {
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase
+  ]);
+
+  let kycApproved = false;
+  try {
+    const { data: kyc } = await supabase
       .from("kyc_submissions")
       .select("status")
       .eq("user_id", user!.id)
-      .maybeSingle(),
-  ]);
-
-  const kycApproved = kyc?.status === "approved";
+      .maybeSingle();
+    kycApproved = kyc?.status === "approved";
+  } catch {
+    // default to false — banner shown, approved users unaffected on retry
+  }
 
   const firstName = (profile?.full_name || "Trader").split(" ")[0];
   const balanceNum = Number(profile?.balance ?? 0);

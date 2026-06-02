@@ -12,7 +12,11 @@ interface Props {
 export default async function AdminKycPage({ searchParams }: Props) {
   const params = await searchParams;
   const page = Math.max(1, parseInt(params.page ?? "1", 10));
-  const status = (params.status ?? "pending") as KycStatus;
+  const VALID_STATUSES: KycStatus[] = ["pending", "approved", "rejected", "all"];
+  const rawStatus = params.status ?? "pending";
+  const status: KycStatus = VALID_STATUSES.includes(rawStatus as KycStatus)
+    ? (rawStatus as KycStatus)
+    : "all";
 
   const supabase = createAdminClient();
 
