@@ -23,13 +23,12 @@ const activeLinks = [
   { label: "Trades",      href: "/admin/trades",      icon: LineChart },
   { label: "Users",       href: "/admin/users",        icon: Users },
   { label: "Withdrawals", href: "/admin/withdrawals",  icon: ArrowUpFromLine },
+  { label: "KYC",         href: "/admin/kyc",          icon: ShieldCheck },
   { label: "Support",     href: "/admin/support",      icon: MessageSquare },
   { label: "Marketing",   href: "/admin/marketing",    icon: Megaphone },
 ];
 
-const comingSoonLinks = [
-  { label: "KYC", icon: ShieldCheck },
-];
+const comingSoonLinks: typeof activeLinks = [];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
