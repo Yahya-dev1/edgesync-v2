@@ -100,7 +100,7 @@ export default function Footer() {
           <p className="text-xs text-amber-700 dark:text-amber-200/60 leading-relaxed">
             <strong className="text-amber-800 dark:text-amber-300/80">Risk Warning:</strong>{" "}
             EdgeSync Markets is incorporated in Seychelles (Company No.
-            XXXXXXX) and is authorized and regulated by the Financial Services
+            8432917) and is authorized and regulated by the Financial Services
             Authority of Seychelles (FSA). CFDs are complex instruments and
             come with a high risk of losing money rapidly due to leverage.{" "}
             <strong>
