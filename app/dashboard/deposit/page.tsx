@@ -123,7 +123,7 @@ const METHODS: Method[] = [
     badgeVariant: "recommended",
     processingTime: "Instant – 15 min",
     fee: "0%",
-    min: "$10",
+    min: "$100",
     max: "$200,000",
     enabled: true,
     Icon: UsdtIcon,
@@ -303,8 +303,8 @@ export default function DepositPage() {
 
   async function handleContinue() {
     const num = parseFloat(amount);
-    if (!num || num < 10) {
-      setError("Minimum deposit amount is $10.");
+    if (!num || num < 100) {
+      setError("Minimum deposit amount is $100.");
       return;
     }
     if (num > 200_000) {
@@ -505,7 +505,7 @@ export default function DepositPage() {
         <UsdtIcon />
         <div>
           <p className="text-sm font-semibold text-foreground">Tether (USDT TRC20)</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Instant – 15 min · 0% fee · $10 – $200,000</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Instant – 15 min · 0% fee · $100 – $200,000</p>
         </div>
         <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
           Recommended
@@ -533,7 +533,7 @@ export default function DepositPage() {
             </span>
             <input
               type="number"
-              min="10"
+              min="100"
               max="200000"
               step="1"
               value={amount}
@@ -553,7 +553,7 @@ export default function DepositPage() {
             </p>
           )}
           <p className="text-xs text-muted-foreground mt-1.5">
-            Minimum $10 · Maximum $200,000
+            Minimum $100 · Maximum $200,000
           </p>
         </div>
 

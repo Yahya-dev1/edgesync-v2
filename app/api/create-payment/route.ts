@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const amount = Number(body.amount);
-  if (!amount || amount <= 0) {
-    return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
+  if (!amount || amount < 100) {
+    return NextResponse.json({ error: "Minimum deposit is $100." }, { status: 400 });
   }
 
   const API_KEY = process.env.NOWPAYMENTS_API_KEY!;
