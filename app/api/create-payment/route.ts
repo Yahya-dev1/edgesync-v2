@@ -46,12 +46,12 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      pay_currency: "usdttrc20",
       price_amount: amount,
       price_currency: "usd",
+      pay_currency: "usdttrc20",
       order_id: orderId,
       order_description: "EdgeSync deposit",
-      is_fixed_rate: false,
+      is_fixed_rate: true,
       is_fee_paid_by_user: false,
     }),
   });
