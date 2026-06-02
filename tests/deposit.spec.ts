@@ -28,7 +28,7 @@ test.describe("Deposit", () => {
     await selectUsdt(page);
     await page.getByPlaceholder("0.00").fill("0");
     await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByText("Minimum deposit amount is $10.")).toBeVisible();
+    await expect(page.getByText("Minimum deposit amount is $100.")).toBeVisible();
   });
 
   test("entering a valid amount progresses to payment instructions with wallet address and QR code", async ({ page }) => {
@@ -48,7 +48,7 @@ test.describe("Deposit", () => {
 
     await page.goto("/dashboard/deposit");
     await selectUsdt(page);
-    await page.getByPlaceholder("0.00").fill("50");
+    await page.getByPlaceholder("0.00").fill("150");
     await page.getByRole("button", { name: "Continue" }).click();
 
     // Should advance to the payment step
