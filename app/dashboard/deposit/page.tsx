@@ -559,7 +559,7 @@ export default function DepositPage() {
 
         {/* Quick amount buttons */}
         <div className="grid grid-cols-4 gap-2">
-          {[50, 100, 250, 500].map((preset) => (
+          {[100, 250, 500, 1000].map((preset) => (
             <button
               key={preset}
               onClick={() => { setAmount(String(preset)); setError(""); }}

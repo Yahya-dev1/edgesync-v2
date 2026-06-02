@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import LiveDashboard from "@/components/dashboard/LiveDashboard";
+import KycBanner from "@/components/dashboard/KycBanner";
 
 // ─── Page ─────────────────────────────────────────────────────
 
@@ -10,7 +11,7 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const [{ data: profile }, { data: copyTrade }] = await Promise.all([
+  const [{ data: profile }, { data: copyTrade }, { data: kyc }] = await Promise.all([
     supabase.from("profiles").select("full_name, balance").eq("id", user!.id).single(),
     supabase
       .from("user_copy_trading")
@@ -20,13 +21,20 @@ export default async function DashboardPage() {
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from("kyc_submissions")
+      .select("status")
+      .eq("user_id", user!.id)
+      .maybeSingle(),
   ]);
+
+  const kycApproved = kyc?.status === "approved";
 
   const firstName = (profile?.full_name || "Trader").split(" ")[0];
   const balanceNum = Number(profile?.balance ?? 0);
 
   if (!copyTrade) {
-    return <State1 firstName={firstName} balance={`$${balanceNum.toFixed(2)}`} />;
+    return <State1 firstName={firstName} balance={`$${balanceNum.toFixed(2)}`} showKycBanner={!kycApproved} />;
   }
 
   return (
@@ -37,13 +45,14 @@ export default async function DashboardPage() {
       copyId={copyTrade.id}
       traderName={copyTrade.trader_name}
       userId={user!.id}
+      showKycBanner={!kycApproved}
     />
   );
 }
 
 // ─── State 1: No active copy trade ────────────────────────────
 
-function State1({ firstName, balance }: { firstName: string; balance: string }) {
+function State1({ firstName, balance, showKycBanner }: { firstName: string; balance: string; showKycBanner: boolean }) {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
@@ -52,6 +61,8 @@ function State1({ firstName, balance }: { firstName: string; balance: string }) 
         </h1>
         <p className="text-base text-muted-foreground mt-1">Here&apos;s your trading overview.</p>
       </div>
+
+      {showKycBanner && <KycBanner />}
 
       {/* Balance card */}
       <div
@@ -159,6 +170,7 @@ function State2({
   copyId,
   traderName,
   userId,
+  showKycBanner,
 }: {
   firstName: string;
   userBalance: number;
@@ -166,6 +178,7 @@ function State2({
   copyId: string;
   traderName: string;
   userId: string;
+  showKycBanner: boolean;
 }) {
   return (
     <div className="max-w-4xl mx-auto">
@@ -174,6 +187,8 @@ function State2({
           Welcome back, <span className="text-primary">{firstName}</span>!
         </h1>
       </div>
+
+      {showKycBanner && <KycBanner />}
 
       <LiveDashboard
         userBalance={userBalance}
