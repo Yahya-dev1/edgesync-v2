@@ -25,11 +25,9 @@ const activeLinks = [
   { label: "Withdrawals", href: "/admin/withdrawals",  icon: ArrowUpFromLine },
   { label: "Support",     href: "/admin/support",      icon: MessageSquare },
   { label: "Marketing",   href: "/admin/marketing",    icon: Megaphone },
+  { label: "KYC",         href: "/admin/kyc",          icon: ShieldCheck },
 ];
 
-const comingSoonLinks = [
-  { label: "KYC", icon: ShieldCheck },
-];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -110,29 +108,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
 
-          {comingSoonLinks.map(({ label, icon: Icon }) => (
-            <div key={label} className={cn("relative", !collapsed && "px-2")}>
-              <div
-                title={collapsed ? label : undefined}
-                className={cn(
-                  "flex items-center rounded-lg cursor-not-allowed opacity-40",
-                  collapsed ? "justify-center h-10 w-full" : "gap-3 px-3 py-2.5 w-full"
-                )}
-              >
-                <Icon className="w-4 h-4 flex-shrink-0 text-muted-foreground" strokeWidth={1.5} />
-                {!collapsed && (
-                  <span className="text-sm font-medium whitespace-nowrap text-muted-foreground flex-1">
-                    {label}
-                  </span>
-                )}
-                {!collapsed && (
-                  <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-overlay text-muted-foreground">
-                    Soon
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
         </nav>
 
         {/* Logout */}
@@ -244,17 +219,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           );
         })}
-        {comingSoonLinks.map(({ label, icon: Icon }) => (
-          <div
-            key={label}
-            className="flex flex-col items-center justify-center flex-1 h-full min-w-[44px] gap-0.5 opacity-40 cursor-not-allowed"
-          >
-            <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
-            <span className="text-[10px] leading-none font-medium text-muted-foreground whitespace-nowrap">
-              {label}
-            </span>
-          </div>
-        ))}
       </nav>
     </div>
   );
