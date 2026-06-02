@@ -40,8 +40,8 @@ function ProfitTargetCard({ initialValue }: { initialValue: number }) {
 
   function handleSave() {
     const num = parseFloat(value);
-    if (isNaN(num) || num <= 0 || num > 100) {
-      setError("Enter a value between 1 and 100.");
+    if (isNaN(num) || num < 1) {
+      setError("Enter a value of at least 1.");
       return;
     }
     setError(null);
@@ -72,7 +72,6 @@ function ProfitTargetCard({ initialValue }: { initialValue: number }) {
             <input
               type="number"
               min="1"
-              max="100"
               step="0.1"
               value={value}
               onChange={(e) => { setValue(e.target.value); setSaved(false); setError(null); }}
