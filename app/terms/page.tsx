@@ -180,7 +180,7 @@ export default function TermsPage() {
           <TC title="4. Deposits and Withdrawals">
             <Sub>4.1 Deposits</Sub>
             <p>
-              The minimum initial deposit is $100 (or equivalent). Deposits
+              The minimum initial deposit is $20 (or equivalent). Deposits
               must be made using supported payment methods as published on our
               website from time to time, including USDT (TRC20) and other
               accepted cryptocurrencies. All deposits must originate from

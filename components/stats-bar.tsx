@@ -1,7 +1,7 @@
 const stats = [
   { value: "500+", label: "Instruments" },
   { value: "1:500", label: "Max Leverage" },
-  { value: "$100", label: "Min Deposit" },
+  { value: "$20", label: "Min Deposit" },
   { value: "2021", label: "Founded" },
 ];
 
