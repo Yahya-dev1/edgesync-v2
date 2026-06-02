@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — EdgeSync Markets",
@@ -9,37 +10,40 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-[#080d1a] text-slate-300">
+    <div className="min-h-screen bg-background text-muted-foreground">
       {/* Header */}
-      <header className="border-b border-white/8 bg-[#080d1a]/90 backdrop-blur-md">
+      <header className="border-b border-border bg-background/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[#00C896]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary">
               <TrendingUp className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">
-              EdgeSync <span className="text-[#00C896]">Markets</span>
+            <span className="text-foreground font-bold text-lg tracking-tight">
+              EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-slate-400 hover:text-[#00C896] transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Back to Home
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3">Privacy Policy</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-4xl font-bold text-foreground mb-3">Privacy Policy</h1>
+          <p className="text-sm text-muted-foreground">
             Last updated: 1 January 2025 &nbsp;·&nbsp; EdgeSync Markets Ltd
           </p>
         </div>
 
-        <div className="prose prose-invert max-w-none space-y-10 text-sm leading-7 text-slate-300">
+        <div className="prose max-w-none space-y-10 text-sm leading-7">
           {/* Intro */}
           <section>
             <p>
@@ -90,23 +94,23 @@ export default function PrivacyPolicyPage() {
           <PolicySection title="2. How We Use Your Information">
             <p>We use your personal information for the following purposes:</p>
             <ul>
-              <li><strong className="text-white">Account Registration & Onboarding:</strong> To verify your identity, open your trading account, and fulfil our Know Your Customer (KYC) obligations.</li>
-              <li><strong className="text-white">Service Delivery:</strong> To process deposits and withdrawals, execute trades, provide copy-trading functionality, and manage your account.</li>
-              <li><strong className="text-white">Regulatory Compliance:</strong> To comply with applicable laws including AML/CFT regulations, financial reporting requirements, and requests from competent authorities.</li>
-              <li><strong className="text-white">Risk Management:</strong> To assess suitability, detect fraud, prevent market abuse, and manage operational risk.</li>
-              <li><strong className="text-white">Customer Support:</strong> To respond to your enquiries, resolve disputes, and provide technical assistance.</li>
-              <li><strong className="text-white">Marketing & Communications:</strong> To send you updates, promotions, and educational content where you have consented or we have a legitimate interest to do so.</li>
-              <li><strong className="text-white">Platform Improvement:</strong> To analyse usage patterns and improve our platform, products, and services.</li>
+              <li><strong className="text-foreground">Account Registration & Onboarding:</strong> To verify your identity, open your trading account, and fulfil our Know Your Customer (KYC) obligations.</li>
+              <li><strong className="text-foreground">Service Delivery:</strong> To process deposits and withdrawals, execute trades, provide copy-trading functionality, and manage your account.</li>
+              <li><strong className="text-foreground">Regulatory Compliance:</strong> To comply with applicable laws including AML/CFT regulations, financial reporting requirements, and requests from competent authorities.</li>
+              <li><strong className="text-foreground">Risk Management:</strong> To assess suitability, detect fraud, prevent market abuse, and manage operational risk.</li>
+              <li><strong className="text-foreground">Customer Support:</strong> To respond to your enquiries, resolve disputes, and provide technical assistance.</li>
+              <li><strong className="text-foreground">Marketing & Communications:</strong> To send you updates, promotions, and educational content where you have consented or we have a legitimate interest to do so.</li>
+              <li><strong className="text-foreground">Platform Improvement:</strong> To analyse usage patterns and improve our platform, products, and services.</li>
             </ul>
           </PolicySection>
 
           <PolicySection title="3. Legal Basis for Processing">
             <p>We process your personal data on the following legal bases:</p>
             <ul>
-              <li><strong className="text-white">Contractual Necessity:</strong> Processing required to enter into or perform the client agreement with you.</li>
-              <li><strong className="text-white">Legal Obligation:</strong> Processing required to comply with applicable laws, regulations, and regulatory obligations.</li>
-              <li><strong className="text-white">Legitimate Interests:</strong> Processing for fraud prevention, network security, and service improvement where our interests are not overridden by your rights.</li>
-              <li><strong className="text-white">Consent:</strong> Where you have given express consent to receive marketing communications or for the use of non-essential cookies.</li>
+              <li><strong className="text-foreground">Contractual Necessity:</strong> Processing required to enter into or perform the client agreement with you.</li>
+              <li><strong className="text-foreground">Legal Obligation:</strong> Processing required to comply with applicable laws, regulations, and regulatory obligations.</li>
+              <li><strong className="text-foreground">Legitimate Interests:</strong> Processing for fraud prevention, network security, and service improvement where our interests are not overridden by your rights.</li>
+              <li><strong className="text-foreground">Consent:</strong> Where you have given express consent to receive marketing communications or for the use of non-essential cookies.</li>
             </ul>
           </PolicySection>
 
@@ -117,10 +121,10 @@ export default function PrivacyPolicyPage() {
               your device. We use:
             </p>
             <ul>
-              <li><strong className="text-white">Strictly Necessary Cookies:</strong> Required for the operation of our website and cannot be disabled.</li>
-              <li><strong className="text-white">Performance Cookies:</strong> Collect anonymised information about how visitors use our website (e.g., Google Analytics).</li>
-              <li><strong className="text-white">Functional Cookies:</strong> Remember your preferences such as language and region settings.</li>
-              <li><strong className="text-white">Marketing Cookies:</strong> Track your visits across websites to deliver relevant advertising, only where consent has been obtained.</li>
+              <li><strong className="text-foreground">Strictly Necessary Cookies:</strong> Required for the operation of our website and cannot be disabled.</li>
+              <li><strong className="text-foreground">Performance Cookies:</strong> Collect anonymised information about how visitors use our website (e.g., Google Analytics).</li>
+              <li><strong className="text-foreground">Functional Cookies:</strong> Remember your preferences such as language and region settings.</li>
+              <li><strong className="text-foreground">Marketing Cookies:</strong> Track your visits across websites to deliver relevant advertising, only where consent has been obtained.</li>
             </ul>
             <p className="mt-4">
               You can manage your cookie preferences through our cookie consent
@@ -132,11 +136,11 @@ export default function PrivacyPolicyPage() {
           <PolicySection title="5. Disclosure of Your Information">
             <p>We may share your personal information with:</p>
             <ul>
-              <li><strong className="text-white">Group Companies:</strong> Affiliated entities within the EdgeSync Markets corporate group for operational and regulatory purposes.</li>
-              <li><strong className="text-white">Service Providers:</strong> Third-party processors who provide IT infrastructure, payment processing, KYC/AML verification, customer support, and data analytics services under binding data processing agreements.</li>
-              <li><strong className="text-white">Regulatory Authorities:</strong> The FSA Seychelles, financial intelligence units, tax authorities, and law enforcement agencies where required by law or court order.</li>
-              <li><strong className="text-white">Liquidity Providers & Counterparties:</strong> Financial institutions and brokers necessary to execute your transactions.</li>
-              <li><strong className="text-white">Successors:</strong> In the event of a merger, acquisition, or sale of assets, your data may be transferred to the successor entity, subject to equivalent privacy protections.</li>
+              <li><strong className="text-foreground">Group Companies:</strong> Affiliated entities within the EdgeSync Markets corporate group for operational and regulatory purposes.</li>
+              <li><strong className="text-foreground">Service Providers:</strong> Third-party processors who provide IT infrastructure, payment processing, KYC/AML verification, customer support, and data analytics services under binding data processing agreements.</li>
+              <li><strong className="text-foreground">Regulatory Authorities:</strong> The FSA Seychelles, financial intelligence units, tax authorities, and law enforcement agencies where required by law or court order.</li>
+              <li><strong className="text-foreground">Liquidity Providers & Counterparties:</strong> Financial institutions and brokers necessary to execute your transactions.</li>
+              <li><strong className="text-foreground">Successors:</strong> In the event of a merger, acquisition, or sale of assets, your data may be transferred to the successor entity, subject to equivalent privacy protections.</li>
             </ul>
             <p className="mt-4">
               We do not sell your personal information to third parties for
@@ -196,20 +200,20 @@ export default function PrivacyPolicyPage() {
               your personal data:
             </p>
             <ul>
-              <li><strong className="text-white">Right of Access:</strong> Request a copy of the personal data we hold about you.</li>
-              <li><strong className="text-white">Right to Rectification:</strong> Request correction of inaccurate or incomplete data.</li>
-              <li><strong className="text-white">Right to Erasure:</strong> Request deletion of your data where it is no longer necessary, subject to our legal retention obligations.</li>
-              <li><strong className="text-white">Right to Restriction:</strong> Request that we restrict processing in certain circumstances.</li>
-              <li><strong className="text-white">Right to Data Portability:</strong> Receive your data in a structured, machine-readable format where processing is based on consent or contract.</li>
-              <li><strong className="text-white">Right to Object:</strong> Object to processing based on legitimate interests or for direct marketing purposes.</li>
-              <li><strong className="text-white">Right to Withdraw Consent:</strong> Where processing is based on consent, withdraw it at any time without affecting prior processing.</li>
+              <li><strong className="text-foreground">Right of Access:</strong> Request a copy of the personal data we hold about you.</li>
+              <li><strong className="text-foreground">Right to Rectification:</strong> Request correction of inaccurate or incomplete data.</li>
+              <li><strong className="text-foreground">Right to Erasure:</strong> Request deletion of your data where it is no longer necessary, subject to our legal retention obligations.</li>
+              <li><strong className="text-foreground">Right to Restriction:</strong> Request that we restrict processing in certain circumstances.</li>
+              <li><strong className="text-foreground">Right to Data Portability:</strong> Receive your data in a structured, machine-readable format where processing is based on consent or contract.</li>
+              <li><strong className="text-foreground">Right to Object:</strong> Object to processing based on legitimate interests or for direct marketing purposes.</li>
+              <li><strong className="text-foreground">Right to Withdraw Consent:</strong> Where processing is based on consent, withdraw it at any time without affecting prior processing.</li>
             </ul>
             <p className="mt-4">
               To exercise any of these rights, please contact our Data
               Protection Officer at{" "}
               <a
                 href="mailto:privacy@edgesyncmarkets.com"
-                className="text-[#00C896] hover:underline"
+                className="text-primary hover:underline"
               >
                 privacy@edgesyncmarkets.com
               </a>
@@ -253,14 +257,14 @@ export default function PrivacyPolicyPage() {
               If you have questions, concerns, or complaints regarding this
               Privacy Policy or our data processing practices, please contact:
             </p>
-            <div className="mt-4 p-4 rounded-xl border border-white/8 bg-[#0d1526]">
-              <p className="text-white font-semibold">EdgeSync Markets Ltd</p>
+            <div className="mt-4 p-4 rounded-xl border border-border bg-card">
+              <p className="text-foreground font-semibold">EdgeSync Markets Ltd</p>
               <p>Data Protection Officer</p>
               <p className="mt-1">
                 Email:{" "}
                 <a
                   href="mailto:privacy@edgesyncmarkets.com"
-                  className="text-[#00C896] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   privacy@edgesyncmarkets.com
                 </a>
@@ -269,7 +273,7 @@ export default function PrivacyPolicyPage() {
                 Support:{" "}
                 <a
                   href="mailto:support@edgesyncmarkets.com"
-                  className="text-[#00C896] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   support@edgesyncmarkets.com
                 </a>
@@ -281,12 +285,12 @@ export default function PrivacyPolicyPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/8 py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-600">
+      <footer className="border-t border-border py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-muted-foreground">
         <p>© {new Date().getFullYear()} EdgeSync Markets Ltd. All rights reserved.</p>
         <div className="mt-2 flex justify-center gap-4">
-          <Link href="/risk-disclosure" className="hover:text-[#00C896] transition-colors">Risk Disclosure</Link>
-          <Link href="/terms" className="hover:text-[#00C896] transition-colors">Terms & Conditions</Link>
-          <Link href="/" className="hover:text-[#00C896] transition-colors">Home</Link>
+          <Link href="/risk-disclosure" className="hover:text-primary transition-colors">Risk Disclosure</Link>
+          <Link href="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
         </div>
       </footer>
     </div>
@@ -296,7 +300,7 @@ export default function PrivacyPolicyPage() {
 function PolicySection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-white/8">
+      <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
         {title}
       </h2>
       <div className="space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2">
@@ -308,7 +312,7 @@ function PolicySection({ title, children }: { title: string; children: React.Rea
 
 function SubHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-base font-semibold text-slate-200 mt-5 mb-2">
+    <h3 className="text-base font-semibold text-foreground mt-5 mb-2">
       {children}
     </h3>
   );

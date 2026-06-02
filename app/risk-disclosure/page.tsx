@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TrendingUp, AlertTriangle } from "lucide-react";
 import type { Metadata } from "next";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "Risk Disclosure — EdgeSync Markets",
@@ -10,34 +11,37 @@ export const metadata: Metadata = {
 
 export default function RiskDisclosurePage() {
   return (
-    <div className="min-h-screen bg-[#080d1a] text-slate-300">
+    <div className="min-h-screen bg-background text-muted-foreground">
       {/* Header */}
-      <header className="border-b border-white/8 bg-[#080d1a]/90 backdrop-blur-md">
+      <header className="border-b border-border bg-background/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[#00C896]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary">
               <TrendingUp className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">
-              EdgeSync <span className="text-[#00C896]">Markets</span>
+            <span className="text-foreground font-bold text-lg tracking-tight">
+              EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-slate-400 hover:text-[#00C896] transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Back to Home
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3">
+          <h1 className="text-4xl font-bold text-foreground mb-3">
             Risk Disclosure Statement
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Last updated: 1 January 2025 &nbsp;·&nbsp; EdgeSync Markets Ltd
           </p>
         </div>
@@ -84,7 +88,7 @@ export default function RiskDisclosurePage() {
               tolerance.
             </p>
             <p className="mt-4">
-              <strong className="text-white">
+              <strong className="text-foreground">
                 If you are in any doubt, you should seek independent financial
                 advice before proceeding.
               </strong>
@@ -134,25 +138,25 @@ export default function RiskDisclosurePage() {
             </p>
             <ul>
               <li>
-                <strong className="text-slate-200">Economic events:</strong>{" "}
+                <strong className="text-foreground">Economic events:</strong>{" "}
                 Interest rate decisions, employment data, GDP releases,
                 inflation figures, and central bank announcements can cause
                 sharp and sudden price movements.
               </li>
               <li>
-                <strong className="text-slate-200">Political events:</strong>{" "}
+                <strong className="text-foreground">Political events:</strong>{" "}
                 Elections, geopolitical tensions, sanctions, trade disputes, and
                 political instability can cause significant volatility in
                 currency and commodity markets.
               </li>
               <li>
-                <strong className="text-slate-200">Market sentiment:</strong>{" "}
+                <strong className="text-foreground">Market sentiment:</strong>{" "}
                 Speculative activity, changes in investor sentiment, and
                 rumours can drive price movements that are disconnected from
                 fundamental value.
               </li>
               <li>
-                <strong className="text-slate-200">Correlation risk:</strong>{" "}
+                <strong className="text-foreground">Correlation risk:</strong>{" "}
                 Assets that historically moved independently may become
                 correlated during periods of market stress, limiting the
                 effectiveness of diversification.
@@ -263,22 +267,22 @@ export default function RiskDisclosurePage() {
             </p>
             <ul>
               <li>
-                <strong className="text-slate-200">Connectivity failures:</strong>{" "}
+                <strong className="text-foreground">Connectivity failures:</strong>{" "}
                 Internet outages or disruptions to communication networks may
                 prevent you from placing, modifying, or closing orders.
               </li>
               <li>
-                <strong className="text-slate-200">Platform downtime:</strong>{" "}
+                <strong className="text-foreground">Platform downtime:</strong>{" "}
                 Scheduled or unscheduled maintenance may result in temporary
                 unavailability of the trading platform.
               </li>
               <li>
-                <strong className="text-slate-200">System errors:</strong>{" "}
+                <strong className="text-foreground">System errors:</strong>{" "}
                 Software bugs, hardware failures, or cyberattacks may disrupt
                 trading operations or result in erroneous order execution.
               </li>
               <li>
-                <strong className="text-slate-200">Data errors:</strong>{" "}
+                <strong className="text-foreground">Data errors:</strong>{" "}
                 Incorrect price feeds or data disruptions may temporarily
                 present incorrect market information.
               </li>
@@ -371,9 +375,9 @@ export default function RiskDisclosurePage() {
           </RiskSection>
 
           <section className="pt-4">
-            <div className="p-5 rounded-2xl border border-white/8 bg-[#0d1526]">
-              <p className="text-xs text-slate-500 leading-relaxed">
-                <strong className="text-slate-400">Acknowledgement:</strong> By
+            <div className="p-5 rounded-2xl border border-border bg-card">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">Acknowledgement:</strong> By
                 opening an account with EdgeSync Markets and/or by continuing to
                 use our services, you acknowledge that you have read, understood,
                 and accepted this Risk Disclosure Statement. You acknowledge that
@@ -382,11 +386,11 @@ export default function RiskDisclosurePage() {
                 objectives, and risk tolerance are consistent with such trading
                 activity.
               </p>
-              <p className="text-xs text-slate-600 mt-3">
+              <p className="text-xs text-muted-foreground mt-3">
                 For questions about this Risk Disclosure, contact us at{" "}
                 <a
                   href="mailto:support@edgesyncmarkets.com"
-                  className="text-[#00C896] hover:underline"
+                  className="text-primary hover:underline"
                 >
                   support@edgesyncmarkets.com
                 </a>
@@ -397,12 +401,12 @@ export default function RiskDisclosurePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/8 py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-600">
+      <footer className="border-t border-border py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-muted-foreground">
         <p>© {new Date().getFullYear()} EdgeSync Markets Ltd. All rights reserved.</p>
         <div className="mt-2 flex justify-center gap-4">
-          <Link href="/privacy-policy" className="hover:text-[#00C896] transition-colors">Privacy Policy</Link>
-          <Link href="/terms" className="hover:text-[#00C896] transition-colors">Terms & Conditions</Link>
-          <Link href="/" className="hover:text-[#00C896] transition-colors">Home</Link>
+          <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-primary transition-colors">Terms & Conditions</Link>
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
         </div>
       </footer>
     </div>
@@ -412,7 +416,7 @@ export default function RiskDisclosurePage() {
 function RiskSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-white/8">
+      <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
         {title}
       </h2>
       <div className="space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2">

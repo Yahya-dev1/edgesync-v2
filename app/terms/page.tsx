@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions — EdgeSync Markets",
@@ -10,34 +11,37 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#080d1a] text-slate-300">
+    <div className="min-h-screen bg-background text-muted-foreground">
       {/* Header */}
-      <header className="border-b border-white/8 bg-[#080d1a]/90 backdrop-blur-md">
+      <header className="border-b border-border bg-background/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-[#00C896]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary">
               <TrendingUp className="w-5 h-5 text-[#080d1a]" strokeWidth={2.5} />
             </div>
-            <span className="text-white font-bold text-lg tracking-tight">
-              EdgeSync <span className="text-[#00C896]">Markets</span>
+            <span className="text-foreground font-bold text-lg tracking-tight">
+              EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-slate-400 hover:text-[#00C896] transition-colors"
-          >
-            ← Back to Home
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
+              ← Back to Home
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
       {/* Content */}
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-white mb-3">
+          <h1 className="text-4xl font-bold text-foreground mb-3">
             Terms & Conditions
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-muted-foreground">
             Last updated: 1 January 2025 &nbsp;·&nbsp; EdgeSync Markets Ltd
           </p>
         </div>
@@ -58,17 +62,17 @@ export default function TermsPage() {
               trading platform, or using any of our services, you acknowledge
               that you have read, understood, and agree to be bound by this
               Agreement in its entirety, together with our{" "}
-              <Link href="/privacy-policy" className="text-[#00C896] hover:underline">
+              <Link href="/privacy-policy" className="text-primary hover:underline">
                 Privacy Policy
               </Link>
               ,{" "}
-              <Link href="/risk-disclosure" className="text-[#00C896] hover:underline">
+              <Link href="/risk-disclosure" className="text-primary hover:underline">
                 Risk Disclosure Statement
               </Link>
               , and any other policies published on our website.
             </p>
             <p className="mt-4">
-              <strong className="text-white">
+              <strong className="text-foreground">
                 If you do not agree to these Terms, you must not use our
                 services.
               </strong>
@@ -78,14 +82,14 @@ export default function TermsPage() {
           <TC title="1. Definitions">
             <p>In this Agreement, the following terms have the meanings set out below:</p>
             <ul>
-              <li><strong className="text-slate-200">"Account"</strong> means a trading account opened in your name on our platform.</li>
-              <li><strong className="text-slate-200">"CFD"</strong> means a Contract for Difference, a financial derivative that allows you to speculate on price movements without owning the underlying asset.</li>
-              <li><strong className="text-slate-200">"Copy Trading"</strong> means the service by which you automatically replicate the trading activity of a Master Trader in your Account.</li>
-              <li><strong className="text-slate-200">"Master Trader"</strong> means a verified signal provider whose trades may be copied by other clients.</li>
-              <li><strong className="text-slate-200">"Financial Instrument"</strong> means any forex pair, index, commodity, cryptocurrency, or other asset available for trading on our platform.</li>
-              <li><strong className="text-slate-200">"Margin"</strong> means the funds required to open and maintain a leveraged position.</li>
-              <li><strong className="text-slate-200">"Platform"</strong> means the trading software and systems made available to you by EdgeSync Markets.</li>
-              <li><strong className="text-slate-200">"Services"</strong> means the trading, copy trading, account management, and related services provided by EdgeSync Markets.</li>
+              <li><strong className="text-foreground">"Account"</strong> means a trading account opened in your name on our platform.</li>
+              <li><strong className="text-foreground">"CFD"</strong> means a Contract for Difference, a financial derivative that allows you to speculate on price movements without owning the underlying asset.</li>
+              <li><strong className="text-foreground">"Copy Trading"</strong> means the service by which you automatically replicate the trading activity of a Master Trader in your Account.</li>
+              <li><strong className="text-foreground">"Master Trader"</strong> means a verified signal provider whose trades may be copied by other clients.</li>
+              <li><strong className="text-foreground">"Financial Instrument"</strong> means any forex pair, index, commodity, cryptocurrency, or other asset available for trading on our platform.</li>
+              <li><strong className="text-foreground">"Margin"</strong> means the funds required to open and maintain a leveraged position.</li>
+              <li><strong className="text-foreground">"Platform"</strong> means the trading software and systems made available to you by EdgeSync Markets.</li>
+              <li><strong className="text-foreground">"Services"</strong> means the trading, copy trading, account management, and related services provided by EdgeSync Markets.</li>
             </ul>
           </TC>
 
@@ -398,7 +402,7 @@ export default function TermsPage() {
             <p>
               If you have a complaint, please contact our customer support team
               in the first instance at{" "}
-              <a href="mailto:support@edgesyncmarkets.com" className="text-[#00C896] hover:underline">
+              <a href="mailto:support@edgesyncmarkets.com" className="text-primary hover:underline">
                 support@edgesyncmarkets.com
               </a>
               . We aim to acknowledge all complaints within 2 business days and
@@ -476,17 +480,17 @@ export default function TermsPage() {
 
           <TC title="15. Contact Information">
             <p>For any questions regarding these Terms and Conditions, please contact us at:</p>
-            <div className="mt-4 p-4 rounded-xl border border-white/8 bg-[#0d1526]">
-              <p className="text-white font-semibold">EdgeSync Markets Ltd</p>
+            <div className="mt-4 p-4 rounded-xl border border-border bg-card">
+              <p className="text-foreground font-semibold">EdgeSync Markets Ltd</p>
               <p className="mt-1">
                 Email:{" "}
-                <a href="mailto:legal@edgesyncmarkets.com" className="text-[#00C896] hover:underline">
+                <a href="mailto:legal@edgesyncmarkets.com" className="text-primary hover:underline">
                   legal@edgesyncmarkets.com
                 </a>
               </p>
               <p>
                 Support:{" "}
-                <a href="mailto:support@edgesyncmarkets.com" className="text-[#00C896] hover:underline">
+                <a href="mailto:support@edgesyncmarkets.com" className="text-primary hover:underline">
                   support@edgesyncmarkets.com
                 </a>
               </p>
@@ -497,12 +501,12 @@ export default function TermsPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/8 py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-600">
+      <footer className="border-t border-border py-8 px-4 sm:px-6 lg:px-8 text-center text-xs text-muted-foreground">
         <p>© {new Date().getFullYear()} EdgeSync Markets Ltd. All rights reserved.</p>
         <div className="mt-2 flex justify-center gap-4">
-          <Link href="/privacy-policy" className="hover:text-[#00C896] transition-colors">Privacy Policy</Link>
-          <Link href="/risk-disclosure" className="hover:text-[#00C896] transition-colors">Risk Disclosure</Link>
-          <Link href="/" className="hover:text-[#00C896] transition-colors">Home</Link>
+          <Link href="/privacy-policy" className="hover:text-primary transition-colors">Privacy Policy</Link>
+          <Link href="/risk-disclosure" className="hover:text-primary transition-colors">Risk Disclosure</Link>
+          <Link href="/" className="hover:text-primary transition-colors">Home</Link>
         </div>
       </footer>
     </div>
@@ -512,7 +516,7 @@ export default function TermsPage() {
 function TC({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="text-xl font-semibold text-white mb-4 pb-2 border-b border-white/8">
+      <h2 className="text-xl font-semibold text-foreground mb-4 pb-2 border-b border-border">
         {title}
       </h2>
       <div className="space-y-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2">
@@ -524,7 +528,7 @@ function TC({ title, children }: { title: string; children: React.ReactNode }) {
 
 function Sub({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-base font-semibold text-slate-200 mt-5 mb-2">
+    <h3 className="text-base font-semibold text-foreground mt-5 mb-2">
       {children}
     </h3>
   );
