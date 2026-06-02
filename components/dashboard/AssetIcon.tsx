@@ -92,18 +92,12 @@ function PairIcon({
 
 function XAUUSDIcon() {
   return (
-    <svg width="40" height="26" viewBox="0 0 40 26" aria-hidden="true">
-      <circle cx="20" cy="13" r="13" fill="#B45309" />
-      <circle cx="20" cy="13" r="13" fill="url(#xau-shine)" />
-      <defs>
-        <radialGradient id="xau-shine" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#FCD34D" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#92400E" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect x="11" y="7" width="18" height="4" rx="1" fill="white" opacity="0.92" />
-      <rect x="11" y="12.5" width="18" height="4" rx="1" fill="white" opacity="0.92" />
-      <rect x="13" y="18" width="14" height="3.5" rx="1" fill="white" opacity="0.55" />
+    <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="20" cy="20" r="20" fill="#B45309"/>
+      <g transform="translate(4, 6) scale(0.063)">
+        <path style={{fill:"#FEBD4B"}} d="M511.351,401.722l-31.999-129.388c-2.374-9.6-10.906-16.335-20.695-16.335h-95.977c13.87-0.01,24.045-13.189,20.68-26.795L351.36,99.816c-2.374-9.6-10.906-16.335-20.695-16.335h-149.32c-9.789,0-18.321,6.735-20.695,16.335l-31.999,129.388c-3.365,13.606,6.809,26.785,20.68,26.795H53.342c-9.789,0-18.321,6.735-20.695,16.335L0.647,401.722c-3.366,13.61,6.817,26.795,20.695,26.795h213.319c12.062,0,21.327-9.959,21.338-21.501c0.011,11.542,9.276,21.501,21.338,21.501h213.319C504.533,428.517,514.716,415.332,511.351,401.722z"/>
+        <path style={{fill:"#FEE66B"}} d="M116.871,255.999h59.361l-37.1,172.518H77.915L116.871,255.999z M372.865,255.999L333.91,428.517h61.216l37.1-172.518H372.865z M205.918,255.999h61.216l37.1-172.518h-59.361L205.918,255.999z"/>
+      </g>
     </svg>
   );
 }
