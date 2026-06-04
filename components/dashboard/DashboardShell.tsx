@@ -143,7 +143,7 @@ export default function DashboardShell({ children, displayName, initials, userId
         <aside
           className={cn(
             "hidden md:flex flex-col flex-shrink-0 bg-surface transition-[width] duration-200 overflow-hidden",
-            collapsed ? "w-[52px]" : "w-[186px]"
+            collapsed ? "w-[52px]" : "w-[192px]"
           )}
           style={{ borderRight: "0.5px solid var(--surface-border)" }}
         >
@@ -154,14 +154,14 @@ export default function DashboardShell({ children, displayName, initials, userId
           >
             {collapsed ? (
               <Link href="/" className="flex w-full items-center justify-center">
-                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary">
-                  <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
+                <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary shadow-sm shadow-primary/25">
+                  <TrendingUp className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={2.5} />
                 </div>
               </Link>
             ) : (
               <Link href="/" className="flex items-center gap-2 px-4 min-w-0">
-                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary flex-shrink-0">
-                  <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
+                <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary flex-shrink-0 shadow-sm shadow-primary/25">
+                  <TrendingUp className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={2.5} />
                 </div>
                 <span className="text-foreground font-semibold text-sm tracking-tight whitespace-nowrap">
                   EdgeSync <span className="text-primary">Markets</span>
@@ -180,26 +180,28 @@ export default function DashboardShell({ children, displayName, initials, userId
                     href={href}
                     title={collapsed ? label : undefined}
                     className={cn(
-                      "flex items-center rounded-lg transition-colors",
+                      "flex items-center rounded-lg transition-colors duration-150",
                       collapsed ? "justify-center h-10 w-full" : "gap-3 px-3 py-2.5 w-full",
                       active
-                        ? "bg-primary/[0.07] text-primary"
+                        ? "bg-primary/[0.08] text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-overlay"
                     )}
                   >
                     <Icon
                       className={cn("w-4 h-4 flex-shrink-0", active ? "text-primary" : "text-muted-foreground")}
-                      strokeWidth={1.5}
+                      strokeWidth={active ? 2 : 1.5}
                     />
                     {!collapsed && (
-                      <span className="text-sm font-medium whitespace-nowrap">{label}</span>
+                      <span className={cn("text-[13px] whitespace-nowrap", active ? "font-semibold" : "font-medium")}>
+                        {label}
+                      </span>
                     )}
                   </Link>
                   {active && !collapsed && (
-                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-r bg-primary" />
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-primary" />
                   )}
                   {active && collapsed && (
-                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-[2px] h-5 rounded-l bg-primary" />
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-l-full bg-primary" />
                   )}
                 </div>
               );
@@ -235,10 +237,10 @@ export default function DashboardShell({ children, displayName, initials, userId
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary">
-                <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
+              <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary shadow-sm shadow-primary/25">
+                <TrendingUp className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={2.5} />
               </div>
-              <span className="text-foreground font-semibold text-sm tracking-tight">
+              <span className="text-foreground font-semibold text-[13px] tracking-tight">
                 EdgeSync <span className="text-primary">Markets</span>
               </span>
             </Link>
@@ -266,10 +268,10 @@ export default function DashboardShell({ children, displayName, initials, userId
 
             {/* User avatar pill */}
             <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-subtle border border-border">
-              <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
-                <span className="text-[9px] font-bold text-primary leading-none">{initials}</span>
+              <div className="w-6 h-6 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center flex-shrink-0">
+                <span className="text-[10px] font-bold text-primary leading-none">{initials}</span>
               </div>
-              <span className="text-sm font-medium text-foreground hidden sm:block max-w-[90px] truncate">
+              <span className="text-[13px] font-medium text-foreground hidden sm:block max-w-[90px] truncate">
                 {displayName.split(" ")[0]}
               </span>
             </div>
@@ -350,10 +352,10 @@ export default function DashboardShell({ children, displayName, initials, userId
           style={{ borderBottom: "0.5px solid var(--surface-border)" }}
         >
           <Link href="/" className="flex items-center gap-2" onClick={() => setDrawerOpen(false)}>
-            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-primary flex-shrink-0">
-              <TrendingUp className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
+            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary flex-shrink-0 shadow-sm shadow-primary/25">
+              <TrendingUp className="w-3.5 h-3.5 text-primary-foreground" strokeWidth={2.5} />
             </div>
-            <span className="text-foreground font-semibold text-sm tracking-tight">
+            <span className="text-foreground font-semibold text-[13px] tracking-tight">
               EdgeSync <span className="text-primary">Markets</span>
             </span>
           </Link>
@@ -407,10 +409,10 @@ export default function DashboardShell({ children, displayName, initials, userId
           style={{ borderTop: "0.5px solid var(--surface-border)" }}
         >
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
-              <span className="text-[10px] font-bold text-primary leading-none">{initials}</span>
+            <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-bold text-primary leading-none">{initials}</span>
             </div>
-            <p className="text-sm font-medium text-foreground truncate">{displayName}</p>
+            <p className="text-[13px] font-medium text-foreground truncate">{displayName}</p>
           </div>
           <button
             onClick={handleLogout}

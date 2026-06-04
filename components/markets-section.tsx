@@ -9,43 +9,57 @@ const markets = [
     name: "Forex",
     description: "Major, minor & exotic currency pairs with tight spreads.",
     pairs: "70+ pairs",
+    accentClass: "bg-blue-500/10 border-blue-500/15",
+    iconClass: "text-blue-400",
   },
   {
     icon: BarChart2,
     name: "Indices",
     description: "Trade the world's top stock market indices 24/5.",
     pairs: "20+ indices",
+    accentClass: "bg-violet-500/10 border-violet-500/15",
+    iconClass: "text-violet-400",
   },
   {
     icon: Gem,
     name: "Metals",
     description: "Gold, silver, platinum and other precious metals.",
     pairs: "Gold, Silver & more",
+    accentClass: "bg-amber-500/10 border-amber-500/15",
+    iconClass: "text-amber-400",
   },
   {
     icon: Bitcoin,
     name: "Crypto",
     description: "Leading cryptocurrencies with competitive spreads.",
     pairs: "50+ coins",
+    accentClass: "bg-orange-500/10 border-orange-500/15",
+    iconClass: "text-orange-400",
   },
   {
     icon: Zap,
     name: "Energies",
     description: "Crude oil, natural gas, and energy commodity CFDs.",
     pairs: "WTI, Brent & more",
+    accentClass: "bg-primary/10 border-primary/15",
+    iconClass: "text-primary",
   },
 ];
 
 function Toast({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border border-primary/20 bg-card text-foreground shadow-xl shadow-black/20">
+    <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl border border-primary/20 bg-card text-foreground shadow-xl shadow-black/20">
       <div>
-        <p className="text-sm font-medium text-foreground">Coming Soon</p>
+        <p className="text-sm font-semibold text-foreground">Coming Soon</p>
         <p className="text-xs text-muted-foreground mt-0.5">
           Self-trading launches soon. Create an account to be notified.
         </p>
       </div>
-      <button onClick={onClose} className="ml-2 text-muted-foreground hover:text-foreground transition-colors">
+      <button
+        onClick={onClose}
+        className="ml-2 text-muted-foreground hover:text-foreground transition-colors"
+        aria-label="Dismiss"
+      >
         <X className="w-4 h-4" />
       </button>
     </div>
@@ -61,44 +75,43 @@ export default function MarketsSection() {
   };
 
   return (
-    <section id="markets" className="py-20 px-4 sm:px-6 lg:px-8 bg-card">
+    <section id="markets" className="py-24 px-4 sm:px-6 lg:px-8 bg-card">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="text-center mb-14">
           <span className="text-xs font-semibold uppercase tracking-widest text-primary">
             Instruments
           </span>
           <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-foreground">
             Global Markets at Your Fingertips
           </h2>
-          <p className="mt-3 text-muted-foreground max-w-lg mx-auto text-sm">
-            500+ instruments across five asset classes with competitive spreads
-            and deep liquidity.
+          <p className="mt-3 text-muted-foreground max-w-lg mx-auto text-sm leading-relaxed">
+            500+ instruments across five asset classes with competitive spreads and deep liquidity.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {markets.map((market) => {
             const Icon = market.icon;
             return (
               <div
                 key={market.name}
-                className="group p-5 rounded-xl border border-border bg-background hover:border-border/60 transition-colors duration-200 flex flex-col"
+                className="group p-5 rounded-xl border border-border bg-background hover:border-primary/20 hover:shadow-sm transition-all duration-200 flex flex-col"
               >
-                <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-overlay mb-4">
-                  <Icon className="w-4.5 h-4.5 text-primary" strokeWidth={1.5} />
+                <div
+                  className={`flex items-center justify-center w-10 h-10 rounded-xl border mb-4 ${market.accentClass}`}
+                >
+                  <Icon className={`w-5 h-5 ${market.iconClass}`} strokeWidth={1.5} />
                 </div>
 
-                <h3 className="text-sm font-semibold text-foreground mb-0.5">
-                  {market.name}
-                </h3>
-                <p className="text-xs text-primary mb-3">{market.pairs}</p>
+                <h3 className="text-sm font-semibold text-foreground mb-0.5">{market.name}</h3>
+                <p className="text-[11px] text-primary font-medium mb-3">{market.pairs}</p>
                 <p className="text-xs text-muted-foreground leading-relaxed flex-1 mb-5">
                   {market.description}
                 </p>
 
                 <button
                   onClick={handleTradeNow}
-                  className="w-full py-2 rounded-lg text-xs font-semibold border border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-colors"
+                  className="w-full py-2 rounded-lg text-xs font-semibold border border-border text-muted-foreground group-hover:border-primary/25 group-hover:text-primary transition-colors"
                 >
                   Trade Now
                 </button>

@@ -74,11 +74,11 @@
   --border: rgba(255, 255, 255, 0.08);
   --input: rgba(255, 255, 255, 0.1);
   --ring: #00C896;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: #00C896;
+  --chart-2: #3B82F6;
+  --chart-3: #F59E0B;
+  --chart-4: #EF4444;
+  --chart-5: #8B5CF6;
   --radius: 0.625rem;
   --sidebar: #0d1526;
   --sidebar-foreground: #f1f5f9;
@@ -94,6 +94,11 @@
   --card-nested: #08111d;
   --hover-overlay: rgba(255, 255, 255, 0.05);
   --subtle-bg: rgba(255, 255, 255, 0.025);
+  /* Financial semantic tokens */
+  --profit: #00C896;
+  --profit-muted: rgba(0, 200, 150, 0.10);
+  --loss: #EF4444;
+  --loss-muted: rgba(239, 68, 68, 0.10);
 }
 
 .dark {
@@ -149,11 +154,11 @@
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #00C896;
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: #00C896;
+  --chart-2: #3B82F6;
+  --chart-3: #F59E0B;
+  --chart-4: #EF4444;
+  --chart-5: #8B5CF6;
   --sidebar: #ffffff;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #00C896;
@@ -167,6 +172,11 @@
   --card-nested: #f1f5f9;
   --hover-overlay: rgba(0, 0, 0, 0.05);
   --subtle-bg: rgba(0, 0, 0, 0.03);
+  /* Financial semantic tokens */
+  --profit: #059669;
+  --profit-muted: rgba(5, 150, 105, 0.10);
+  --loss: #DC2626;
+  --loss-muted: rgba(220, 38, 38, 0.10);
 }
 
 @layer base {
@@ -180,7 +190,7 @@
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
-    font-size: 18px;
+    font-size: 16px;
   }
   body {
     background-color: var(--background);
