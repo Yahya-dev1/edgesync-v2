@@ -186,7 +186,7 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
       {/* Header */}
       <div className="mb-7">
         <h1 className="text-2xl font-bold text-foreground">Deposit Funds</h1>
-        <p className="text-base text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Select a payment method to fund your trading account.
         </p>
       </div>
@@ -199,13 +199,12 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
             onClick={() => method.enabled && onSelect()}
             disabled={!method.enabled}
             className={cn(
-              "w-full text-left rounded-xl bg-surface transition-colors duration-150",
+              "w-full text-left rounded-xl border bg-card transition-colors duration-150",
               "flex items-center gap-4 px-4 py-4",
               method.enabled
-                ? "hover:bg-overlay cursor-pointer group"
-                : "cursor-not-allowed opacity-50"
+                ? "border-border hover:border-primary/25 hover:bg-overlay cursor-pointer group"
+                : "border-border cursor-not-allowed opacity-50"
             )}
-            style={{ border: "0.5px solid var(--surface-border)" }}
           >
             {/* Icon */}
             <div className="flex-shrink-0">
@@ -360,18 +359,15 @@ export default function DepositPage() {
   if (step === "success") {
     return (
       <div className="max-w-md mx-auto pt-8">
-        <div
-          className="rounded-xl bg-surface p-8 flex flex-col items-center text-center"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-5">
+        <div className="rounded-xl border border-border bg-card p-8 flex flex-col items-center text-center">
+          <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
             <CheckCircle className="w-8 h-8 text-primary" strokeWidth={1.5} />
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">Deposit Confirmed!</h2>
-          <p className="text-base text-muted-foreground mb-8">Your balance has been updated.</p>
+          <p className="text-sm text-muted-foreground mb-8">Your balance has been updated.</p>
           <button
             onClick={() => router.push("/dashboard")}
-            className="w-full py-3 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
+            className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
           >
             Back to Dashboard
           </button>
@@ -387,13 +383,10 @@ export default function DepositPage() {
       <div className="max-w-md mx-auto pt-4">
         <div className="mb-5">
           <h1 className="text-2xl font-bold text-foreground">Complete Payment</h1>
-          <p className="text-base text-muted-foreground mt-1">Send USDT to the address below.</p>
+          <p className="text-sm text-muted-foreground mt-1">Send USDT to the address below.</p>
         </div>
 
-        <div
-          className="rounded-xl bg-surface p-6 space-y-6"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
+        <div className="rounded-xl border border-border bg-card p-6 space-y-6">
           {/* Network badge */}
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-muted-foreground">Network:</span>
@@ -418,10 +411,7 @@ export default function DepositPage() {
           {/* Address */}
           <div>
             <p className="text-sm text-muted-foreground mb-1.5 font-medium">Wallet Address</p>
-            <div
-              className="flex items-center gap-2 p-3 rounded-lg bg-subtle"
-              style={{ border: "0.5px solid var(--surface-border)" }}
-            >
+            <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
               <span className="flex-1 text-sm font-mono text-foreground break-all leading-relaxed">
                 {payment.pay_address}
               </span>
@@ -454,10 +444,7 @@ export default function DepositPage() {
           </div>
 
           {/* Status */}
-          <div
-            className="flex items-center gap-2 p-3 rounded-lg bg-subtle"
-            style={{ border: "0.5px solid var(--surface-border)" }}
-          >
+          <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
             <span
               className={`w-2 h-2 rounded-full flex-shrink-0 ${
                 paymentStatus === "waiting"
@@ -499,9 +486,7 @@ export default function DepositPage() {
       </button>
 
       {/* Selected method indicator */}
-      <div className="flex items-center gap-3 mb-5 px-4 py-3 rounded-xl bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="flex items-center gap-3 mb-5 px-4 py-3 rounded-xl border border-border bg-card">
         <UsdtIcon />
         <div>
           <p className="text-sm font-semibold text-foreground">Tether (USDT TRC20)</p>
@@ -514,36 +499,24 @@ export default function DepositPage() {
 
       <div className="mb-5">
         <h1 className="text-2xl font-bold text-foreground">Enter Amount</h1>
-        <p className="text-base text-muted-foreground mt-1">
-          How much would you like to deposit?
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">How much would you like to deposit?</p>
       </div>
 
-      <div
-        className="rounded-xl bg-surface p-6 space-y-5"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="rounded-xl border border-border bg-card p-6 space-y-5">
         <div>
-          <label className="block text-sm font-medium text-muted-foreground mb-1.5">
-            Amount (USD)
-          </label>
+          <label className="block text-sm font-medium text-foreground mb-1.5">Amount (USD)</label>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground text-base font-medium">
-              $
-            </span>
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
             <input
               type="number"
               min="20"
               max="200000"
               step="1"
               value={amount}
-              onChange={(e) => {
-                setAmount(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => { setAmount(e.target.value); setError(""); }}
               onKeyDown={(e) => e.key === "Enter" && handleContinue()}
               placeholder="0.00"
-              className="w-full bg-subtle border border-border rounded-lg pl-8 pr-4 py-3 text-foreground text-base placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 focus:bg-overlay transition-colors"
+              className="w-full bg-background border border-border rounded-xl pl-8 pr-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
             />
           </div>
           {error && (
@@ -563,7 +536,7 @@ export default function DepositPage() {
             <button
               key={preset}
               onClick={() => { setAmount(String(preset)); setError(""); }}
-              className="py-2 rounded-lg text-sm font-semibold border border-border text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-primary/5 transition-colors"
+              className="py-2 rounded-xl text-sm font-semibold border border-border text-muted-foreground hover:border-primary/30 hover:text-primary hover:bg-primary/5 transition-colors"
             >
               ${preset}
             </button>
@@ -573,7 +546,7 @@ export default function DepositPage() {
         <button
           onClick={handleContinue}
           disabled={loading || !amount}
-          className="w-full py-3 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
         >
           {loading ? (
             <>

@@ -67,7 +67,7 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
     <div className="max-w-xl mx-auto pt-4">
       <div className="mb-7">
         <h1 className="text-2xl font-bold text-foreground">Withdraw Funds</h1>
-        <p className="text-base text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Select a withdrawal method to continue.
         </p>
       </div>
@@ -75,8 +75,7 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
       <div className="flex flex-col gap-2.5">
         <button
           onClick={onSelect}
-          className="w-full text-left rounded-xl bg-surface transition-colors duration-150 flex items-center gap-4 px-4 py-4 hover:bg-overlay cursor-pointer group"
-          style={{ border: "0.5px solid var(--surface-border)" }}
+          className="w-full text-left rounded-xl border border-border bg-card transition-colors duration-150 flex items-center gap-4 px-4 py-4 hover:border-primary/25 hover:bg-overlay cursor-pointer group"
         >
           <div className="flex-shrink-0">
             <UsdtIcon />
@@ -233,13 +232,10 @@ export default function WithdrawPage() {
           Change method
         </button>
         <div className="mb-6">
-          <div className="h-7 w-48 rounded-lg bg-muted animate-pulse mb-2" />
-          <div className="h-5 w-72 rounded-lg bg-muted animate-pulse" />
+          <div className="h-7 w-48 rounded-xl bg-muted animate-pulse mb-2" />
+          <div className="h-5 w-72 rounded-xl bg-muted animate-pulse" />
         </div>
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-8 space-y-4"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
+        <div className="rounded-xl border border-border bg-card p-[16px] md:p-8 space-y-4">
           <div className="h-12 w-12 rounded-full bg-muted animate-pulse mx-auto" />
           <div className="h-6 w-40 rounded-lg bg-muted animate-pulse mx-auto" />
           <div className="h-4 w-full rounded-lg bg-muted animate-pulse" />
@@ -255,10 +251,7 @@ export default function WithdrawPage() {
   if (success) {
     return (
       <div className="max-w-lg mx-auto">
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-8 flex flex-col items-center text-center"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
+        <div className="rounded-xl border border-border bg-card p-[16px] md:p-8 flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
               <circle cx="14" cy="14" r="13" stroke="#00C896" strokeWidth="2" />
@@ -296,10 +289,7 @@ export default function WithdrawPage() {
       </button>
 
       {/* Selected method indicator */}
-      <div
-        className="flex items-center gap-3 mb-5 px-4 py-3 rounded-xl bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="flex items-center gap-3 mb-5 px-4 py-3 rounded-xl border border-border bg-card">
         <UsdtIcon />
         <div>
           <p className="text-sm font-semibold text-foreground">Tether (USDT TRC20)</p>
@@ -313,20 +303,14 @@ export default function WithdrawPage() {
       </div>
 
       {/* Balance pill */}
-      <div
-        className="flex items-center justify-between rounded-xl bg-surface px-[16px] py-4 mb-5"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="flex items-center justify-between rounded-xl border border-border bg-card px-[16px] py-4 mb-5">
         <span className="text-sm text-muted-foreground">Available balance</span>
         <span className="text-lg font-bold text-foreground">${balance.toFixed(2)}</span>
       </div>
 
       {showNoFunds ? (
         /* ── No funds empty state ──────────────────────────── */
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-8 flex flex-col items-center text-center"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
+        <div className="rounded-xl border border-border bg-card p-[16px] md:p-8 flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden="true">
               <rect x="4" y="9" width="24" height="16" rx="3" stroke="currentColor" strokeWidth="1.8" />
@@ -340,17 +324,14 @@ export default function WithdrawPage() {
           </p>
           <a
             href="/dashboard/deposit"
-            className="px-6 py-2.5 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
+            className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
           >
             Make a Deposit
           </a>
         </div>
       ) : showLocked ? (
         /* ── Locked state (copying, profit target not reached) ─ */
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-8 flex flex-col items-center text-center"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
+        <div className="rounded-xl border border-border bg-card p-[16px] md:p-8 flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
             <LockIcon />
           </div>
@@ -371,10 +352,7 @@ export default function WithdrawPage() {
         </div>
       ) : (
         /* ── Withdrawal form (free or copy-trade unlocked) ──── */
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-8"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
+        <div className="rounded-xl border border-border bg-card p-[16px] md:p-8">
           {showBadge && (
             <div className="flex items-center gap-2 mb-6 p-3 rounded-lg bg-primary/10 border border-primary/20">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
@@ -407,8 +385,7 @@ export default function WithdrawPage() {
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
                   required
-                  className="w-full pl-7 pr-4 py-3 rounded-lg text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:ring-2 focus:ring-primary"
-                  style={{ background: "var(--muted)", border: "0.5px solid var(--surface-border)" }}
+                  className="w-full pl-7 pr-4 py-3 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 outline-none border border-border bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
                 />
               </div>
               <button
@@ -432,8 +409,7 @@ export default function WithdrawPage() {
                 onChange={(e) => setWallet(e.target.value)}
                 placeholder="T..."
                 required
-                className="w-full px-4 py-3 rounded-lg text-base text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:ring-2 focus:ring-primary"
-                style={{ background: "var(--muted)", border: "0.5px solid var(--surface-border)" }}
+                className="w-full px-4 py-3 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 outline-none border border-border bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
               />
             </div>
 
@@ -444,7 +420,7 @@ export default function WithdrawPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors shadow-sm shadow-primary/20"
             >
               {submitting ? "Submitting…" : "Request Withdrawal"}
             </button>

@@ -36,7 +36,7 @@ function TypeBadge({ type }: { type: TxType }) {
   return (
     <span
       className={cn(
-        "inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold capitalize",
+        "inline-block px-2 py-0.5 rounded-lg text-[11px] font-semibold capitalize",
         type === "deposit"
           ? "bg-emerald-500/10 text-emerald-400"
           : "bg-red-500/10 text-red-400"
@@ -56,7 +56,7 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-block px-2 py-0.5 rounded-md text-[11px] font-semibold capitalize",
+        "inline-block px-2 py-0.5 rounded-lg text-[11px] font-semibold capitalize",
         classes[status] ?? "bg-overlay text-muted-foreground"
       )}
     >
@@ -129,10 +129,7 @@ export default async function TransactionsPage({ searchParams }: Props) {
       </div>
 
       {/* Table card */}
-      <div
-        className="rounded-xl overflow-hidden bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="rounded-xl overflow-hidden border border-border bg-card">
         {totalCount === 0 ? (
           <div className="px-4 py-16 text-center text-sm text-muted-foreground">
             No transactions yet.
@@ -142,7 +139,7 @@ export default async function TransactionsPage({ searchParams }: Props) {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ borderBottom: "0.5px solid var(--surface-border)" }}>
+                  <tr className="border-b border-border">
                     {["Type", "Amount", "Status", "Date"].map((h) => (
                       <th
                         key={h}
@@ -157,8 +154,7 @@ export default async function TransactionsPage({ searchParams }: Props) {
                   {rows.map((tx) => (
                     <tr
                       key={`${tx.type}-${tx.id}`}
-                      className="border-t transition-colors hover:bg-overlay/40"
-                      style={{ borderColor: "var(--surface-border)" }}
+                      className="border-t border-border transition-colors hover:bg-overlay/40"
                     >
                       <td className="px-4 py-3">
                         <TypeBadge type={tx.type} />
@@ -180,10 +176,7 @@ export default async function TransactionsPage({ searchParams }: Props) {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div
-                className="flex items-center justify-between px-4 py-3"
-                style={{ borderTop: "0.5px solid var(--surface-border)" }}
-              >
+              <div className="flex items-center justify-between px-4 py-3 border-t border-border">
                 <span className="text-xs text-muted-foreground">
                   Page {clampedPage} of {totalPages}
                 </span>

@@ -1,13 +1,11 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import TraderGrid from "@/components/dashboard/TraderGrid";
+import { Info } from "lucide-react";
 
 export default async function CopyTradingPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: traders } = await supabase
@@ -19,32 +17,20 @@ export default async function CopyTradingPage() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">Choose a master trader</h1>
-        <p className="text-base text-muted-foreground mt-1">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">Choose a Master Trader</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Select a trader to automatically copy their strategy
         </p>
       </div>
 
       {/* Country restriction banner */}
-      <div
-        className="flex items-start gap-3 rounded-xl px-4 py-3.5 mb-7 bg-blue-500/5"
-        style={{ border: "0.5px solid rgba(59,130,246,0.25)" }}
-      >
-        <svg
-          className="shrink-0 mt-0.5"
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-        >
-          <circle cx="8" cy="8" r="7" stroke="#3B82F6" strokeWidth="1.4" />
-          <path d="M8 7v4" stroke="#3B82F6" strokeWidth="1.4" strokeLinecap="round" />
-          <circle cx="8" cy="5" r="0.75" fill="#3B82F6" />
-        </svg>
+      <div className="flex items-start gap-3 rounded-xl px-4 py-3.5 mb-7 border border-blue-500/20 bg-blue-500/[0.05]">
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-500/10 border border-blue-500/15 flex-shrink-0 mt-0.5">
+          <Info className="w-3.5 h-3.5 text-blue-400" strokeWidth={1.5} />
+        </div>
         <p className="text-sm text-blue-400 leading-relaxed">
           <span className="font-semibold text-blue-300">Country restriction applies.</span>{" "}
-          You can only copy trade traders from your own country. Traders outside your region
-          are marked as geo restricted.
+          You can only copy trade traders from your own country. Traders outside your region are marked as geo restricted.
         </p>
       </div>
 

@@ -57,18 +57,12 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="rounded-xl bg-surface overflow-hidden"
-      style={{ border: "0.5px solid var(--surface-border)" }}
-    >
-      <div
-        className="px-4 py-3.5 md:px-5"
-        style={{ borderBottom: "0.5px solid var(--surface-border)" }}
-      >
-        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Icon className="w-4 h-4 text-primary" strokeWidth={1.75} />
-          {title}
-        </h2>
+    <div className="rounded-xl border border-border bg-card overflow-hidden">
+      <div className="px-4 py-3.5 md:px-5 border-b border-border flex items-center gap-2.5">
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 border border-primary/15 flex-shrink-0">
+          <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={1.75} />
+        </div>
+        <h2 className="text-sm font-semibold text-foreground">{title}</h2>
       </div>
       <div className="px-4 py-4 md:px-5 md:py-5">{children}</div>
     </div>
@@ -84,14 +78,8 @@ function Modal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div
-        className="relative z-10 w-full max-w-md rounded-xl bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative z-10 w-full max-w-md rounded-xl border border-border bg-card shadow-xl shadow-black/20">
         {children}
       </div>
     </div>
@@ -375,7 +363,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
             <button
               type="submit"
               disabled={kycUploading || !frontFile || !backFile}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-primary/20"
             >
               {kycUploading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               {kycUploading ? "Submitting…" : "Submit for Verification"}
@@ -502,8 +490,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
             required
-            className="w-full px-3 py-2.5 pr-10 rounded-lg text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 focus:ring-primary transition-colors"
-            style={{ background: "var(--muted)", border: "0.5px solid var(--surface-border)" }}
+            className="w-full px-3 py-2.5 pr-10 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 outline-none border border-border bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
           />
           <button
             type="button"
@@ -561,11 +548,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
                         }
                       }}
                       autoFocus
-                      className="flex-1 px-3 py-2 rounded-lg text-sm text-foreground outline-none focus:ring-2 focus:ring-primary transition-colors"
-                      style={{
-                        background: "var(--muted)",
-                        border: "0.5px solid var(--surface-border)",
-                      }}
+                      className="flex-1 px-3 py-2.5 rounded-xl text-sm text-foreground outline-none border border-border bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
                     />
                     <button
                       onClick={saveName}
@@ -634,7 +617,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
             </div>
             <button
               onClick={() => setPasswordOpen(true)}
-              className="px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors flex-shrink-0"
+              className="px-4 py-2 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0 shadow-sm shadow-primary/20"
             >
               Change Password
             </button>
@@ -661,7 +644,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
       </div>
 
       {/* ── Footer ────────────────────────────────────────────────── */}
-      <footer className="mt-10 pt-6" style={{ borderTop: "0.5px solid var(--surface-border)" }}>
+      <footer className="mt-10 pt-6 border-t border-border">
         <nav className="flex flex-wrap gap-x-4 gap-y-2 mb-4">
           {[
             { label: "Privacy Policy", href: "/privacy-policy" },
@@ -691,10 +674,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
       {/* ── Change Password Modal ─────────────────────────────────── */}
       {passwordOpen && (
         <Modal onClose={closePasswordModal}>
-          <div
-            className="flex items-center justify-between px-5 py-4"
-            style={{ borderBottom: "0.5px solid var(--surface-border)" }}
-          >
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
             <h3 className="text-sm font-semibold text-foreground">Change Password</h3>
             <button
               onClick={closePasswordModal}
@@ -752,11 +732,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
                     onChange={(e) => setConfirmPwd(e.target.value)}
                     placeholder="Re-enter new password"
                     required
-                    className="w-full px-3 py-2.5 rounded-lg text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 focus:ring-primary transition-colors"
-                    style={{
-                      background: "var(--muted)",
-                      border: "0.5px solid var(--surface-border)",
-                    }}
+                    className="w-full px-3 py-2.5 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 outline-none border border-border bg-background focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
                   />
                 </div>
 
@@ -767,7 +743,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
                 <button
                   type="submit"
                   disabled={pwdChanging}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm shadow-primary/20"
                 >
                   {pwdChanging && <Loader2 className="w-4 h-4 animate-spin" />}
                   {pwdChanging ? "Updating…" : "Update Password"}
@@ -781,10 +757,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
       {/* ── Delete Account Dialog ─────────────────────────────────── */}
       {deleteOpen && (
         <Modal onClose={() => { if (!deleting) { setDeleteOpen(false); setDeleteConfirm(""); } }}>
-          <div
-            className="flex items-center justify-between px-5 py-4"
-            style={{ borderBottom: "0.5px solid var(--surface-border)" }}
-          >
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border">
             <h3 className="text-sm font-semibold text-red-400 flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" />
               Delete Account
@@ -824,11 +797,7 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
                 onChange={(e) => setDeleteConfirm(e.target.value)}
                 placeholder="DELETE"
                 autoComplete="off"
-                className="w-full px-3 py-2.5 rounded-lg text-sm text-foreground placeholder:text-muted-foreground/40 outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                style={{
-                  background: "var(--muted)",
-                  border: "0.5px solid var(--surface-border)",
-                }}
+                className="w-full px-3 py-2.5 rounded-xl text-sm text-foreground placeholder:text-muted-foreground/40 outline-none border border-border bg-background focus:border-red-500/50 focus:ring-2 focus:ring-red-500/15 transition-colors"
               />
             </div>
 
@@ -836,15 +805,14 @@ export default function SettingsClient({ profile, kyc: initialKyc, userId, email
               <button
                 onClick={() => { setDeleteOpen(false); setDeleteConfirm(""); }}
                 disabled={deleting}
-                className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-overlay border border-transparent transition-colors disabled:opacity-50"
-                style={{ border: "0.5px solid var(--surface-border)" }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-overlay border border-border transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteAccount}
                 disabled={deleteConfirm !== "DELETE" || deleting}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {deleting && <Loader2 className="w-4 h-4 animate-spin" />}
                 {deleting ? "Deleting…" : "Delete Account"}

@@ -151,10 +151,7 @@ export default function NotificationsClient({ userId, initialNotifications }: Pr
       </div>
 
       {/* List */}
-      <div
-        className="rounded-xl overflow-hidden bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
+      <div className="rounded-xl overflow-hidden border border-border bg-card">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
             <div className="w-12 h-12 rounded-full bg-overlay flex items-center justify-center">
@@ -172,9 +169,8 @@ export default function NotificationsClient({ userId, initialNotifications }: Pr
                 !n.is_read
                   ? "bg-primary/[0.04] hover:bg-primary/[0.07]"
                   : "hover:bg-overlay/40",
-                idx > 0 && "border-t"
+                idx > 0 && "border-t border-border"
               )}
-              style={idx > 0 ? { borderColor: "var(--surface-border)" } : undefined}
             >
               <NotificationIcon type={n.type} />
 

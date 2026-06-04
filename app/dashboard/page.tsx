@@ -2,14 +2,11 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import LiveDashboard from "@/components/dashboard/LiveDashboard";
 import KycBanner from "@/components/dashboard/KycBanner";
-
-// ─── Page ─────────────────────────────────────────────────────
+import { ArrowDownToLine, ArrowUpFromLine, Users, BarChart2 } from "lucide-react";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
   const [{ data: profile }, { data: copyTrade }] = await Promise.all([
     supabase.from("profiles").select("full_name, balance").eq("id", user!.id).single(),
@@ -32,7 +29,7 @@ export default async function DashboardPage() {
       .maybeSingle();
     kycApproved = kyc?.status === "approved";
   } catch {
-    // default to false — banner shown, approved users unaffected on retry
+    // default false
   }
 
   const firstName = (profile?.full_name || "Trader").split(" ")[0];
@@ -64,99 +61,88 @@ function State1({ firstName, balance, showKycBanner }: { firstName: string; bala
         <h1 className="text-xl md:text-2xl font-bold text-foreground">
           Welcome, <span className="text-primary">{firstName}</span>!
         </h1>
-        <p className="text-base text-muted-foreground mt-1">Here&apos;s your trading overview.</p>
+        <p className="text-sm text-muted-foreground mt-1">Here&apos;s your trading overview.</p>
       </div>
 
       {showKycBanner && <KycBanner />}
 
       {/* Balance card */}
-      <div
-        className="rounded-xl p-[16px] md:p-6 mb-5 bg-surface"
-        style={{ border: "0.5px solid var(--surface-border)" }}
-      >
-        <p className="text-sm font-medium text-muted-foreground mb-1">Account Balance</p>
-        <p className="text-3xl font-bold text-foreground mb-5">{balance}</p>
-        <div className="flex gap-3">
-          <Link
-            href="/dashboard/deposit"
-            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
-          >
-            Deposit
-          </Link>
-          <Link
-            href="/dashboard/withdraw"
-            className="flex-1 py-2.5 text-center rounded-lg text-base font-semibold border border-border text-muted-foreground hover:bg-overlay hover:text-foreground transition-colors"
-          >
-            Withdraw
-          </Link>
+      <div className="rounded-xl border border-border bg-card p-5 md:p-6 mb-5 relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse 70% 60% at 0% 0%, rgba(0,200,150,0.06) 0%, transparent 70%)" }}
+        />
+        <div className="relative">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Account Balance</p>
+          <p className="text-3xl font-bold text-foreground tabular-nums mb-5">{balance}</p>
+          <div className="flex gap-3">
+            <Link
+              href="/dashboard/deposit"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
+            >
+              <ArrowDownToLine className="w-4 h-4" strokeWidth={2} />
+              Deposit
+            </Link>
+            <Link
+              href="/dashboard/withdraw"
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold border border-border text-muted-foreground hover:bg-overlay hover:text-foreground transition-colors"
+            >
+              <ArrowUpFromLine className="w-4 h-4" strokeWidth={2} />
+              Withdraw
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* Option cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Copy Trading — active */}
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-6 flex flex-col"
-          style={{ border: "1.5px solid var(--primary)" }}
-        >
-          <div className="flex items-center justify-between mb-3 md:mb-5">
-            <span className="text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-              Active
-            </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                <circle cx="7" cy="11" r="3.5" stroke="#00C896" strokeWidth="1.5" />
-                <circle cx="14" cy="7" r="3" stroke="#00C896" strokeWidth="1.5" />
-                <path
-                  d="M10.5 9.5C11.5 10 12.5 11 12.5 12.5"
-                  stroke="#00C896"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              </svg>
+        {/* Copy Trading */}
+        <div className="rounded-xl border border-primary/30 bg-card p-5 md:p-6 flex flex-col relative overflow-hidden">
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse 80% 60% at 0% 0%, rgba(0,200,150,0.06) 0%, transparent 70%)" }}
+          />
+          <div className="relative flex flex-col flex-1">
+            <div className="flex items-center justify-between mb-5">
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                Live
+              </span>
+              <div className="w-9 h-9 rounded-xl bg-primary/10 border border-primary/15 flex items-center justify-center">
+                <Users className="w-4.5 h-4.5 text-primary" strokeWidth={1.5} />
+              </div>
             </div>
+            <h3 className="text-base font-bold text-foreground mb-2">Copy Trading</h3>
+            <p className="text-sm text-muted-foreground mb-6 flex-1">
+              Automatically mirror trades from verified expert traders.
+            </p>
+            <Link
+              href="/dashboard/copy-trading"
+              className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
+            >
+              Browse Traders
+            </Link>
           </div>
-          <h3 className="text-lg font-bold text-foreground mb-2">Copy Trading</h3>
-          <p className="text-base text-muted-foreground mb-4 md:mb-6 flex-1">
-            Automatically mirror trades from verified expert traders.
-          </p>
-          <Link
-            href="/dashboard/copy-trading"
-            className="block py-2.5 text-center rounded-lg text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors"
-          >
-            Browse traders
-          </Link>
         </div>
 
         {/* Self Trading — disabled */}
-        <div
-          className="rounded-xl bg-surface p-[16px] md:p-6 flex flex-col opacity-50"
-          style={{ border: "0.5px solid var(--surface-border)" }}
-        >
-          <div className="flex items-center justify-between mb-3 md:mb-5">
-            <span className="text-xs font-semibold text-muted-foreground bg-overlay px-2.5 py-1 rounded-full">
+        <div className="rounded-xl border border-border bg-card/50 p-5 md:p-6 flex flex-col opacity-50">
+          <div className="flex items-center justify-between mb-5">
+            <span className="text-xs font-semibold text-muted-foreground bg-overlay px-2.5 py-1 rounded-full border border-border">
               Coming Soon
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-overlay flex items-center justify-center">
-              <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-                <rect x="2" y="3" width="16" height="14" rx="2" stroke="#64748B" strokeWidth="1.5" />
-                <path
-                  d="M3 14.5l4-4 3 3 4-4.5 3 2.5"
-                  stroke="#64748B"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            <div className="w-9 h-9 rounded-xl bg-overlay border border-border flex items-center justify-center">
+              <BarChart2 className="w-4.5 h-4.5 text-muted-foreground" strokeWidth={1.5} />
             </div>
           </div>
-          <h3 className="text-lg font-bold text-foreground mb-2">Self Trading</h3>
-          <p className="text-base text-muted-foreground mb-4 md:mb-6 flex-1">
+          <h3 className="text-base font-bold text-muted-foreground mb-2">Self Trading</h3>
+          <p className="text-sm text-muted-foreground mb-6 flex-1">
             Take full control and execute your own trades manually.
           </p>
           <button
             disabled
-            className="w-full py-2.5 text-center rounded-lg text-base font-semibold border border-border text-muted-foreground cursor-not-allowed"
+            className="w-full py-2.5 rounded-xl text-sm font-semibold border border-border/50 text-muted-foreground/50 cursor-not-allowed"
+            aria-disabled="true"
           >
             Under Maintenance
           </button>
@@ -169,13 +155,7 @@ function State1({ firstName, balance, showKycBanner }: { firstName: string; bala
 // ─── State 2: Active copy trade ────────────────────────────────
 
 function State2({
-  firstName,
-  userBalance,
-  originalDeposit,
-  copyId,
-  traderName,
-  userId,
-  showKycBanner,
+  firstName, userBalance, originalDeposit, copyId, traderName, userId, showKycBanner,
 }: {
   firstName: string;
   userBalance: number;
@@ -192,9 +172,7 @@ function State2({
           Welcome back, <span className="text-primary">{firstName}</span>!
         </h1>
       </div>
-
       {showKycBanner && <KycBanner />}
-
       <LiveDashboard
         userBalance={userBalance}
         originalDeposit={originalDeposit}
