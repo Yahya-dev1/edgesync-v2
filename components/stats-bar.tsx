@@ -4,7 +4,7 @@ const stats = [
   { value: "500+", label: "Instruments", icon: Activity },
   { value: "1:500", label: "Max Leverage", icon: Layers },
   { value: "$20", label: "Min. Deposit", icon: DollarSign },
-  { value: "150+", label: "Countries Served", icon: Globe },
+  { value: "150+", label: "Countries", icon: Globe },
 ];
 
 export default function StatsBar() {
