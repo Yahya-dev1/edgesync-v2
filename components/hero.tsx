@@ -17,7 +17,7 @@ export default function Hero() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(0,200,150,0.13) 0%, transparent 65%), radial-gradient(ellipse 50% 35% at 85% 85%, rgba(0,200,150,0.05) 0%, transparent 60%)",
+            "radial-gradient(ellipse 90% 55% at 50% -5%, var(--teal-glow-strong) 0%, transparent 65%), radial-gradient(ellipse 50% 35% at 85% 85%, var(--teal-glow-subtle) 0%, transparent 60%)",
         }}
       />
       {/* Dot grid texture */}

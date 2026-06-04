@@ -99,6 +99,10 @@
   --profit-muted: rgba(0, 200, 150, 0.10);
   --loss: #EF4444;
   --loss-muted: rgba(239, 68, 68, 0.10);
+  /* Teal glow levels — dark mode defaults */
+  --teal-glow-strong: rgba(0, 200, 150, 0.22);
+  --teal-glow-mid:    rgba(0, 200, 150, 0.13);
+  --teal-glow-subtle: rgba(0, 200, 150, 0.09);
 }
 
 .dark {
@@ -177,6 +181,10 @@
   --profit-muted: rgba(5, 150, 105, 0.10);
   --loss: #DC2626;
   --loss-muted: rgba(220, 38, 38, 0.10);
+  /* Teal glow levels — light mode (much stronger to be visible on white) */
+  --teal-glow-strong: rgba(0, 200, 150, 0.38);
+  --teal-glow-mid:    rgba(0, 200, 150, 0.22);
+  --teal-glow-subtle: rgba(0, 200, 150, 0.14);
 }
 
 @layer base {

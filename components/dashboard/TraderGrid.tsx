@@ -77,7 +77,7 @@ function TraderCard({ trader, onCopy, copying }: { trader: Trader; onCopy: (name
       {isTopTrader && (
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 80% 50% at 0% 0%, rgba(0,200,150,0.05) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse 80% 50% at 0% 0%, var(--teal-glow-subtle) 0%, transparent 70%)" }}
         />
       )}
 

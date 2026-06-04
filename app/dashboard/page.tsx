@@ -70,7 +70,7 @@ function State1({ firstName, balance, showKycBanner }: { firstName: string; bala
       <div className="rounded-xl border border-border bg-card p-5 md:p-6 mb-5 relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse 70% 60% at 0% 0%, rgba(0,200,150,0.06) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(ellipse 70% 60% at 0% 0%, var(--teal-glow-subtle) 0%, transparent 70%)" }}
         />
         <div className="relative">
           <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">Account Balance</p>
@@ -100,7 +100,7 @@ function State1({ firstName, balance, showKycBanner }: { firstName: string; bala
         <div className="rounded-xl border border-primary/30 bg-card p-5 md:p-6 flex flex-col relative overflow-hidden">
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse 80% 60% at 0% 0%, rgba(0,200,150,0.06) 0%, transparent 70%)" }}
+            style={{ background: "radial-gradient(ellipse 80% 60% at 0% 0%, var(--teal-glow-subtle) 0%, transparent 70%)" }}
           />
           <div className="relative flex flex-col flex-1">
             <div className="flex items-center justify-between mb-5">

@@ -59,7 +59,7 @@ export default function TradingOptions() {
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(ellipse 80% 60% at 0% 0%, rgba(0,200,150,0.06) 0%, transparent 70%)",
+                  "radial-gradient(ellipse 80% 60% at 0% 0%, var(--teal-glow-subtle) 0%, transparent 70%)",
               }}
             />
 

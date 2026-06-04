@@ -87,7 +87,7 @@ export default function RegisterPage() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,200,150,0.10) 0%, transparent 65%)",
+            "radial-gradient(ellipse 80% 50% at 50% -10%, var(--teal-glow-mid) 0%, transparent 65%)",
         }}
       />
       {/* Dot grid */}
