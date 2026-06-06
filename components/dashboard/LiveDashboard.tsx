@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import StopCopyingButton from "./StopCopyingButton";
 import { AssetIcon } from "./AssetIcon";
-import { Wallet, TrendingUp, BarChart2 } from "lucide-react";
+import { Wallet, TrendingUp, BarChart2, ChevronDown } from "lucide-react";
 
 const supabase = createClient();
 
@@ -15,6 +15,7 @@ type Trade = {
   pnl_percentage: number;
   lot_size: number | null;
   is_active: boolean | null;
+  opened_at: string | null;
 };
 
 export default function LiveDashboard({
@@ -30,14 +31,19 @@ export default function LiveDashboard({
 }) {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [liveBalance, setLiveBalance] = useState(userBalance);
+  const [showHistory, setShowHistory] = useState(false);
 
   const base = originalDeposit ?? liveBalance;
+
+  const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000);
+  const recentTrades = trades.filter((t) => t.opened_at && new Date(t.opened_at) >= cutoff48h);
+  const historyTrades = trades.filter((t) => !t.opened_at || new Date(t.opened_at) < cutoff48h);
 
   useEffect(() => {
     async function fetchTrades() {
       let query = supabase
         .from("master_trades")
-        .select("id, symbol, direction, pnl_percentage, lot_size, is_active")
+        .select("id, symbol, direction, pnl_percentage, lot_size, is_active, opened_at")
         .eq("trader_name", traderName)
         .order("created_at", { ascending: false });
 
@@ -182,7 +188,7 @@ export default function LiveDashboard({
         <div className="rounded-xl border border-border bg-card p-5 md:p-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-5">Copied Trades</p>
 
-          {trades.length === 0 ? (
+          {recentTrades.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <div className="w-11 h-11 rounded-full bg-overlay border border-border flex items-center justify-center mb-3">
                 <BarChart2 className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
@@ -194,51 +200,103 @@ export default function LiveDashboard({
             </div>
           ) : (
             <div className="space-y-2.5">
-              {trades.map((trade) => {
-                const pnl = tradePnlAmount(Number(trade.pnl_percentage));
-                const positive = pnl >= 0;
-                const pnlStr = (positive ? "+" : "-") + "$" + Math.abs(pnl).toFixed(2);
-                const isOpen = trade.is_active === true;
-                return (
-                  <div
-                    key={trade.id}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background"
-                  >
-                    <div className="flex-shrink-0">
-                      <AssetIcon symbol={trade.symbol} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-foreground">{trade.symbol ?? "—"}</p>
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${isOpen ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
-                          {isOpen ? "Open" : "Closed"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className={`text-xs font-medium ${trade.direction?.toUpperCase() === "BUY" ? "text-primary" : "text-red-400"}`}>
-                          {trade.direction?.toUpperCase() ?? "—"}
-                        </p>
-                        {(() => {
-                          if (!trade.lot_size || trade.lot_size === 0 || !amiinfxAccountSize) return null;
-                          const displayedLot = (liveBalance / amiinfxAccountSize) * trade.lot_size;
-                          return (
-                            <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
-                              {displayedLot.toFixed(2)} lots
-                            </span>
-                          );
-                        })()}
-                      </div>
-                    </div>
-                    <span className={`text-sm font-semibold tabular-nums ${positive ? "text-primary" : "text-red-400"}`}>
-                      {pnlStr}
-                    </span>
-                  </div>
-                );
-              })}
+              {recentTrades.map((trade) => (
+                <TradeCard
+                  key={trade.id}
+                  trade={trade}
+                  pnlAmount={tradePnlAmount(Number(trade.pnl_percentage))}
+                  liveBalance={liveBalance}
+                  amiinfxAccountSize={amiinfxAccountSize}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Trade History — collapsible, only shown if older trades exist */}
+          {historyTrades.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <button
+                onClick={() => setShowHistory((v) => !v)}
+                className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors w-full"
+              >
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${showHistory ? "rotate-180" : ""}`}
+                  strokeWidth={2.5}
+                />
+                <span className="uppercase tracking-widest">
+                  {showHistory ? "Hide history" : "Show history"}
+                </span>
+                <span className="ml-auto font-normal text-muted-foreground/60">
+                  {historyTrades.length} trade{historyTrades.length !== 1 ? "s" : ""}
+                </span>
+              </button>
+
+              {showHistory && (
+                <div className="space-y-2.5 mt-3">
+                  {historyTrades.map((trade) => (
+                    <TradeCard
+                      key={trade.id}
+                      trade={trade}
+                      pnlAmount={tradePnlAmount(Number(trade.pnl_percentage))}
+                      liveBalance={liveBalance}
+                      amiinfxAccountSize={amiinfxAccountSize}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
     </>
+  );
+}
+
+function TradeCard({
+  trade,
+  pnlAmount,
+  liveBalance,
+  amiinfxAccountSize,
+}: {
+  trade: Trade;
+  pnlAmount: number;
+  liveBalance: number;
+  amiinfxAccountSize: number | null;
+}) {
+  const positive = pnlAmount >= 0;
+  const pnlStr = (positive ? "+" : "-") + "$" + Math.abs(pnlAmount).toFixed(2);
+  const isOpen = trade.is_active === true;
+
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-xl border border-border bg-background">
+      <div className="flex-shrink-0">
+        <AssetIcon symbol={trade.symbol} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-foreground">{trade.symbol ?? "—"}</p>
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${isOpen ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
+            {isOpen ? "Open" : "Closed"}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className={`text-xs font-medium ${trade.direction?.toUpperCase() === "BUY" ? "text-primary" : "text-red-400"}`}>
+            {trade.direction?.toUpperCase() ?? "—"}
+          </p>
+          {(() => {
+            if (!trade.lot_size || trade.lot_size === 0 || !amiinfxAccountSize) return null;
+            const displayedLot = (liveBalance / amiinfxAccountSize) * trade.lot_size;
+            return (
+              <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
+                {displayedLot.toFixed(2)} lots
+              </span>
+            );
+          })()}
+        </div>
+      </div>
+      <span className={`text-sm font-semibold tabular-nums ${positive ? "text-primary" : "text-red-400"}`}>
+        {pnlStr}
+      </span>
+    </div>
   );
 }
