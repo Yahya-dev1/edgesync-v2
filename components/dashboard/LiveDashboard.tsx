@@ -13,17 +13,19 @@ type Trade = {
   symbol: string | null;
   direction: string | null;
   pnl_percentage: number;
+  lot_size: number | null;
   is_active: boolean | null;
 };
 
 export default function LiveDashboard({
-  userBalance, originalDeposit, copyId, traderName, userId,
+  userBalance, originalDeposit, copyId, traderName, userId, amiinfxAccountSize,
 }: {
   userBalance: number;
   originalDeposit: number | null;
   copyId: string;
   traderName: string;
   userId: string;
+  amiinfxAccountSize: number | null;
 }) {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [liveBalance, setLiveBalance] = useState(userBalance);
@@ -34,7 +36,7 @@ export default function LiveDashboard({
     async function fetchTrades() {
       const { data } = await supabase
         .from("master_trades")
-        .select("id, symbol, direction, pnl_percentage, is_active")
+        .select("id, symbol, direction, pnl_percentage, lot_size, is_active")
         .eq("trader_name", traderName)
         .order("created_at", { ascending: false });
       if (data) setTrades(data as Trade[]);
@@ -205,9 +207,20 @@ export default function LiveDashboard({
                           {isOpen ? "Open" : "Closed"}
                         </span>
                       </div>
-                      <p className={`text-xs font-medium ${trade.direction?.toUpperCase() === "BUY" ? "text-primary" : "text-red-400"}`}>
-                        {trade.direction?.toUpperCase() ?? "—"}
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className={`text-xs font-medium ${trade.direction?.toUpperCase() === "BUY" ? "text-primary" : "text-red-400"}`}>
+                          {trade.direction?.toUpperCase() ?? "—"}
+                        </p>
+                        {(() => {
+                          if (!trade.lot_size || trade.lot_size === 0 || !amiinfxAccountSize) return null;
+                          const displayedLot = (liveBalance / amiinfxAccountSize) * trade.lot_size;
+                          return (
+                            <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
+                              {displayedLot.toFixed(2)} lots
+                            </span>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <span className={`text-sm font-semibold tabular-nums ${positive ? "text-primary" : "text-red-400"}`}>
                       {pnlStr}

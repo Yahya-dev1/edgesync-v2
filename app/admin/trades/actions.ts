@@ -12,6 +12,7 @@ export interface TradePayload {
   pnl_percentage: number;
   status: TradeStatus;
   close_price?: number | null;
+  lot_size?: number | null;
 }
 
 async function getAmiinFxName(): Promise<string> {
@@ -36,6 +37,7 @@ export async function insertTrade(payload: TradePayload): Promise<{ error?: stri
       direction: payload.direction,
       open_price: payload.open_price,
       pnl_percentage: payload.pnl_percentage,
+      lot_size: payload.lot_size ?? null,
       is_active: payload.status === "open",
       close_price: payload.status === "closed" ? payload.close_price : null,
       closed_at: payload.status === "closed" ? new Date().toISOString() : null,
@@ -74,6 +76,7 @@ export async function updateTrade(id: string, payload: TradePayload): Promise<{ 
         direction: payload.direction,
         open_price: payload.open_price,
         pnl_percentage: payload.pnl_percentage,
+        lot_size: payload.lot_size ?? null,
         is_active: !isClosing,
         close_price: isClosing ? payload.close_price : null,
         closed_at: isClosing

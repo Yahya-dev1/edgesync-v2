@@ -8,7 +8,7 @@ export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const [{ data: profile }, { data: copyTrade }] = await Promise.all([
+  const [{ data: profile }, { data: copyTrade }, { data: accountSizeRow }] = await Promise.all([
     supabase.from("profiles").select("full_name, balance").eq("id", user!.id).single(),
     supabase
       .from("user_copy_trading")
@@ -18,7 +18,14 @@ export default async function DashboardPage() {
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "amiinfx_account_size")
+      .maybeSingle(),
   ]);
+
+  const amiinfxAccountSize = accountSizeRow?.value ? Number(accountSizeRow.value) : null;
 
   let kycApproved = false;
   try {
@@ -47,6 +54,7 @@ export default async function DashboardPage() {
       copyId={copyTrade.id}
       traderName={copyTrade.trader_name}
       userId={user!.id}
+      amiinfxAccountSize={amiinfxAccountSize}
       showKycBanner={!kycApproved}
     />
   );
@@ -155,7 +163,7 @@ function State1({ firstName, balance, showKycBanner }: { firstName: string; bala
 // ─── State 2: Active copy trade ────────────────────────────────
 
 function State2({
-  firstName, userBalance, originalDeposit, copyId, traderName, userId, showKycBanner,
+  firstName, userBalance, originalDeposit, copyId, traderName, userId, amiinfxAccountSize, showKycBanner,
 }: {
   firstName: string;
   userBalance: number;
@@ -163,6 +171,7 @@ function State2({
   copyId: string;
   traderName: string;
   userId: string;
+  amiinfxAccountSize: number | null;
   showKycBanner: boolean;
 }) {
   return (
@@ -179,6 +188,7 @@ function State2({
         copyId={copyId}
         traderName={traderName}
         userId={userId}
+        amiinfxAccountSize={amiinfxAccountSize}
       />
     </div>
   );

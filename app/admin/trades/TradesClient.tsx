@@ -16,6 +16,7 @@ interface Trade {
   open_price: number | null;
   close_price: number | null;
   pnl_percentage: number | null;
+  lot_size: number | null;
   is_active: boolean | null;
   opened_at: string | null;
   closed_at: string | null;
@@ -55,6 +56,7 @@ const EMPTY_FORM = {
   direction: "buy",
   open_price: "",
   pnl_percentage: "",
+  lot_size: "",
   status: "open" as TradeStatus,
   close_price: "",
 };
@@ -81,6 +83,7 @@ function TradeModal({
         direction: initial.direction ?? "buy",
         open_price: initial.open_price != null ? String(initial.open_price) : "",
         pnl_percentage: initial.pnl_percentage != null ? String(initial.pnl_percentage) : "",
+        lot_size: initial.lot_size != null ? String(initial.lot_size) : "",
         status: initial.is_active ? "open" : "closed",
         close_price: initial.close_price != null ? String(initial.close_price) : "",
       };
@@ -116,6 +119,7 @@ function TradeModal({
       direction: form.direction,
       open_price: Number(form.open_price),
       pnl_percentage: Number(form.pnl_percentage),
+      lot_size: form.lot_size !== "" && !isNaN(Number(form.lot_size)) ? Number(form.lot_size) : null,
       status: form.status,
       close_price: isClosed ? Number(form.close_price) : null,
     };
@@ -203,6 +207,19 @@ function TradeModal({
               value={form.pnl_percentage}
               onChange={(e) => set("pnl_percentage", e.target.value)}
               placeholder="2.5"
+              className={inputCls}
+            />
+          </Field>
+
+          {/* Lot Size */}
+          <Field label="Lot size">
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={form.lot_size}
+              onChange={(e) => set("lot_size", e.target.value)}
+              placeholder="e.g. 0.01"
               className={inputCls}
             />
           </Field>
@@ -418,7 +435,7 @@ export default function TradesClient({ trades, totalCount, page, totalPages, sta
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: "0.5px solid var(--surface-border)" }}>
-                {["Symbol", "Direction", "Open Price", "Close Price", "P&L %", "Status", "Opened", "Closed", ""].map(
+                {["Symbol", "Direction", "Open Price", "Close Price", "P&L %", "Lot Size", "Status", "Opened", "Closed", ""].map(
                   (h) => (
                     <th
                       key={h}
@@ -433,7 +450,7 @@ export default function TradesClient({ trades, totalCount, page, totalPages, sta
             <tbody>
               {trades.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-4 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={10} className="px-4 py-12 text-center text-sm text-muted-foreground">
                     No trades found.
                   </td>
                 </tr>
@@ -477,6 +494,9 @@ export default function TradesClient({ trades, totalCount, page, totalPages, sta
                           ? `${trade.pnl_percentage >= 0 ? "+" : ""}${fmt(trade.pnl_percentage)}%`
                           : "—"}
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-foreground tabular-nums">
+                      {trade.lot_size != null ? fmt(trade.lot_size, 2) : "—"}
                     </td>
                     <td className="px-4 py-3">
                       <span
