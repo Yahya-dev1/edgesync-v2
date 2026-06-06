@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     supabase.from("profiles").select("full_name, balance").eq("id", user!.id).single(),
     supabase
       .from("user_copy_trading")
-      .select("id, trader_name, original_deposit")
+      .select("id, trader_name, original_deposit, started_at")
       .eq("user_id", user!.id)
       .eq("is_copying", true)
       .order("started_at", { ascending: false })
@@ -54,6 +54,7 @@ export default async function DashboardPage() {
       copyId={copyTrade.id}
       traderName={copyTrade.trader_name}
       userId={user!.id}
+      startedAt={copyTrade.started_at ?? null}
       amiinfxAccountSize={amiinfxAccountSize}
       showKycBanner={!kycApproved}
     />
@@ -163,7 +164,7 @@ function State1({ firstName, balance, showKycBanner }: { firstName: string; bala
 // ─── State 2: Active copy trade ────────────────────────────────
 
 function State2({
-  firstName, userBalance, originalDeposit, copyId, traderName, userId, amiinfxAccountSize, showKycBanner,
+  firstName, userBalance, originalDeposit, copyId, traderName, userId, startedAt, amiinfxAccountSize, showKycBanner,
 }: {
   firstName: string;
   userBalance: number;
@@ -171,6 +172,7 @@ function State2({
   copyId: string;
   traderName: string;
   userId: string;
+  startedAt: string | null;
   amiinfxAccountSize: number | null;
   showKycBanner: boolean;
 }) {
@@ -188,6 +190,7 @@ function State2({
         copyId={copyId}
         traderName={traderName}
         userId={userId}
+        startedAt={startedAt}
         amiinfxAccountSize={amiinfxAccountSize}
       />
     </div>

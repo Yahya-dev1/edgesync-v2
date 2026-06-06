@@ -18,13 +18,14 @@ type Trade = {
 };
 
 export default function LiveDashboard({
-  userBalance, originalDeposit, copyId, traderName, userId, amiinfxAccountSize,
+  userBalance, originalDeposit, copyId, traderName, userId, startedAt, amiinfxAccountSize,
 }: {
   userBalance: number;
   originalDeposit: number | null;
   copyId: string;
   traderName: string;
   userId: string;
+  startedAt: string | null;
   amiinfxAccountSize: number | null;
 }) {
   const [trades, setTrades] = useState<Trade[]>([]);
@@ -34,11 +35,17 @@ export default function LiveDashboard({
 
   useEffect(() => {
     async function fetchTrades() {
-      const { data } = await supabase
+      let query = supabase
         .from("master_trades")
         .select("id, symbol, direction, pnl_percentage, lot_size, is_active")
         .eq("trader_name", traderName)
         .order("created_at", { ascending: false });
+
+      if (startedAt) {
+        query = query.gte("opened_at", startedAt);
+      }
+
+      const { data } = await query;
       if (data) setTrades(data as Trade[]);
     }
 
@@ -67,7 +74,7 @@ export default function LiveDashboard({
       supabase.removeChannel(tradesChannel);
       supabase.removeChannel(profileChannel);
     };
-  }, [traderName, userId]);
+  }, [traderName, userId, startedAt]);
 
   const floatingPnl = originalDeposit != null
     ? liveBalance - originalDeposit
