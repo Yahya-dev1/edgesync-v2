@@ -68,7 +68,7 @@ const STAT_STYLE: Record<string, { valueClass: string }> = {
   "Trades":   { valueClass: "text-foreground" },
 };
 
-function TraderCard({ trader, onCopy, copying }: { trader: Trader; onCopy: (name: string) => void; copying: boolean }) {
+function TraderCard({ trader, onCopy, copying, hasDeposit }: { trader: Trader; onCopy: (name: string) => void; copying: boolean; hasDeposit: boolean }) {
   const isTopTrader = trader.name === "AmiinFx";
 
   return (
@@ -127,17 +127,41 @@ function TraderCard({ trader, onCopy, copying }: { trader: Trader; onCopy: (name
         </div>
 
         {/* CTA */}
-        {!trader.is_available && (
-          <div className="flex items-center justify-center gap-1.5 mb-2">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-              <rect x="1" y="5" width="10" height="7" rx="1.5" stroke="#EF4444" strokeWidth="1.2" />
-              <path d="M3.5 5V3.5a2.5 2.5 0 015 0V5" stroke="#EF4444" strokeWidth="1.2" />
-            </svg>
-            <span className="text-xs font-semibold text-red-400">Geo restricted</span>
-          </div>
-        )}
-
-        {trader.is_available ? (
+        {!hasDeposit ? (
+          <>
+            <div className="flex items-center justify-center gap-1.5 mb-2">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                <rect x="1" y="5" width="10" height="7" rx="1.5" stroke="#F59E0B" strokeWidth="1.2" />
+                <path d="M3.5 5V3.5a2.5 2.5 0 015 0V5" stroke="#F59E0B" strokeWidth="1.2" />
+              </svg>
+              <span className="text-xs font-semibold text-amber-400">Deposit required</span>
+            </div>
+            <button
+              disabled
+              className="w-full py-2.5 rounded-xl text-sm font-semibold text-muted-foreground/50 border border-border/50 cursor-not-allowed"
+              aria-disabled="true"
+            >
+              Copy {trader.name}
+            </button>
+          </>
+        ) : !trader.is_available ? (
+          <>
+            <div className="flex items-center justify-center gap-1.5 mb-2">
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                <rect x="1" y="5" width="10" height="7" rx="1.5" stroke="#EF4444" strokeWidth="1.2" />
+                <path d="M3.5 5V3.5a2.5 2.5 0 015 0V5" stroke="#EF4444" strokeWidth="1.2" />
+              </svg>
+              <span className="text-xs font-semibold text-red-400">Geo restricted</span>
+            </div>
+            <button
+              disabled
+              className="w-full py-2.5 rounded-xl text-sm font-semibold text-muted-foreground/50 border border-border/50 cursor-not-allowed"
+              aria-disabled="true"
+            >
+              Not available
+            </button>
+          </>
+        ) : (
           <button
             onClick={() => onCopy(trader.name)}
             disabled={copying}
@@ -145,21 +169,13 @@ function TraderCard({ trader, onCopy, copying }: { trader: Trader; onCopy: (name
           >
             {copying ? "Starting…" : `Copy ${trader.name}`}
           </button>
-        ) : (
-          <button
-            disabled
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-muted-foreground/50 border border-border/50 cursor-not-allowed"
-            aria-disabled="true"
-          >
-            Not available
-          </button>
         )}
       </div>
     </div>
   );
 }
 
-export default function TraderGrid({ traders: initialTraders, userId }: { traders: Trader[]; userId: string }) {
+export default function TraderGrid({ traders: initialTraders, userId, hasDeposit }: { traders: Trader[]; userId: string; hasDeposit: boolean }) {
   const [traders, setTraders] = useState<Trader[]>(initialTraders);
   const [copying, setCopying] = useState(false);
 
@@ -176,6 +192,7 @@ export default function TraderGrid({ traders: initialTraders, userId }: { trader
   }, []);
 
   const handleCopy = async (traderName: string) => {
+    if (!hasDeposit) return;
     setCopying(true);
     const supabase = createClient();
 
@@ -212,7 +229,7 @@ export default function TraderGrid({ traders: initialTraders, userId }: { trader
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {traders.map((trader) => (
-        <TraderCard key={trader.id} trader={trader} onCopy={handleCopy} copying={copying} />
+        <TraderCard key={trader.id} trader={trader} onCopy={handleCopy} copying={copying} hasDeposit={hasDeposit} />
       ))}
     </div>
   );

@@ -8,11 +8,22 @@ export default async function CopyTradingPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: traders } = await supabase
-    .from("traders")
-    .select("id, name, followers, win_rate, roi, drawdown, trades_taken, stars, risk_level, is_available, flag")
-    .order("is_available", { ascending: false })
-    .order("followers", { ascending: false });
+  const [{ data: traders }, { data: depositCheck }] = await Promise.all([
+    supabase
+      .from("traders")
+      .select("id, name, followers, win_rate, roi, drawdown, trades_taken, stars, risk_level, is_available, flag")
+      .order("is_available", { ascending: false })
+      .order("followers", { ascending: false }),
+    supabase
+      .from("deposits")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("status", "approved")
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  const hasDeposit = depositCheck != null;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -34,7 +45,7 @@ export default async function CopyTradingPage() {
         </p>
       </div>
 
-      <TraderGrid traders={traders ?? []} userId={user.id} />
+      <TraderGrid traders={traders ?? []} userId={user.id} hasDeposit={hasDeposit} />
     </div>
   );
 }
