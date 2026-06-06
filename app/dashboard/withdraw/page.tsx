@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { ChevronRight, Clock, Percent, ArrowUpDown, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // ─── USDT icon ────────────────────────────────────────────────
 
@@ -60,6 +61,105 @@ function ProgressBar({ current, target }: { current: number; target: number }) {
   );
 }
 
+// ─── Maintenance method icons ────────────────────────────────
+
+function CardIcon() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="20" fill="#64748B" fillOpacity="0.10" />
+      <circle cx="20" cy="20" r="19.5" stroke="#64748B" strokeOpacity="0.25" />
+      <rect x="11" y="15" width="18" height="12" rx="2" stroke="#64748B" strokeWidth="1.4" />
+      <line x1="11" y1="19.5" x2="29" y2="19.5" stroke="#64748B" strokeWidth="1.4" />
+      <rect x="13.5" y="22" width="5" height="2" rx="0.75" fill="#64748B" />
+    </svg>
+  );
+}
+
+function WireIcon() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="20" fill="#64748B" fillOpacity="0.10" />
+      <circle cx="20" cy="20" r="19.5" stroke="#64748B" strokeOpacity="0.25" />
+      <path d="M20 12L12 16h16L20 12Z" fill="#64748B" fillOpacity="0.5" />
+      <rect x="12" y="16" width="16" height="1.5" rx="0.5" fill="#64748B" />
+      <rect x="13.5" y="18.5" width="2" height="6" rx="0.5" fill="#64748B" fillOpacity="0.7" />
+      <rect x="19" y="18.5" width="2" height="6" rx="0.5" fill="#64748B" fillOpacity="0.7" />
+      <rect x="24.5" y="18.5" width="2" height="6" rx="0.5" fill="#64748B" fillOpacity="0.7" />
+      <rect x="12" y="25.5" width="16" height="1.5" rx="0.5" fill="#64748B" />
+    </svg>
+  );
+}
+
+function BitcoinIcon() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <circle cx="20" cy="20" r="20" fill="#F7931A" fillOpacity="0.12" />
+      <circle cx="20" cy="20" r="19.5" stroke="#F7931A" strokeOpacity="0.3" />
+      <text
+        x="20" y="21" dominantBaseline="middle" textAnchor="middle"
+        fill="#F7931A" fontSize="16" fontWeight="700" fontFamily="system-ui, sans-serif"
+      >
+        ₿
+      </text>
+    </svg>
+  );
+}
+
+// ─── Withdrawal method definitions ───────────────────────────
+
+interface WithdrawMethod {
+  id: string;
+  name: string;
+  processingTime: string;
+  fee: string;
+  min: string;
+  enabled: boolean;
+  badge?: string;
+  Icon: React.ComponentType;
+}
+
+const WITHDRAW_METHODS: WithdrawMethod[] = [
+  {
+    id: "usdt_trc20",
+    name: "Tether (USDT TRC20)",
+    processingTime: "1–3 business days",
+    fee: "0%",
+    min: "$10 minimum",
+    enabled: true,
+    Icon: UsdtIcon,
+  },
+  {
+    id: "bank_card",
+    name: "Bank Card",
+    processingTime: "3–5 business days",
+    fee: "2.5%",
+    min: "$50 minimum",
+    enabled: false,
+    badge: "Under Maintenance",
+    Icon: CardIcon,
+  },
+  {
+    id: "bitcoin",
+    name: "Bitcoin (BTC)",
+    processingTime: "10–60 min",
+    fee: "0%",
+    min: "$10 minimum",
+    enabled: false,
+    badge: "Under Maintenance",
+    Icon: BitcoinIcon,
+  },
+  {
+    id: "wire",
+    name: "Wire Transfer",
+    processingTime: "2–5 business days",
+    fee: "0%",
+    min: "$1,000 minimum",
+    enabled: false,
+    badge: "Under Maintenance",
+    Icon: WireIcon,
+  },
+];
+
 // ─── Method selection step ────────────────────────────────────
 
 function MethodStep({ onSelect }: { onSelect: () => void }) {
@@ -73,40 +173,56 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
       </div>
 
       <div className="flex flex-col gap-2.5">
-        <button
-          onClick={onSelect}
-          className="w-full text-left rounded-xl border border-border bg-card transition-colors duration-150 flex items-center gap-4 px-4 py-4 hover:border-primary/25 hover:bg-overlay cursor-pointer group"
-        >
-          <div className="flex-shrink-0">
-            <UsdtIcon />
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <span className="text-sm font-semibold text-foreground leading-tight">
-                Tether (USDT TRC20)
-              </span>
+        {WITHDRAW_METHODS.map((method) => (
+          <button
+            key={method.id}
+            onClick={() => method.enabled && onSelect()}
+            className={cn(
+              "w-full text-left rounded-xl border bg-card transition-colors duration-150",
+              "flex items-center gap-4 px-4 py-4",
+              method.enabled
+                ? "border-border hover:border-primary/25 hover:bg-overlay cursor-pointer group"
+                : "border-border cursor-not-allowed opacity-60"
+            )}
+          >
+            <div className="flex-shrink-0">
+              <method.Icon />
             </div>
-            <div className="flex items-center gap-2 text-[11px] text-muted-foreground flex-wrap">
-              <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3 flex-shrink-0" />
-                1-3 business days
-              </span>
-              <span className="text-muted-foreground/40">·</span>
-              <span className="flex items-center gap-1">
-                <Percent className="w-3 h-3 flex-shrink-0" />
-                0% fee
-              </span>
-              <span className="text-muted-foreground/40">·</span>
-              <span className="flex items-center gap-1">
-                <ArrowUpDown className="w-3 h-3 flex-shrink-0" />
-                $10 minimum
-              </span>
-            </div>
-          </div>
 
-          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-        </button>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                <span className="text-sm font-semibold text-foreground leading-tight">
+                  {method.name}
+                </span>
+                {method.badge && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full leading-tight bg-orange-500/10 text-orange-400">
+                    {method.badge}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground flex-wrap">
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3 flex-shrink-0" />
+                  {method.processingTime}
+                </span>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="flex items-center gap-1">
+                  <Percent className="w-3 h-3 flex-shrink-0" />
+                  {method.fee} fee
+                </span>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="flex items-center gap-1">
+                  <ArrowUpDown className="w-3 h-3 flex-shrink-0" />
+                  {method.min}
+                </span>
+              </div>
+            </div>
+
+            {method.enabled && (
+              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+            )}
+          </button>
+        ))}
       </div>
 
       <p className="text-xs text-muted-foreground text-center mt-6 leading-relaxed">

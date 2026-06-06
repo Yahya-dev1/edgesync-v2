@@ -197,13 +197,12 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
           <button
             key={method.id}
             onClick={() => method.enabled && onSelect()}
-            disabled={!method.enabled}
             className={cn(
               "w-full text-left rounded-xl border bg-card transition-colors duration-150",
               "flex items-center gap-4 px-4 py-4",
               method.enabled
                 ? "border-border hover:border-primary/25 hover:bg-overlay cursor-pointer group"
-                : "border-border cursor-not-allowed opacity-50"
+                : "border-border cursor-not-allowed opacity-60"
             )}
           >
             {/* Icon */}
