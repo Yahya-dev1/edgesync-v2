@@ -2,9 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle, XCircle, ChevronLeft, ChevronRight, Loader2, AlertTriangle, Check } from "lucide-react";
+import { CheckCircle, XCircle, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { approveWithdrawal, rejectWithdrawal, saveProfitTarget } from "./actions";
+import { approveWithdrawal, rejectWithdrawal } from "./actions";
 import { fmtDate, StatusBadge, ConfirmDialog } from "@/components/admin/shared";
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -31,79 +31,22 @@ interface Props {
   profitTarget: number;
 }
 
-// ─── Profit target settings card ────────────────────────────────
+// ─── Profit target progress bar ─────────────────────────────────
 
-function ProfitTargetCard({ initialValue }: { initialValue: number }) {
-  const [value, setValue] = useState(String(initialValue));
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  function handleSave() {
-    const num = parseFloat(value);
-    if (isNaN(num) || num < 1) {
-      setError("Enter a value of at least 1.");
-      return;
-    }
-    setError(null);
-    setSaved(false);
-    startTransition(async () => {
-      const result = await saveProfitTarget(num);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2500);
-      }
-    });
-  }
-
+function ProfitTargetBar({ value }: { value: number }) {
+  const pct = Math.min(100, Math.max(0, value));
   return (
     <div
       className="rounded-xl bg-surface p-4 mb-5"
       style={{ border: "0.5px solid var(--surface-border)" }}
     >
-      <h2 className="text-sm font-semibold text-foreground mb-3">Settings</h2>
-      <div className="flex items-end gap-3 flex-wrap">
-        <div className="flex-1 min-w-[160px] max-w-xs">
-          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
-            Profit Target (%)
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              min="1"
-              step="0.1"
-              value={value}
-              onChange={(e) => { setValue(e.target.value); setSaved(false); setError(null); }}
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              className="w-full pr-8 pl-3 py-2 rounded-lg text-sm text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:ring-2 focus:ring-primary"
-              style={{ background: "var(--muted)", border: "0.5px solid var(--surface-border)" }}
-            />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground select-none">
-              %
-            </span>
-          </div>
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={pending}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-        >
-          {pending ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : saved ? (
-            <Check className="w-3.5 h-3.5" />
-          ) : null}
-          {saved ? "Saved" : "Save"}
-        </button>
+      <p className="text-xs font-medium text-muted-foreground mb-2">Profit Target</p>
+      <div className="h-2 rounded-full bg-overlay overflow-hidden">
+        <div
+          className="h-full rounded-full bg-primary transition-all duration-500"
+          style={{ width: `${pct}%` }}
+        />
       </div>
-      {error && (
-        <p className="text-xs text-red-400 flex items-center gap-1.5 mt-2">
-          <AlertTriangle className="w-3 h-3 flex-shrink-0" />
-          {error}
-        </p>
-      )}
     </div>
   );
 }
@@ -167,8 +110,8 @@ export default function WithdrawalsClient({
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Settings */}
-      <ProfitTargetCard initialValue={profitTarget} />
+      {/* Profit target */}
+      <ProfitTargetBar value={profitTarget} />
 
       {/* Page header */}
       <div className="flex items-center justify-between mb-5">
