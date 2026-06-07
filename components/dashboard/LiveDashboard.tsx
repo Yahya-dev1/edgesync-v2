@@ -35,9 +35,8 @@ export default function LiveDashboard({
 
   const base = originalDeposit ?? liveBalance;
 
-  const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000);
-  const recentTrades = trades.filter((t) => t.opened_at && new Date(t.opened_at) >= cutoff48h);
-  const historyTrades = trades.filter((t) => !t.opened_at || new Date(t.opened_at) < cutoff48h);
+  const activeTrades = trades.filter((t) => t.is_active === true);
+  const historyTrades = trades.filter((t) => t.is_active !== true);
 
   useEffect(() => {
     async function fetchTrades() {
@@ -188,7 +187,7 @@ export default function LiveDashboard({
         <div className="rounded-xl border border-border bg-card p-5 md:p-6">
           <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-5">Copied Trades</p>
 
-          {recentTrades.length === 0 ? (
+          {activeTrades.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
               <div className="w-11 h-11 rounded-full bg-overlay border border-border flex items-center justify-center mb-3">
                 <BarChart2 className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
@@ -200,7 +199,7 @@ export default function LiveDashboard({
             </div>
           ) : (
             <div className="space-y-2.5">
-              {recentTrades.map((trade) => (
+              {activeTrades.map((trade) => (
                 <TradeCard
                   key={trade.id}
                   trade={trade}

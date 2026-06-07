@@ -26,20 +26,47 @@ async function getAmiinFxName(): Promise<string> {
   return data.name;
 }
 
-// Advances each eligible user's original_deposit by (1 + tradePnl/100), then
-// marks the trade as is_settled = true. Must be called AFTER the trade row has
-// been written with is_settled = false so the trigger has already applied the
-// final P&L to profiles.balance.
-//
-// Only users whose started_at <= openedAt (i.e. the trade was in scope for
-// them) receive the baseline advance; others are unaffected.
-//
-// Why multiply original_deposit instead of reading profiles.balance?
-// Because balance = original_deposit × ∏(unsettled trades). Settling one
-// trade T means new_original_deposit = old_original_deposit × (1 + T%).
-// Multiplication is commutative so the order of other open trades doesn't
-// matter — the trigger re-derives the same balance from the new baseline.
-async function settleTrade(
+// Called BEFORE setting is_active = false on a trade. Snapshots the current
+// profiles.balance into original_deposit for every eligible copying user,
+// so that when the trigger re-fires after the close the new baseline is correct
+// and the closed trade is no longer included in the compounding set.
+async function lockBaselineForUsers(
+  supabase: ReturnType<typeof createAdminClient>,
+  traderName: string,
+  openedAt: string
+): Promise<void> {
+  const { data: users } = await supabase
+    .from("user_copy_trading")
+    .select("user_id, started_at")
+    .eq("trader_name", traderName)
+    .eq("is_copying", true);
+
+  if (!users?.length) return;
+
+  const eligible = users.filter((u) => !u.started_at || u.started_at <= openedAt);
+  if (!eligible.length) return;
+
+  await Promise.all(
+    eligible.map(async (u) => {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("balance")
+        .eq("id", u.user_id)
+        .single();
+      if (profile?.balance == null) return;
+      return supabase
+        .from("user_copy_trading")
+        .update({ original_deposit: Number(profile.balance) })
+        .eq("user_id", u.user_id)
+        .eq("is_copying", true);
+    })
+  );
+}
+
+// Used only when a trade is inserted directly as closed (backdating). Advances
+// original_deposit by the trade's factor, then marks is_settled = true to fire
+// the trigger and sync profiles.balance to the new baseline.
+async function advanceBaselineForUsers(
   supabase: ReturnType<typeof createAdminClient>,
   tradeId: string,
   traderName: string,
@@ -68,6 +95,8 @@ async function settleTrade(
     );
   }
 
+  // Updating is_settled re-fires the trigger, which syncs profiles.balance
+  // from the new original_deposit.
   await supabase
     .from("master_trades")
     .update({ is_settled: true })
@@ -90,7 +119,6 @@ export async function insertTrade(payload: TradePayload): Promise<{ error?: stri
         pnl_percentage: payload.pnl_percentage,
         lot_size: payload.lot_size ?? null,
         is_active: payload.status === "open",
-        is_settled: false,
         close_price: payload.status === "closed" ? payload.close_price : null,
         closed_at: payload.status === "closed" ? openedAt : null,
         opened_at: openedAt,
@@ -100,10 +128,8 @@ export async function insertTrade(payload: TradePayload): Promise<{ error?: stri
 
     if (error) return { error: error.message };
 
-    // Trades inserted directly as closed are settled immediately so their
-    // P&L is baked into original_deposit before future trigger runs.
     if (payload.status === "closed" && inserted) {
-      await settleTrade(supabase, inserted.id, traderName, payload.pnl_percentage, openedAt);
+      await advanceBaselineForUsers(supabase, inserted.id, traderName, payload.pnl_percentage, openedAt);
     }
 
     revalidatePath("/admin/trades");
@@ -120,7 +146,7 @@ export async function updateTrade(id: string, payload: TradePayload): Promise<{ 
 
     const { data: current } = await supabase
       .from("master_trades")
-      .select("is_active, is_settled, closed_at, opened_at, trader_name")
+      .select("is_active, closed_at, opened_at, trader_name")
       .eq("id", id)
       .single();
 
@@ -128,46 +154,36 @@ export async function updateTrade(id: string, payload: TradePayload): Promise<{ 
     const transitioningToClosed = isClosing && wasOpen;
     const shouldSetClosedAt = isClosing && (wasOpen || !current?.closed_at);
 
-    // When transitioning open→closed we write is_settled = false first so the
-    // trigger picks up this trade's final pnl_percentage in its run. We call
-    // settleTrade() afterwards to advance original_deposit and flip is_settled.
-    // For all other transitions (open edits, closed edits) we leave is_settled
-    // unchanged so we don't disturb already-settled baselines.
-    const updatePayload: Record<string, unknown> = {
-      symbol: payload.symbol.toUpperCase().trim(),
-      direction: payload.direction,
-      open_price: payload.open_price,
-      pnl_percentage: payload.pnl_percentage,
-      lot_size: payload.lot_size ?? null,
-      is_active: !isClosing,
-      close_price: isClosing ? payload.close_price : null,
-      closed_at: isClosing
-        ? shouldSetClosedAt
-          ? new Date().toISOString()
-          : current?.closed_at
-        : null,
-    };
-
-    if (transitioningToClosed) {
-      updatePayload.is_settled = false;
+    // Lock original_deposit = profiles.balance for all copying users BEFORE
+    // the trade row is set to is_active = false. This ensures the trigger fires
+    // with the correct baseline and the closed trade is excluded going forward.
+    if (transitioningToClosed && current?.trader_name) {
+      await lockBaselineForUsers(
+        supabase,
+        current.trader_name,
+        current.opened_at ?? new Date().toISOString()
+      );
     }
 
     const { error } = await supabase
       .from("master_trades")
-      .update(updatePayload)
+      .update({
+        symbol: payload.symbol.toUpperCase().trim(),
+        direction: payload.direction,
+        open_price: payload.open_price,
+        pnl_percentage: payload.pnl_percentage,
+        lot_size: payload.lot_size ?? null,
+        is_active: !isClosing,
+        close_price: isClosing ? payload.close_price : null,
+        closed_at: isClosing
+          ? shouldSetClosedAt
+            ? new Date().toISOString()
+            : current?.closed_at
+          : null,
+      })
       .eq("id", id);
 
     if (error) return { error: error.message };
-
-    if (transitioningToClosed && current?.trader_name) {
-      await settleTrade(
-        supabase,
-        id,
-        current.trader_name,
-        payload.pnl_percentage,
-        current.opened_at ?? new Date().toISOString()
-      );
-    }
 
     revalidatePath("/admin/trades");
     return {};
