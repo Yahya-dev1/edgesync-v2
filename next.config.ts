@@ -11,7 +11,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       // wss://*.tradingview.com covers the real-time price WebSocket
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.nowpayments.io https://*.tradingview.com wss://*.tradingview.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.tradingview.com wss://*.tradingview.com",
       // www.tradingview.com is the iframe origin for the advanced chart embed
       "frame-src https://s3.tradingview.com https://charting-library.tradingview-widget.com https://www.tradingview.com",
       "font-src 'self' data:",

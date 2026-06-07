@@ -7,6 +7,7 @@ import {
   TrendingUp,
   LineChart,
   Users,
+  ArrowDownToLine,
   ArrowUpFromLine,
   ShieldCheck,
   MessageSquare,
@@ -22,6 +23,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 const activeLinks = [
   { label: "Trades",      href: "/admin/trades",      icon: LineChart },
   { label: "Users",       href: "/admin/users",        icon: Users },
+  { label: "Deposits",    href: "/admin/deposits",     icon: ArrowDownToLine },
   { label: "Withdrawals", href: "/admin/withdrawals",  icon: ArrowUpFromLine },
   { label: "KYC",         href: "/admin/kyc",          icon: ShieldCheck },
   { label: "Support",     href: "/admin/support",      icon: MessageSquare },

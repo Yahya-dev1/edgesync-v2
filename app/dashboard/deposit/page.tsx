@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -14,19 +14,19 @@ import {
   Clock,
   Percent,
   ArrowUpDown,
+  Upload,
+  ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
+
+// ─── Wallet address ───────────────────────────────────────────────
+
+const USDT_TRC20_ADDRESS = "[USDT_TRC20_ADDRESS]";
 
 // ─── Types ────────────────────────────────────────────────────────
 
-type Step = "method" | "amount" | "payment" | "success";
-
-interface PaymentInfo {
-  payment_id: string;
-  pay_address: string;
-  pay_amount: string;
-  pay_currency: string;
-}
+type Step = "method" | "amount" | "payment" | "screenshot" | "success";
 
 // ─── Payment method icons ─────────────────────────────────────────
 
@@ -65,7 +65,6 @@ function EthereumIcon() {
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
       <circle cx="20" cy="20" r="20" fill="#627EEA" fillOpacity="0.12" />
       <circle cx="20" cy="20" r="19.5" stroke="#627EEA" strokeOpacity="0.3" />
-      {/* Ethereum diamond */}
       <path d="M20 11.5L13.5 20.2L20 23.8L26.5 20.2L20 11.5Z" fill="#627EEA" fillOpacity="0.65" />
       <path d="M13.5 21.5L20 28.5L26.5 21.5L20 25.2L13.5 21.5Z" fill="#627EEA" />
     </svg>
@@ -89,7 +88,6 @@ function WireIcon() {
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
       <circle cx="20" cy="20" r="20" fill="#64748B" fillOpacity="0.10" />
       <circle cx="20" cy="20" r="19.5" stroke="#64748B" strokeOpacity="0.25" />
-      {/* Bank columns */}
       <path d="M20 12L12 16h16L20 12Z" fill="#64748B" fillOpacity="0.5" />
       <rect x="12" y="16" width="16" height="1.5" rx="0.5" fill="#64748B" />
       <rect x="13.5" y="18.5" width="2" height="6" rx="0.5" fill="#64748B" fillOpacity="0.7" />
@@ -121,7 +119,7 @@ const METHODS: Method[] = [
     name: "Tether (USDT TRC20)",
     badge: "Recommended",
     badgeVariant: "recommended",
-    processingTime: "Instant – 15 min",
+    processingTime: "1–2 hours",
     fee: "0%",
     min: "$20",
     max: "$200,000",
@@ -183,7 +181,6 @@ const METHODS: Method[] = [
 function MethodStep({ onSelect }: { onSelect: () => void }) {
   return (
     <div className="max-w-xl mx-auto pt-4">
-      {/* Header */}
       <div className="mb-7">
         <h1 className="text-2xl font-bold text-foreground">Deposit Funds</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -191,7 +188,6 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
         </p>
       </div>
 
-      {/* Method cards */}
       <div className="flex flex-col gap-2.5">
         {METHODS.map((method) => (
           <button
@@ -205,14 +201,11 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
                 : "border-border cursor-not-allowed opacity-60"
             )}
           >
-            {/* Icon */}
             <div className="flex-shrink-0">
               <method.Icon />
             </div>
 
-            {/* Details */}
             <div className="flex-1 min-w-0">
-              {/* Name + badge row */}
               <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                 <span className="text-sm font-semibold text-foreground leading-tight">
                   {method.name}
@@ -229,7 +222,6 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
                 </span>
               </div>
 
-              {/* Meta row */}
               <div className="flex items-center gap-2 text-[11px] text-muted-foreground flex-wrap">
                 <span className="flex items-center gap-1">
                   <Clock className="w-3 h-3 flex-shrink-0" />
@@ -248,7 +240,6 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
               </div>
             </div>
 
-            {/* Arrow — only on enabled */}
             {method.enabled && (
               <ChevronRight
                 className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0"
@@ -258,9 +249,8 @@ function MethodStep({ onSelect }: { onSelect: () => void }) {
         ))}
       </div>
 
-      {/* Footer note */}
       <p className="text-xs text-muted-foreground text-center mt-6 leading-relaxed">
-        All deposits are processed securely. Funds are credited after network confirmation.
+        All deposits are reviewed by our team and credited within 1–2 hours.
       </p>
     </div>
   );
@@ -272,34 +262,13 @@ export default function DepositPage() {
   const router = useRouter();
   const [step, setStep] = useState<Step>("method");
   const [amount, setAmount] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [payment, setPayment] = useState<PaymentInfo | null>(null);
   const [copied, setCopied] = useState(false);
-  const [paymentStatus, setPaymentStatus] = useState<string>("waiting");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Poll payment status every 10 seconds
-  const pollStatus = useCallback(async (paymentId: string) => {
-    try {
-      const res = await fetch(`/api/payment-status?payment_id=${paymentId}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      setPaymentStatus(data.payment_status ?? "waiting");
-      if (data.payment_status === "finished" || data.payment_status === "confirmed") {
-        setStep("success");
-      }
-    } catch {
-      // ignore poll errors
-    }
-  }, []);
-
-  useEffect(() => {
-    if (step !== "payment" || !payment) return;
-    const id = setInterval(() => pollStatus(payment.payment_id), 10_000);
-    return () => clearInterval(id);
-  }, [step, payment, pollStatus]);
-
-  async function handleContinue() {
+  function handleContinueToPayment() {
     const num = parseFloat(amount);
     if (!num || num < 20) {
       setError("Minimum deposit amount is $20.");
@@ -310,42 +279,64 @@ export default function DepositPage() {
       return;
     }
     setError("");
-    setLoading(true);
-    try {
-      const res = await fetch("/api/create-payment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: num }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error ?? "Something went wrong. Please try again.");
-        return;
-      }
-      setPayment(data);
-      setStep("payment");
-    } catch {
-      setError("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    setStep("payment");
   }
 
   function handleCopyAddress() {
-    if (!payment) return;
-    navigator.clipboard.writeText(payment.pay_address);
+    navigator.clipboard.writeText(USDT_TRC20_ADDRESS);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const statusLabel: Record<string, string> = {
-    waiting: "Awaiting payment…",
-    confirming: "Confirming transaction…",
-    confirmed: "Confirmed!",
-    finished: "Finished!",
-    failed: "Failed",
-    expired: "Expired",
-  };
+  async function handleSubmitScreenshot() {
+    if (!screenshotFile) {
+      setError("Please select a screenshot to upload.");
+      return;
+    }
+
+    setError("");
+    setUploading(true);
+
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setError("Not authenticated. Please log in and try again.");
+        return;
+      }
+
+      const ext = screenshotFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const fileName = `${user.id}/${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("deposit-screenshots")
+        .upload(fileName, screenshotFile, { upsert: false });
+
+      if (uploadError) {
+        setError("Failed to upload screenshot. Please try again.");
+        return;
+      }
+
+      const { error: dbError } = await supabase.from("deposits").insert({
+        user_id: user.id,
+        amount: parseFloat(amount),
+        status: "pending",
+        method: "USDT TRC20",
+        screenshot_url: fileName,
+      });
+
+      if (dbError) {
+        setError("Failed to submit deposit request. Please try again.");
+        return;
+      }
+
+      setStep("success");
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   // ── Step: method selection ─────────────────────────────────────
 
@@ -362,8 +353,13 @@ export default function DepositPage() {
           <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-5">
             <CheckCircle className="w-8 h-8 text-primary" strokeWidth={1.5} />
           </div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">Deposit Confirmed!</h2>
-          <p className="text-sm text-muted-foreground mb-8">Your balance has been updated.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Deposit Submitted!</h2>
+          <p className="text-sm text-muted-foreground mb-1.5 leading-relaxed">
+            Your deposit is under review. Admin will approve within 1–2 hours.
+          </p>
+          <p className="text-xs text-muted-foreground mb-8">
+            You will receive a notification once your deposit is confirmed.
+          </p>
           <button
             onClick={() => router.push("/dashboard")}
             className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
@@ -375,14 +371,140 @@ export default function DepositPage() {
     );
   }
 
-  // ── Step: payment instructions ─────────────────────────────────
+  // ── Step: screenshot upload ────────────────────────────────────
 
-  if (step === "payment" && payment) {
+  if (step === "screenshot") {
     return (
       <div className="max-w-md mx-auto pt-4">
+        <button
+          onClick={() => { setStep("payment"); setScreenshotFile(null); setError(""); }}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to payment details
+        </button>
+
         <div className="mb-5">
-          <h1 className="text-2xl font-bold text-foreground">Complete Payment</h1>
-          <p className="text-sm text-muted-foreground mt-1">Send USDT to the address below.</p>
+          <h1 className="text-2xl font-bold text-foreground">Upload Screenshot</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Upload proof of your payment to complete the deposit.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+          {/* Amount reminder */}
+          <div className="flex items-center justify-between p-3 rounded-xl bg-background border border-border">
+            <span className="text-sm text-muted-foreground">Deposit amount</span>
+            <span className="text-sm font-bold text-foreground">
+              ${parseFloat(amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+            </span>
+          </div>
+
+          {/* File upload area */}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1.5">
+              Payment Screenshot
+            </label>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className={cn(
+                "w-full rounded-xl border-2 border-dashed transition-colors p-6 flex flex-col items-center gap-3 cursor-pointer",
+                screenshotFile
+                  ? "border-primary/40 bg-primary/5"
+                  : "border-border hover:border-primary/30 hover:bg-overlay"
+              )}
+            >
+              {screenshotFile ? (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Check className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-foreground">{screenshotFile.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {(screenshotFile.size / 1024).toFixed(1)} KB · Click to change
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-overlay flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-foreground">Click to upload screenshot</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">JPG or PNG, max 10 MB</p>
+                  </div>
+                </>
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/jpg,image/png"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setScreenshotFile(file);
+                setError("");
+              }}
+            />
+          </div>
+
+          {error && (
+            <p className="text-sm text-red-400 flex items-center gap-1.5">
+              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+              {error}
+            </p>
+          )}
+
+          <button
+            onClick={handleSubmitScreenshot}
+            disabled={uploading || !screenshotFile}
+            className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
+          >
+            {uploading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Submitting…
+              </>
+            ) : (
+              <>
+                <ImageIcon className="w-4 h-4" />
+                Submit Deposit
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Step: payment instructions ─────────────────────────────────
+
+  if (step === "payment") {
+    const displayAmount = parseFloat(amount).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+    return (
+      <div className="max-w-md mx-auto pt-4">
+        <button
+          onClick={() => { setStep("amount"); setError(""); }}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Change amount
+        </button>
+
+        <div className="mb-5">
+          <h1 className="text-2xl font-bold text-foreground">Payment Instructions</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Send exactly <strong className="text-foreground">${displayAmount} USDT</strong> to the address below,
+            then upload your payment screenshot.
+          </p>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-6 space-y-6">
@@ -398,7 +520,7 @@ export default function DepositPage() {
           <div className="flex justify-center">
             <div className="p-3 bg-white rounded-xl inline-block">
               <QRCodeSVG
-                value={payment.pay_address}
+                value={USDT_TRC20_ADDRESS}
                 size={180}
                 bgColor="#ffffff"
                 fgColor="#000000"
@@ -412,7 +534,7 @@ export default function DepositPage() {
             <p className="text-sm text-muted-foreground mb-1.5 font-medium">Wallet Address</p>
             <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
               <span className="flex-1 text-sm font-mono text-foreground break-all leading-relaxed">
-                {payment.pay_address}
+                {USDT_TRC20_ADDRESS}
               </span>
               <button
                 onClick={handleCopyAddress}
@@ -431,31 +553,13 @@ export default function DepositPage() {
             )}
           </div>
 
-          {/* Amount to send */}
+          {/* Amount */}
           <div>
             <p className="text-sm text-muted-foreground mb-1.5 font-medium">Amount to Send</p>
             <p className="text-xl font-bold text-foreground">
-              {payment.pay_amount}{" "}
-              <span className="text-base font-medium text-muted-foreground uppercase">
-                {payment.pay_currency}
-              </span>
+              {displayAmount}{" "}
+              <span className="text-base font-medium text-muted-foreground">USDT</span>
             </p>
-          </div>
-
-          {/* Status */}
-          <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
-            <span
-              className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                paymentStatus === "waiting"
-                  ? "bg-amber-400 animate-pulse"
-                  : paymentStatus === "confirming"
-                  ? "bg-blue-400 animate-pulse"
-                  : "bg-primary"
-              }`}
-            />
-            <span className="text-sm text-muted-foreground">
-              {statusLabel[paymentStatus] ?? paymentStatus}
-            </span>
           </div>
 
           {/* Warning */}
@@ -466,6 +570,13 @@ export default function DepositPage() {
               network will result in permanent loss of funds.
             </p>
           </div>
+
+          <button
+            onClick={() => setStep("screenshot")}
+            className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20"
+          >
+            I've Sent the Payment
+          </button>
         </div>
       </div>
     );
@@ -475,7 +586,6 @@ export default function DepositPage() {
 
   return (
     <div className="max-w-md mx-auto pt-4">
-      {/* Back to method selection */}
       <button
         onClick={() => { setStep("method"); setAmount(""); setError(""); }}
         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-5"
@@ -484,12 +594,11 @@ export default function DepositPage() {
         Change method
       </button>
 
-      {/* Selected method indicator */}
       <div className="flex items-center gap-3 mb-5 px-4 py-3 rounded-xl border border-border bg-card">
         <UsdtIcon />
         <div>
           <p className="text-sm font-semibold text-foreground">Tether (USDT TRC20)</p>
-          <p className="text-xs text-muted-foreground mt-0.5">Instant – 15 min · 0% fee · $20 – $200,000</p>
+          <p className="text-xs text-muted-foreground mt-0.5">1–2 hours · 0% fee · $20 – $200,000</p>
         </div>
         <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
           Recommended
@@ -513,7 +622,7 @@ export default function DepositPage() {
               step="1"
               value={amount}
               onChange={(e) => { setAmount(e.target.value); setError(""); }}
-              onKeyDown={(e) => e.key === "Enter" && handleContinue()}
+              onKeyDown={(e) => e.key === "Enter" && handleContinueToPayment()}
               placeholder="0.00"
               className="w-full bg-background border border-border rounded-xl pl-8 pr-4 py-3 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/15 transition-colors"
             />
@@ -529,7 +638,6 @@ export default function DepositPage() {
           </p>
         </div>
 
-        {/* Quick amount buttons */}
         <div className="grid grid-cols-4 gap-2">
           {[20, 50, 100, 250].map((preset) => (
             <button
@@ -543,22 +651,15 @@ export default function DepositPage() {
         </div>
 
         <button
-          onClick={handleContinue}
-          disabled={loading || !amount}
+          onClick={handleContinueToPayment}
+          disabled={!amount}
           className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
         >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Generating address…
-            </>
-          ) : (
-            "Continue"
-          )}
+          Continue
         </button>
 
         <p className="text-sm text-muted-foreground text-center">
-          Deposits are credited after 1 network confirmation.
+          Deposits are reviewed and credited within 1–2 hours.
         </p>
       </div>
     </div>
