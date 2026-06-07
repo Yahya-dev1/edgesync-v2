@@ -284,8 +284,9 @@ function TradeCard({
             {trade.direction?.toUpperCase() ?? "—"}
           </p>
           {(() => {
-            if (!trade.lot_size || trade.lot_size === 0 || !amiinfxAccountSize) return null;
-            const displayedLot = (liveBalance / amiinfxAccountSize) * trade.lot_size;
+            const lotNum = Number(trade.lot_size);
+            if (!(lotNum > 0) || !amiinfxAccountSize) return null;
+            const displayedLot = (liveBalance / amiinfxAccountSize) * lotNum;
             return (
               <span className="text-[10px] font-medium text-muted-foreground tabular-nums">
                 {displayedLot.toFixed(2)} lots
