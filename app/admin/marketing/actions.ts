@@ -76,12 +76,12 @@ function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function bigPnl() {
-  return Math.round((Math.random() * 7000 + 1000) * 100) / 100;
+function randomBalance() {
+  return Math.round((Math.random() * 19500 + 500) * 100) / 100;
 }
 
-function normalPnl() {
-  return Math.round((Math.random() * 550 - 50) * 100) / 100;
+function round2(n: number) {
+  return Math.round(n * 100) / 100;
 }
 
 const COLORS = ["green", "blue", "amber", "purple"] as const;
@@ -92,28 +92,54 @@ export async function generateMarketingAccounts(): Promise<{ error?: string }> {
   try {
     const supabase = createAdminClient();
 
+    // Fetch today's trades and AmiinFx account size in parallel
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const [{ data: todayTrades }, { data: settingsRow }] = await Promise.all([
+      supabase
+        .from("master_trades")
+        .select("symbol, direction, pnl_percentage")
+        .gte("opened_at", todayStart.toISOString()),
+      supabase
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "amiinfx_account_size")
+        .maybeSingle(),
+    ]);
+
+    const amiinfxAccountSize = settingsRow?.value ? Number(settingsRow.value) : null;
+    const useLiveTrades =
+      (todayTrades?.length ?? 0) > 0 && amiinfxAccountSize != null && amiinfxAccountSize > 0;
+
     await supabase.from("marketing_accounts").delete().not("id", "is", null);
 
     const accounts = Array.from({ length: 10 }, (_, i) => {
-      // Randomly pick one ethnicity for this account — never mixed
-      const ethnicity  = pick(ETHNICITIES);
-      const firstName  = pick(ethnicity.first);
-      const lastName   = pick(ethnicity.last);
-      const fullName   = `${firstName} ${lastName}`;
-      const initials   = `${firstName[0]}${lastName[0]}`.toUpperCase();
+      const ethnicity = pick(ETHNICITIES);
+      const firstName = pick(ethnicity.first);
+      const lastName  = pick(ethnicity.last);
+      const fullName  = `${firstName} ${lastName}`;
+      const initials  = `${firstName[0]}${lastName[0]}`.toUpperCase();
+      const balance   = randomBalance();
 
-      // Even indices → big P&L, odd → normal
-      const isBig      = i % 2 === 0;
-      const tradeCount = Math.floor(Math.random() * 3) + 1;
+      let trades: { symbol: string; direction: string; pnl_amount: number }[];
 
-      const trades = Array.from({ length: tradeCount }, () => ({
-        symbol:     "XAUUSD",
-        direction:  Math.random() < 0.5 ? "BUY" : "SELL",
-        pnl_amount: isBig ? bigPnl() : normalPnl(),
-      }));
+      if (useLiveTrades) {
+        trades = todayTrades!.map((t) => ({
+          symbol:     t.symbol ?? "XAUUSD",
+          direction:  (t.direction ?? "BUY").toUpperCase(),
+          pnl_amount: round2((balance / amiinfxAccountSize!) * (t.pnl_percentage ?? 0)),
+        }));
+      } else {
+        const tradeCount = Math.floor(Math.random() * 3) + 1;
+        trades = Array.from({ length: tradeCount }, () => ({
+          symbol:     "XAUUSD",
+          direction:  Math.random() < 0.5 ? "BUY" : "SELL",
+          pnl_amount: round2(Math.random() * 550 - 50),
+        }));
+      }
 
-      const total_pnl =
-        Math.round(trades.reduce((s, t) => s + t.pnl_amount, 0) * 100) / 100;
+      const total_pnl = round2(trades.reduce((s, t) => s + t.pnl_amount, 0));
 
       return {
         full_name:    fullName,
