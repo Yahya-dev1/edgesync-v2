@@ -35,9 +35,44 @@ const KENYAN_LAST = [
   "Kipchoge", "Mugo", "Owino", "Gathoni", "Ndungu", "Chege",
 ];
 
+const ARAB_FIRST = [
+  "Omar", "Khalid", "Tariq", "Faisal", "Mansour", "Nasser", "Saeed", "Walid",
+  "Bilal", "Hamza", "Layla", "Fatima", "Noura", "Rania", "Hessa", "Mona",
+  "Dina", "Sara", "Lina", "Amira", "Yousef", "Salim", "Ziad", "Adel",
+  "Karim", "Mariam", "Hind", "Ghada", "Rana", "Amal",
+];
+
+const ARAB_LAST = [
+  "Al-Rashid", "Al-Farsi", "Al-Mansouri", "Al-Zaabi", "Al-Shamsi",
+  "Al-Nuaimi", "Al-Maktoum", "Al-Nahyan", "Khalifa", "Hassan", "Ibrahim",
+  "Saleh", "Nasser", "Qasim", "Darwish", "Saeed", "Hamdan", "Zayed",
+  "Jaber", "Thani",
+];
+
+const WESTERN_FIRST = [
+  "James", "Oliver", "William", "Henry", "George", "Thomas", "Charles",
+  "Edward", "Alexander", "Robert", "Emma", "Charlotte", "Sophie", "Isabella",
+  "Eleanor", "Victoria", "Catherine", "Alice", "Grace", "Rose", "Jack",
+  "Harry", "Liam", "Noah", "Ethan", "Sophia", "Amelia", "Olivia", "Emily",
+  "Hannah",
+];
+
+const WESTERN_LAST = [
+  "Smith", "Johnson", "Williams", "Brown", "Jones", "Taylor", "Davies",
+  "Evans", "Wilson", "Thomas", "Roberts", "Hughes", "Clarke", "Turner",
+  "Mitchell", "Harris", "Walker", "White", "Martin", "Thompson",
+];
+
+const ETHNICITIES = [
+  { first: SOMALI_FIRST,  last: SOMALI_LAST  },
+  { first: KENYAN_FIRST,  last: KENYAN_LAST  },
+  { first: ARAB_FIRST,    last: ARAB_LAST    },
+  { first: WESTERN_FIRST, last: WESTERN_LAST },
+] as const;
+
 // ─── Helpers ─────────────────────────────────────────────────────
 
-function pick<T>(arr: T[]): T {
+function pick<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
@@ -60,10 +95,10 @@ export async function generateMarketingAccounts(): Promise<{ error?: string }> {
     await supabase.from("marketing_accounts").delete().not("id", "is", null);
 
     const accounts = Array.from({ length: 10 }, (_, i) => {
-      // Randomly pick nationality for this account — never mixed
-      const isSomali   = Math.random() < 0.5;
-      const firstName  = isSomali ? pick(SOMALI_FIRST) : pick(KENYAN_FIRST);
-      const lastName   = isSomali ? pick(SOMALI_LAST)  : pick(KENYAN_LAST);
+      // Randomly pick one ethnicity for this account — never mixed
+      const ethnicity  = pick(ETHNICITIES);
+      const firstName  = pick(ethnicity.first);
+      const lastName   = pick(ethnicity.last);
       const fullName   = `${firstName} ${lastName}`;
       const initials   = `${firstName[0]}${lastName[0]}`.toUpperCase();
 
