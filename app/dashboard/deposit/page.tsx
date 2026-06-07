@@ -22,7 +22,7 @@ import { createClient } from "@/lib/supabase/client";
 
 // ─── Wallet address ───────────────────────────────────────────────
 
-const USDT_TRC20_ADDRESS = "[USDT_TRC20_ADDRESS]";
+const USDT_TRC20_ADDRESS = "TDAHiiJJFSarDNQpos63qSfLd9sr2QYyd5";
 
 // ─── Types ────────────────────────────────────────────────────────
 
