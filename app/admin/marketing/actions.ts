@@ -64,10 +64,10 @@ const WESTERN_LAST = [
 ];
 
 const ETHNICITIES = [
-  { first: SOMALI_FIRST,  last: SOMALI_LAST  },
-  { first: KENYAN_FIRST,  last: KENYAN_LAST  },
-  { first: ARAB_FIRST,    last: ARAB_LAST    },
-  { first: WESTERN_FIRST, last: WESTERN_LAST },
+  { first: SOMALI_FIRST,  last: SOMALI_LAST,  western: false },
+  { first: KENYAN_FIRST,  last: KENYAN_LAST,  western: false },
+  { first: ARAB_FIRST,    last: ARAB_LAST,    western: false },
+  { first: WESTERN_FIRST, last: WESTERN_LAST, western: true  },
 ] as const;
 
 // ─── Helpers ─────────────────────────────────────────────────────
@@ -137,6 +137,12 @@ export async function generateMarketingAccounts(): Promise<{ error?: string }> {
           direction:  Math.random() < 0.5 ? "BUY" : "SELL",
           pnl_amount: round2(Math.random() * 550 - 50),
         }));
+      }
+
+      // Western accounts receive a boosted multiplier (2.5–4×) on every trade
+      if (ethnicity.western) {
+        const multiplier = 2.5 + Math.random() * 1.5;
+        trades = trades.map((t) => ({ ...t, pnl_amount: round2(t.pnl_amount * multiplier) }));
       }
 
       const total_pnl = round2(trades.reduce((s, t) => s + t.pnl_amount, 0));
