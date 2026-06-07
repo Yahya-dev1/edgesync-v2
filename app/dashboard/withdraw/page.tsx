@@ -47,14 +47,10 @@ function ProgressBar({ current, target }: { current: number; target: number }) {
           style={{ width: `${pct}%`, background: "var(--primary)" }}
         />
       </div>
-      <div className="flex justify-between mt-2 text-sm text-muted-foreground">
+      <div className="mt-2 text-sm text-muted-foreground">
         <span>
           Current profit:{" "}
           <span className="font-semibold text-foreground">{current.toFixed(2)}%</span>
-        </span>
-        <span>
-          Target:{" "}
-          <span className="font-semibold text-foreground">{target}%</span>
         </span>
       </div>
     </div>
