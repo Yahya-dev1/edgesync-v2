@@ -10,9 +10,10 @@ import {
   Loader2,
   AlertTriangle,
   ImageIcon,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { approveDeposit, rejectDeposit } from "./actions";
+import { approveDeposit, rejectDeposit, saveDepositWalletAddress } from "./actions";
 import { fmtDate, StatusBadge, ConfirmDialog } from "@/components/admin/shared";
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -38,6 +39,102 @@ interface Props {
   page: number;
   totalPages: number;
   status: DepositStatus;
+  walletAddress: string;
+}
+
+// ─── Deposit wallet address settings card ───────────────────────
+
+// USDT TRC20 addresses are Base58, start with 'T', and are exactly 34 chars.
+// Mirrors the server-side check so typos are caught before the confirm dialog.
+const TRC20_ADDRESS_RE = /^T[1-9A-HJ-NP-Za-km-z]{33}$/;
+
+function DepositWalletCard({ initialAddress }: { initialAddress: string }) {
+  const [value, setValue] = useState(initialAddress);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  function requestSave() {
+    setSaved(false);
+    if (!TRC20_ADDRESS_RE.test(value.trim())) {
+      setError("Enter a valid USDT TRC20 address (starts with T, 34 characters).");
+      return;
+    }
+    setError(null);
+    setConfirmOpen(true);
+  }
+
+  function handleConfirm() {
+    startTransition(async () => {
+      const result = await saveDepositWalletAddress(value.trim());
+      if (result.error) {
+        setError(result.error);
+        setConfirmOpen(false);
+      } else {
+        setSaved(true);
+        setConfirmOpen(false);
+        setTimeout(() => setSaved(false), 2500);
+      }
+    });
+  }
+
+  return (
+    <div
+      className="rounded-xl bg-surface p-4 mb-5"
+      style={{ border: "0.5px solid var(--surface-border)" }}
+    >
+      <h2 className="text-sm font-semibold text-foreground mb-3">Settings</h2>
+      <div className="flex items-end gap-3 flex-wrap">
+        <div className="flex-1 min-w-[240px] max-w-xl">
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Deposit Wallet Address (USDT TRC20)
+          </label>
+          <input
+            type="text"
+            spellCheck={false}
+            autoComplete="off"
+            value={value}
+            onChange={(e) => { setValue(e.target.value); setSaved(false); setError(null); }}
+            onKeyDown={(e) => e.key === "Enter" && requestSave()}
+            className="w-full px-3 py-2 rounded-lg text-sm font-mono text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors focus:ring-2 focus:ring-primary"
+            style={{ background: "var(--muted)", border: "0.5px solid var(--surface-border)" }}
+          />
+        </div>
+        <button
+          onClick={requestSave}
+          disabled={pending}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/80 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+        >
+          {pending ? (
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          ) : saved ? (
+            <Check className="w-3.5 h-3.5" />
+          ) : null}
+          {saved ? "Saved" : "Save"}
+        </button>
+      </div>
+      {error && (
+        <p className="text-xs text-red-400 flex items-center gap-1.5 mt-2">
+          <AlertTriangle className="w-3 h-3 flex-shrink-0" />
+          {error}
+        </p>
+      )}
+
+      {confirmOpen && (
+        <ConfirmDialog
+          title="Change deposit wallet address?"
+          description="Changing this address will immediately update the deposit page for all users. Make sure the new address is correct — funds sent to a wrong address cannot be recovered."
+          confirmLabel="Save Address"
+          confirmClassName="bg-primary text-primary-foreground hover:bg-primary/80"
+          onConfirm={handleConfirm}
+          onClose={() => setConfirmOpen(false)}
+          pending={pending}
+          error={null}
+        />
+      )}
+    </div>
+  );
 }
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -54,6 +151,7 @@ export default function DepositsClient({
   page,
   totalPages,
   status,
+  walletAddress,
 }: Props) {
   const router = useRouter();
   const [confirmTarget, setConfirmTarget] = useState<{
@@ -98,6 +196,9 @@ export default function DepositsClient({
 
   return (
     <div className="max-w-7xl mx-auto">
+      {/* Settings */}
+      <DepositWalletCard initialAddress={walletAddress} />
+
       {/* Page header */}
       <div className="flex items-center justify-between mb-5">
         <div>

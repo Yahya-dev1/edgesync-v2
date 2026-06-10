@@ -1,7 +1,54 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+
+// Verifies the caller is a signed-in admin. The user-scoped server client reads
+// under RLS, where a user may only see their own user_roles row.
+async function requireAdmin(): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const { data: roleRow } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .eq("role", "admin")
+    .maybeSingle();
+
+  if (!roleRow) return { error: "Not authorized." };
+  return {};
+}
+
+// USDT TRC20 addresses are Base58, start with 'T', and are exactly 34 chars.
+const TRC20_ADDRESS_RE = /^T[1-9A-HJ-NP-Za-km-z]{33}$/;
+
+export async function saveDepositWalletAddress(address: string): Promise<{ error?: string }> {
+  try {
+    const auth = await requireAdmin();
+    if (auth.error) return auth;
+
+    const trimmed = address.trim();
+    if (!TRC20_ADDRESS_RE.test(trimmed)) {
+      return { error: "Enter a valid USDT TRC20 address (starts with T, 34 characters)." };
+    }
+
+    const supabase = createAdminClient();
+    const { error } = await supabase
+      .from("platform_settings")
+      .upsert({ key: "deposit_wallet_address", value: trimmed }, { onConflict: "key" });
+
+    if (error) return { error: error.message };
+
+    revalidatePath("/admin/deposits");
+    revalidatePath("/dashboard/deposit");
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
 
 export async function approveDeposit(
   depositId: string,

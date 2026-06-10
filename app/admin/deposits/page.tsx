@@ -27,7 +27,16 @@ export default async function AdminDepositsPage({ searchParams }: Props) {
 
   query = query.range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
-  const { data: rows, count, error } = await query;
+  const [{ data: rows, count, error }, { data: walletSetting }] = await Promise.all([
+    query,
+    supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "deposit_wallet_address")
+      .maybeSingle(),
+  ]);
+
+  const walletAddress = walletSetting?.value ?? "TDAHiiJJFSarDNQpos63qSfLd9sr2QYyd5";
 
   if (error) {
     return (
@@ -96,6 +105,7 @@ export default async function AdminDepositsPage({ searchParams }: Props) {
       page={page}
       totalPages={totalPages}
       status={status}
+      walletAddress={walletAddress}
     />
   );
 }

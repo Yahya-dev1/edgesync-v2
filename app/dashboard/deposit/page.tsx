@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -21,8 +21,11 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 // ─── Wallet address ───────────────────────────────────────────────
+// The live address comes from platform_settings (key 'deposit_wallet_address')
+// and is fetched at runtime. This is only the fallback shown until it loads or
+// if the setting is somehow missing.
 
-const USDT_TRC20_ADDRESS = "TDAHiiJJFSarDNQpos63qSfLd9sr2QYyd5";
+const FALLBACK_USDT_TRC20_ADDRESS = "TDAHiiJJFSarDNQpos63qSfLd9sr2QYyd5";
 
 // ─── Types ────────────────────────────────────────────────────────
 
@@ -266,7 +269,21 @@ export default function DepositPage() {
   const [copied, setCopied] = useState(false);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [walletAddress, setWalletAddress] = useState(FALLBACK_USDT_TRC20_ADDRESS);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function loadWalletAddress() {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "deposit_wallet_address")
+        .maybeSingle();
+      if (data?.value) setWalletAddress(data.value);
+    }
+    loadWalletAddress();
+  }, []);
 
   function handleContinueToPayment() {
     const num = parseFloat(amount);
@@ -283,7 +300,7 @@ export default function DepositPage() {
   }
 
   function handleCopyAddress() {
-    navigator.clipboard.writeText(USDT_TRC20_ADDRESS);
+    navigator.clipboard.writeText(walletAddress);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -520,7 +537,7 @@ export default function DepositPage() {
           <div className="flex justify-center">
             <div className="p-3 bg-white rounded-xl inline-block">
               <QRCodeSVG
-                value={USDT_TRC20_ADDRESS}
+                value={walletAddress}
                 size={180}
                 bgColor="#ffffff"
                 fgColor="#000000"
@@ -534,7 +551,7 @@ export default function DepositPage() {
             <p className="text-sm text-muted-foreground mb-1.5 font-medium">Wallet Address</p>
             <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-background">
               <span className="flex-1 text-sm font-mono text-foreground break-all leading-relaxed">
-                {USDT_TRC20_ADDRESS}
+                {walletAddress}
               </span>
               <button
                 onClick={handleCopyAddress}

@@ -451,7 +451,7 @@ export default function WithdrawPage() {
           <h2 className="text-xl font-bold text-foreground mb-3">Withdrawals Locked</h2>
 
           <p className="text-base text-muted-foreground mb-6 max-w-sm">
-            Your withdrawal will be available once your copy trading profit reaches the target set by AmiinFx.
+            Your withdrawal will be available once your copy trading profit reaches the target.
           </p>
 
           <div className="w-full">
