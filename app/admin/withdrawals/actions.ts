@@ -26,15 +26,36 @@ export async function approveWithdrawal(
 
     const newBalance = currentBalance - amount;
 
-    // Fetch all currently open trades before any writes so we can freeze them
-    // for this user. These get inserted into user_trade_settlements below,
-    // preventing them from compounding on the post-withdrawal baseline.
-    const { data: activeTrades, error: tradesError } = await supabase
-      .from("master_trades")
-      .select("id")
-      .eq("is_active", true);
+    // The post-withdrawal balance becomes the new baseline, so every trade that
+    // currently compounds into it must be settled — otherwise the next trade
+    // event would re-inflate the balance off the lowered original_deposit.
+    // Settle ALL unsettled trades (open and closed) in this user's copy window,
+    // not just the open ones.
+    const { data: copyRow } = await supabase
+      .from("user_copy_trading")
+      .select("trader_name, started_at")
+      .eq("user_id", userId)
+      .eq("is_copying", true)
+      .maybeSingle();
 
-    if (tradesError) return { error: tradesError.message };
+    if (copyRow?.trader_name) {
+      let tradesQuery = supabase
+        .from("master_trades")
+        .select("id")
+        .eq("trader_name", copyRow.trader_name);
+      if (copyRow.started_at) tradesQuery = tradesQuery.gte("opened_at", copyRow.started_at);
+
+      const { data: trades, error: tradesError } = await tradesQuery;
+      if (tradesError) return { error: tradesError.message };
+
+      if (trades && trades.length > 0) {
+        const settlements = trades.map((t) => ({ user_id: userId, trade_id: t.id }));
+        const { error: settlementError } = await supabase
+          .from("user_trade_settlements")
+          .upsert(settlements, { onConflict: "user_id,trade_id", ignoreDuplicates: true });
+        if (settlementError) return { error: settlementError.message };
+      }
+    }
 
     const [statusResult, balanceResult, copyResult] = await Promise.all([
       supabase
@@ -55,17 +76,6 @@ export async function approveWithdrawal(
     if (statusResult.error) return { error: statusResult.error.message };
     if (balanceResult.error) return { error: balanceResult.error.message };
     if (copyResult.error) return { error: copyResult.error.message };
-
-    if (activeTrades && activeTrades.length > 0) {
-      const settlements = activeTrades.map((t) => ({
-        user_id: userId,
-        trade_id: t.id,
-      }));
-      const { error: settlementError } = await supabase
-        .from("user_trade_settlements")
-        .upsert(settlements, { onConflict: "user_id,trade_id", ignoreDuplicates: true });
-      if (settlementError) return { error: settlementError.message };
-    }
 
     revalidatePath("/admin/withdrawals");
     return {};

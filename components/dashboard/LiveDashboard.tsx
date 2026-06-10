@@ -31,9 +31,10 @@ export default function LiveDashboard({
 }) {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [liveBalance, setLiveBalance] = useState(userBalance);
+  const [liveOriginalDeposit, setLiveOriginalDeposit] = useState(originalDeposit);
   const [showHistory, setShowHistory] = useState(false);
 
-  const base = originalDeposit ?? liveBalance;
+  const base = liveOriginalDeposit ?? liveBalance;
 
   const activeTrades = trades.filter((t) => t.is_active === true);
   const historyTrades = trades.filter((t) => t.is_active !== true);
@@ -75,14 +76,31 @@ export default function LiveDashboard({
       )
       .subscribe();
 
+    // original_deposit moves when a trade is settled (closed, withdrawal, admin
+    // edit). Track it live so P&L resets in place instead of only on refresh.
+    const copyChannel = supabase
+      .channel("copy_trading_baseline")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "user_copy_trading", filter: `user_id=eq.${userId}` },
+        (payload) => {
+          const updated = payload.new as { original_deposit: number | null; is_copying: boolean };
+          if (updated?.is_copying) {
+            setLiveOriginalDeposit(updated.original_deposit != null ? Number(updated.original_deposit) : null);
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(tradesChannel);
       supabase.removeChannel(profileChannel);
+      supabase.removeChannel(copyChannel);
     };
   }, [traderName, userId, startedAt]);
 
-  const floatingPnl = originalDeposit != null
-    ? liveBalance - originalDeposit
+  const floatingPnl = liveOriginalDeposit != null
+    ? liveBalance - liveOriginalDeposit
     : trades.filter((t) => t.is_active).reduce((sum, t) => sum + (base * Number(t.pnl_percentage)) / 100, 0);
 
   const pnlPositive = floatingPnl >= 0;
@@ -96,7 +114,7 @@ export default function LiveDashboard({
     {
       label: "Account Balance",
       value: "$" + liveBalance.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
-      sub: originalDeposit != null ? formattedPnl : null,
+      sub: liveOriginalDeposit != null ? formattedPnl : null,
       subPositive: pnlPositive,
       icon: Wallet,
       iconClass: "text-primary",

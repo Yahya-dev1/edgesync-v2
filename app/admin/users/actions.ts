@@ -7,9 +7,37 @@ export async function updateBalance(userId: string, balance: number): Promise<{ 
   try {
     const supabase = createAdminClient();
 
+    // An admin balance edit is a settlement event: the new balance becomes the
+    // baseline, so P&L recalculates to $0.00. Settle every unsettled trade in
+    // the user's copy window first — otherwise the next trade event would
+    // re-inflate the balance off the freshly reset original_deposit.
+    const { data: copyRow } = await supabase
+      .from("user_copy_trading")
+      .select("trader_name, started_at")
+      .eq("user_id", userId)
+      .eq("is_copying", true)
+      .maybeSingle();
+
+    if (copyRow?.trader_name) {
+      let tradesQuery = supabase
+        .from("master_trades")
+        .select("id")
+        .eq("trader_name", copyRow.trader_name);
+      if (copyRow.started_at) tradesQuery = tradesQuery.gte("opened_at", copyRow.started_at);
+
+      const { data: trades, error: tradesError } = await tradesQuery;
+      if (tradesError) return { error: tradesError.message };
+
+      if (trades && trades.length > 0) {
+        const settlements = trades.map((t) => ({ user_id: userId, trade_id: t.id }));
+        const { error: settlementError } = await supabase
+          .from("user_trade_settlements")
+          .upsert(settlements, { onConflict: "user_id,trade_id", ignoreDuplicates: true });
+        if (settlementError) return { error: settlementError.message };
+      }
+    }
+
     // Run both writes concurrently to minimise the realtime race window.
-    // Resetting original_deposit to the new balance means P&L recalculates to
-    // $0.00 — the admin adjustment is treated as a new baseline, not profit.
     const [profileResult, copyResult] = await Promise.all([
       supabase.from("profiles").update({ balance }).eq("id", userId),
       supabase

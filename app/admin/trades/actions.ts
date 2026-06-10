@@ -26,90 +26,17 @@ async function getAmiinFxName(): Promise<string> {
   return data.name;
 }
 
-// Called BEFORE setting is_active = false on a trade. Snapshots the current
-// profiles.balance into original_deposit for every eligible copying user,
-// so that when the trigger re-fires after the close the new baseline is correct
-// and the closed trade is no longer included in the compounding set.
-async function lockBaselineForUsers(
-  supabase: ReturnType<typeof createAdminClient>,
-  traderName: string,
-  openedAt: string
-): Promise<void> {
-  const { data: users } = await supabase
-    .from("user_copy_trading")
-    .select("user_id, started_at")
-    .eq("trader_name", traderName)
-    .eq("is_copying", true);
-
-  if (!users?.length) return;
-
-  const eligible = users.filter((u) => !u.started_at || u.started_at <= openedAt);
-  if (!eligible.length) return;
-
-  await Promise.all(
-    eligible.map(async (u) => {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("balance")
-        .eq("id", u.user_id)
-        .single();
-      if (profile?.balance == null) return;
-      return supabase
-        .from("user_copy_trading")
-        .update({ original_deposit: Number(profile.balance) })
-        .eq("user_id", u.user_id)
-        .eq("is_copying", true);
-    })
-  );
-}
-
-// Used only when a trade is inserted directly as closed (backdating). Advances
-// original_deposit by the trade's factor, then marks is_settled = true to fire
-// the trigger and sync profiles.balance to the new baseline.
-async function advanceBaselineForUsers(
-  supabase: ReturnType<typeof createAdminClient>,
-  tradeId: string,
-  traderName: string,
-  tradePnl: number,
-  openedAt: string
-): Promise<void> {
-  const { data: users } = await supabase
-    .from("user_copy_trading")
-    .select("user_id, original_deposit, started_at")
-    .eq("trader_name", traderName)
-    .eq("is_copying", true)
-    .not("original_deposit", "is", null);
-
-  if (users && users.length > 0) {
-    const factor = 1 + tradePnl / 100;
-    await Promise.all(
-      users
-        .filter((u) => !u.started_at || u.started_at <= openedAt)
-        .map((u) =>
-          supabase
-            .from("user_copy_trading")
-            .update({ original_deposit: Number(u.original_deposit) * factor })
-            .eq("user_id", u.user_id)
-            .eq("is_copying", true)
-        )
-    );
-  }
-
-  // Updating is_settled re-fires the trigger, which syncs profiles.balance
-  // from the new original_deposit.
-  await supabase
-    .from("master_trades")
-    .update({ is_settled: true })
-    .eq("id", tradeId);
-}
-
+// Inserting a trade — open OR closed — never settles. The balance trigger
+// (update_user_balances_from_trades) compounds every unsettled trade into the
+// user's balance, so the gain shows up as floating P&L and stays visible until
+// the trade is settled (closed via update, withdrawal, or admin balance edit).
 export async function insertTrade(payload: TradePayload): Promise<{ error?: string }> {
   try {
     const traderName = await getAmiinFxName();
     const supabase = createAdminClient();
     const openedAt = new Date().toISOString();
 
-    const { data: inserted, error } = await supabase
+    const { error } = await supabase
       .from("master_trades")
       .insert({
         trader_name: traderName,
@@ -122,15 +49,9 @@ export async function insertTrade(payload: TradePayload): Promise<{ error?: stri
         close_price: payload.status === "closed" ? payload.close_price : null,
         closed_at: payload.status === "closed" ? openedAt : null,
         opened_at: openedAt,
-      })
-      .select("id")
-      .single();
+      });
 
     if (error) return { error: error.message };
-
-    if (payload.status === "closed" && inserted) {
-      await advanceBaselineForUsers(supabase, inserted.id, traderName, payload.pnl_percentage, openedAt);
-    }
 
     revalidatePath("/admin/trades");
     return {};
@@ -146,25 +67,16 @@ export async function updateTrade(id: string, payload: TradePayload): Promise<{ 
 
     const { data: current } = await supabase
       .from("master_trades")
-      .select("is_active, closed_at, opened_at, trader_name")
+      .select("is_active, closed_at")
       .eq("id", id)
       .single();
 
     const wasOpen = current?.is_active === true;
-    const transitioningToClosed = isClosing && wasOpen;
     const shouldSetClosedAt = isClosing && (wasOpen || !current?.closed_at);
 
-    // Lock original_deposit = profiles.balance for all copying users BEFORE
-    // the trade row is set to is_active = false. This ensures the trigger fires
-    // with the correct baseline and the closed trade is excluded going forward.
-    if (transitioningToClosed && current?.trader_name) {
-      await lockBaselineForUsers(
-        supabase,
-        current.trader_name,
-        current.opened_at ?? new Date().toISOString()
-      );
-    }
-
+    // Flipping is_active from true to false here is the settlement event — the
+    // balance trigger detects the open→closed transition, locks the trade's
+    // profit into each copying user's original_deposit, and resets their P&L.
     const { error } = await supabase
       .from("master_trades")
       .update({
