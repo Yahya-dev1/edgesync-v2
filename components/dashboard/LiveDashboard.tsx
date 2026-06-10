@@ -40,6 +40,9 @@ export default function LiveDashboard({
   const historyTrades = trades.filter((t) => t.is_active !== true);
 
   useEffect(() => {
+    let cancelled = false;
+    const channels: ReturnType<typeof supabase.channel>[] = [];
+
     async function fetchTrades() {
       let query = supabase
         .from("master_trades")
@@ -52,50 +55,67 @@ export default function LiveDashboard({
       }
 
       const { data } = await query;
-      if (data) setTrades(data as Trade[]);
+      if (!cancelled && data) setTrades(data as Trade[]);
     }
 
-    fetchTrades();
+    async function setup() {
+      // Realtime binds RLS at channel-join time, so the socket must already
+      // carry the user's JWT BEFORE we subscribe. The module-level client loads
+      // its session from storage asynchronously and this effect can run first —
+      // subscribing as anon, which RLS then silently drops (master_trades and
+      // profiles are gated to the authenticated role), so no live update arrives
+      // until a manual reload. Authenticate the socket first, then open channels.
+      const { data: { session } } = await supabase.auth.getSession();
+      if (cancelled) return;
+      await supabase.realtime.setAuth(session?.access_token ?? null);
+      if (cancelled) return;
 
-    const tradesChannel = supabase
-      .channel("master_trades_live")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "master_trades" }, fetchTrades)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "master_trades" }, fetchTrades)
-      .on("postgres_changes", { event: "DELETE", schema: "public", table: "master_trades" }, fetchTrades)
-      .subscribe();
+      fetchTrades();
 
-    const profileChannel = supabase
-      .channel("profile_balance")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${userId}` },
-        (payload) => {
-          const updated = payload.new as { balance: number };
-          if (updated?.balance !== undefined) setLiveBalance(Number(updated.balance));
-        }
-      )
-      .subscribe();
+      channels.push(
+        supabase
+          .channel("master_trades_live")
+          .on("postgres_changes", { event: "INSERT", schema: "public", table: "master_trades" }, fetchTrades)
+          .on("postgres_changes", { event: "UPDATE", schema: "public", table: "master_trades" }, fetchTrades)
+          .on("postgres_changes", { event: "DELETE", schema: "public", table: "master_trades" }, fetchTrades)
+          .subscribe(),
 
-    // original_deposit moves when a trade is settled (closed, withdrawal, admin
-    // edit). Track it live so P&L resets in place instead of only on refresh.
-    const copyChannel = supabase
-      .channel("copy_trading_baseline")
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "user_copy_trading", filter: `user_id=eq.${userId}` },
-        (payload) => {
-          const updated = payload.new as { original_deposit: number | null; is_copying: boolean };
-          if (updated?.is_copying) {
-            setLiveOriginalDeposit(updated.original_deposit != null ? Number(updated.original_deposit) : null);
-          }
-        }
-      )
-      .subscribe();
+        supabase
+          .channel("profile_balance")
+          .on(
+            "postgres_changes",
+            { event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${userId}` },
+            (payload) => {
+              const updated = payload.new as { balance: number };
+              if (updated?.balance !== undefined) setLiveBalance(Number(updated.balance));
+            }
+          )
+          .subscribe(),
+
+        // original_deposit moves when a trade is settled (closed, withdrawal,
+        // admin edit). Track it live so P&L resets in place instead of only on
+        // refresh.
+        supabase
+          .channel("copy_trading_baseline")
+          .on(
+            "postgres_changes",
+            { event: "UPDATE", schema: "public", table: "user_copy_trading", filter: `user_id=eq.${userId}` },
+            (payload) => {
+              const updated = payload.new as { original_deposit: number | null; is_copying: boolean };
+              if (updated?.is_copying) {
+                setLiveOriginalDeposit(updated.original_deposit != null ? Number(updated.original_deposit) : null);
+              }
+            }
+          )
+          .subscribe()
+      );
+    }
+
+    setup();
 
     return () => {
-      supabase.removeChannel(tradesChannel);
-      supabase.removeChannel(profileChannel);
-      supabase.removeChannel(copyChannel);
+      cancelled = true;
+      channels.forEach((c) => supabase.removeChannel(c));
     };
   }, [traderName, userId, startedAt]);
 
