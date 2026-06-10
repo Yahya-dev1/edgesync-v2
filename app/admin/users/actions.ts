@@ -37,12 +37,14 @@ export async function updateBalance(userId: string, balance: number): Promise<{ 
       }
     }
 
-    // Run both writes concurrently to minimise the realtime race window.
+    // Run both writes concurrently to minimise the realtime race window. The
+    // override becomes the new baseline for everything, including the true
+    // principal (deposit_base) used to rebuild balance on trade deletion.
     const [profileResult, copyResult] = await Promise.all([
       supabase.from("profiles").update({ balance }).eq("id", userId),
       supabase
         .from("user_copy_trading")
-        .update({ original_deposit: balance })
+        .update({ original_deposit: balance, deposit_base: balance })
         .eq("user_id", userId)
         .eq("is_copying", true),
     ]);

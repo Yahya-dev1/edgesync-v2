@@ -220,6 +220,8 @@ export default function TraderGrid({ traders: initialTraders, userId, hasDeposit
       is_copying: true,
       started_at: new Date().toISOString(),
       original_deposit: originalDeposit,
+      // True principal the balance compounds from; used to rebuild on trade delete.
+      deposit_base: originalDeposit,
     });
     if (insertError) { console.error("[copy] insert failed:", insertError); setCopying(false); return; }
 

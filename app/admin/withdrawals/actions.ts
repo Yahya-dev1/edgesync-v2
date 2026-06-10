@@ -33,7 +33,7 @@ export async function approveWithdrawal(
     // not just the open ones.
     const { data: copyRow } = await supabase
       .from("user_copy_trading")
-      .select("trader_name, started_at")
+      .select("trader_name, started_at, deposit_base")
       .eq("user_id", userId)
       .eq("is_copying", true)
       .maybeSingle();
@@ -57,6 +57,13 @@ export async function approveWithdrawal(
       }
     }
 
+    // Withdrawing reduces the true principal (deposits − withdrawals), floored at
+    // zero, so trade-delete rebuilds recompound from the right base afterwards.
+    const copyUpdate: { original_deposit: number; deposit_base?: number } = {
+      original_deposit: newBalance,
+    };
+    if (copyRow) copyUpdate.deposit_base = Math.max(Number(copyRow.deposit_base ?? 0) - amount, 0);
+
     const [statusResult, balanceResult, copyResult] = await Promise.all([
       supabase
         .from("withdrawals")
@@ -68,7 +75,7 @@ export async function approveWithdrawal(
         .eq("id", userId),
       supabase
         .from("user_copy_trading")
-        .update({ original_deposit: newBalance })
+        .update(copyUpdate)
         .eq("user_id", userId)
         .eq("is_copying", true),
     ]);

@@ -58,16 +58,27 @@ export async function approveDeposit(
   try {
     const supabase = createAdminClient();
 
-    const { data: profile, error: fetchError } = await supabase
-      .from("profiles")
-      .select("balance")
-      .eq("id", userId)
-      .single();
+    const [{ data: profile, error: fetchError }, { data: copyRow }] = await Promise.all([
+      supabase.from("profiles").select("balance").eq("id", userId).single(),
+      supabase
+        .from("user_copy_trading")
+        .select("deposit_base")
+        .eq("user_id", userId)
+        .eq("is_copying", true)
+        .maybeSingle(),
+    ]);
 
     if (fetchError) return { error: fetchError.message };
 
     const currentBalance = (profile?.balance as number) ?? 0;
     const newBalance = currentBalance + amount;
+
+    // A deposit raises the user's true principal, so trade-delete rebuilds (which
+    // recompound from deposit_base) stay correct after the deposit.
+    const copyUpdate: { original_deposit: number; deposit_base?: number } = {
+      original_deposit: newBalance,
+    };
+    if (copyRow) copyUpdate.deposit_base = Number(copyRow.deposit_base ?? 0) + amount;
 
     const [statusResult, balanceResult, copyResult] = await Promise.all([
       supabase
@@ -80,7 +91,7 @@ export async function approveDeposit(
         .eq("id", userId),
       supabase
         .from("user_copy_trading")
-        .update({ original_deposit: newBalance })
+        .update(copyUpdate)
         .eq("user_id", userId)
         .eq("is_copying", true),
     ]);
