@@ -241,6 +241,7 @@ export default function WithdrawPage() {
   const [unlocked, setUnlocked] = useState(false);
   const [noDeposit, setNoDeposit] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
+  const [hasOpenTrade, setHasOpenTrade] = useState(false);
 
   // Form state
   const [amount, setAmount] = useState("");
@@ -260,7 +261,12 @@ export default function WithdrawPage() {
           supabase.from("profiles").select("balance").eq("id", user.id).single(),
           supabase.from("deposits").select("amount").eq("user_id", user.id).eq("status", "approved"),
           supabase.from("platform_settings").select("key, value").in("key", ["profit_target_percentage"]),
-          supabase.from("user_copy_trading").select("id").eq("user_id", user.id).eq("is_copying", true).maybeSingle(),
+          supabase
+            .from("user_copy_trading")
+            .select("trader_name, started_at")
+            .eq("user_id", user.id)
+            .eq("is_copying", true)
+            .maybeSingle(),
         ]);
 
       const bal = Number(profile?.balance ?? 0);
@@ -268,10 +274,26 @@ export default function WithdrawPage() {
       const targetPct =
         Number(settings?.find((s) => s.key === "profit_target_percentage")?.value) || 10;
 
+      // A copied trade that is still open (is_active) inside the user's copy
+      // window locks withdrawals until it settles — mirrors the DB-level guard.
+      let openTrade = false;
+      if (copyTrade?.trader_name) {
+        let openQuery = supabase
+          .from("master_trades")
+          .select("id")
+          .eq("trader_name", copyTrade.trader_name)
+          .eq("is_active", true)
+          .limit(1);
+        if (copyTrade.started_at) openQuery = openQuery.gte("opened_at", copyTrade.started_at);
+        const { data: openTrades } = await openQuery;
+        openTrade = (openTrades?.length ?? 0) > 0;
+      }
+
       setBalance(bal);
       setTotalDeposited(deposited);
       setProfitTarget(targetPct);
       setIsCopying(!!copyTrade);
+      setHasOpenTrade(openTrade);
 
       if (deposited === 0) {
         setNoDeposit(true);
@@ -316,7 +338,16 @@ export default function WithdrawPage() {
     });
 
     if (insertErr) {
-      setError("Something went wrong. Please try again.");
+      // The DB guard blocks withdrawals while a copied trade is open. If a trade
+      // opened after this page loaded, surface the lock instead of a generic error.
+      const blockedByOpenTrade =
+        insertErr.code === "23514" || /open|settled/i.test(insertErr.message ?? "");
+      if (blockedByOpenTrade) {
+        setHasOpenTrade(true);
+        setError("A trade is currently open. Withdrawals unlock once it settles.");
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
       setSubmitting(false);
       return;
     }
@@ -379,15 +410,16 @@ export default function WithdrawPage() {
     );
   }
 
-  // Four-way render decision:
-  // 1. noDeposit                        → no funds empty state
-  // 2. !noDeposit && isCopying && !unlocked → locked with progress bar
-  // 3. !noDeposit && (!isCopying || unlocked) → withdrawal form
-  //    showBadge = isCopying && unlocked (profit target reached context)
+  // Render decision (copy traders only — free accounts always see the form):
+  // 1. noDeposit                          → no funds empty state
+  // 2. open trade in window               → locked (trade in progress)
+  // 3. profit target not reached          → locked with progress bar
+  // 4. otherwise                          → withdrawal form
+  //    showBadge = profit target reached, no open trade (unlocked context)
 
   const showNoFunds = noDeposit;
-  const showLocked  = !noDeposit && isCopying && !unlocked;
-  const showBadge   = !noDeposit && isCopying && unlocked;
+  const showLocked  = !noDeposit && isCopying && (hasOpenTrade || !unlocked);
+  const showBadge   = !noDeposit && isCopying && unlocked && !hasOpenTrade;
 
   return (
     <div className="max-w-lg mx-auto">
@@ -442,7 +474,7 @@ export default function WithdrawPage() {
           </a>
         </div>
       ) : showLocked ? (
-        /* ── Locked state (copying, profit target not reached) ─ */
+        /* ── Locked state (open trade in progress, or profit target not met) ─ */
         <div className="rounded-xl border border-border bg-card p-[16px] md:p-8 flex flex-col items-center text-center">
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4 text-muted-foreground">
             <LockIcon />
@@ -450,17 +482,41 @@ export default function WithdrawPage() {
 
           <h2 className="text-xl font-bold text-foreground mb-3">Withdrawals Locked</h2>
 
-          <p className="text-base text-muted-foreground mb-6 max-w-sm">
-            Your withdrawal will be available once your copy trading profit reaches the target.
-          </p>
+          {hasOpenTrade ? (
+            <>
+              <div className="flex items-center gap-2 mb-4 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-yellow-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-yellow-400" />
+                </span>
+                <span className="text-xs font-semibold text-yellow-500">Trade in progress</span>
+              </div>
 
-          <div className="w-full">
-            <ProgressBar current={Math.max(currentProfit, 0)} target={profitTarget} />
-          </div>
+              <p className="text-base text-muted-foreground mb-2 max-w-sm">
+                You have an open copy trade. Withdrawals unlock automatically once the
+                trade is settled.
+              </p>
 
-          <p className="text-sm text-muted-foreground/70 mt-6 max-w-sm">
-            This ensures you benefit fully from AmiinFx&apos;s strategy before withdrawing.
-          </p>
+              <p className="text-sm text-muted-foreground/70 mt-4 max-w-sm">
+                This protects your funds while AmiinFx&apos;s position is still live.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-base text-muted-foreground mb-6 max-w-sm">
+                Your withdrawal will be available once your copy trading profit reaches the
+                target.
+              </p>
+
+              <div className="w-full">
+                <ProgressBar current={Math.max(currentProfit, 0)} target={profitTarget} />
+              </div>
+
+              <p className="text-sm text-muted-foreground/70 mt-6 max-w-sm">
+                This ensures you benefit fully from AmiinFx&apos;s strategy before withdrawing.
+              </p>
+            </>
+          )}
         </div>
       ) : (
         /* ── Withdrawal form (free or copy-trade unlocked) ──── */
