@@ -3,7 +3,7 @@ import { Activity, Layers, DollarSign, Globe } from "lucide-react";
 const stats = [
   { value: "500+", label: "Instruments", icon: Activity },
   { value: "1:500", label: "Max Leverage", icon: Layers },
-  { value: "$20", label: "Min. Deposit", icon: DollarSign },
+  { value: "$300", label: "Min. Deposit", icon: DollarSign },
   { value: "150+", label: "Countries", icon: Globe },
 ];
 

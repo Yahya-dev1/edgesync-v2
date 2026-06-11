@@ -124,7 +124,7 @@ const METHODS: Method[] = [
     badgeVariant: "recommended",
     processingTime: "1–2 hours",
     fee: "0%",
-    min: "$20",
+    min: "$300",
     max: "$200,000",
     enabled: true,
     Icon: UsdtIcon,
@@ -287,8 +287,8 @@ export default function DepositPage() {
 
   function handleContinueToPayment() {
     const num = parseFloat(amount);
-    if (!num || num < 20) {
-      setError("Minimum deposit amount is $20.");
+    if (!num || num < 300) {
+      setError("Minimum deposit amount is $300.");
       return;
     }
     if (num > 200_000) {
@@ -615,7 +615,7 @@ export default function DepositPage() {
         <UsdtIcon />
         <div>
           <p className="text-sm font-semibold text-foreground">Tether (USDT TRC20)</p>
-          <p className="text-xs text-muted-foreground mt-0.5">1–2 hours · 0% fee · $20 – $200,000</p>
+          <p className="text-xs text-muted-foreground mt-0.5">1–2 hours · 0% fee · $300 – $200,000</p>
         </div>
         <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
           Recommended
@@ -634,7 +634,7 @@ export default function DepositPage() {
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
             <input
               type="number"
-              min="20"
+              min="300"
               max="200000"
               step="1"
               value={amount}
@@ -651,12 +651,12 @@ export default function DepositPage() {
             </p>
           )}
           <p className="text-xs text-muted-foreground mt-1.5">
-            Minimum $20 · Maximum $200,000
+            Minimum $300 · Maximum $200,000
           </p>
         </div>
 
         <div className="grid grid-cols-4 gap-2">
-          {[20, 50, 100, 250].map((preset) => (
+          {[300, 500, 1000, 5000].map((preset) => (
             <button
               key={preset}
               onClick={() => { setAmount(String(preset)); setError(""); }}
