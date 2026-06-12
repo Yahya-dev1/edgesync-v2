@@ -1,26 +1,8 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
-
-// Verifies the caller is a signed-in admin. The user-scoped server client reads
-// under RLS, where a user may only see their own user_roles row.
-async function requireAdmin(): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated." };
-
-  const { data: roleRow } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .eq("role", "admin")
-    .maybeSingle();
-
-  if (!roleRow) return { error: "Not authorized." };
-  return {};
-}
 
 // USDT TRC20 addresses are Base58, start with 'T', and are exactly 34 chars.
 const TRC20_ADDRESS_RE = /^T[1-9A-HJ-NP-Za-km-z]{33}$/;
@@ -55,6 +37,8 @@ export async function approveDeposit(
   userId: string,
   amount: number
 ): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
 
@@ -112,6 +96,8 @@ export async function rejectDeposit(
   userId: string,
   amount: number
 ): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
 

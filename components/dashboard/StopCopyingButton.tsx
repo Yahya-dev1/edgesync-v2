@@ -11,14 +11,14 @@ interface Props {
   traderName: string;
 }
 
-export default function StopCopyingButton({ copyId, userId, traderName }: Props) {
+export default function StopCopyingButton({ copyId, userId }: Props) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleStop = async () => {
     setLoading(true);
     const supabase = createClient();
-    await supabase.rpc("decrement_followers", { p_trader_name: traderName });
+    // Follower count is decremented server-side by the sync_trader_followers trigger.
     await supabase.from("user_copy_trading").update({ is_copying: false }).eq("id", copyId).eq("user_id", userId);
     router.refresh();
     setLoading(false);

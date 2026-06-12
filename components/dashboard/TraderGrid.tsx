@@ -196,32 +196,16 @@ export default function TraderGrid({ traders: initialTraders, userId, hasDeposit
     setCopying(true);
     const supabase = createClient();
 
-    const { error: rpcError } = await supabase.rpc("increment_followers", { p_trader_name: traderName });
-    if (rpcError) console.error("[copy] increment_followers failed:", rpcError);
-
-    const { data: depositRows } = await supabase
-      .from("deposits")
-      .select("amount")
-      .eq("user_id", userId)
-      .eq("status", "approved");
-    const depositSum = depositRows?.reduce((sum, d) => sum + Number(d.amount), 0) ?? 0;
-
-    let originalDeposit = depositSum;
-    if (!originalDeposit) {
-      const { data: profile } = await supabase.from("profiles").select("balance").eq("id", userId).single();
-      originalDeposit = Number(profile?.balance ?? 0);
-    }
-
+    // Stop copying any current trader, then start the new one. The financial
+    // baseline (original_deposit / deposit_base / started_at) and the trader's
+    // follower count are set server-side by triggers — never trusted from the
+    // client — so we only send is_copying / trader_name here.
     await supabase.from("user_copy_trading").update({ is_copying: false }).eq("user_id", userId).eq("is_copying", true);
 
     const { error: insertError } = await supabase.from("user_copy_trading").insert({
       user_id: userId,
       trader_name: traderName,
       is_copying: true,
-      started_at: new Date().toISOString(),
-      original_deposit: originalDeposit,
-      // True principal the balance compounds from; used to rebuild on trade delete.
-      deposit_base: originalDeposit,
     });
     if (insertError) { console.error("[copy] insert failed:", insertError); setCopying(false); return; }
 

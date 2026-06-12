@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export type TradeStatus = "open" | "closed";
@@ -31,6 +32,8 @@ async function getAmiinFxName(): Promise<string> {
 // user's balance, so the gain shows up as floating P&L and stays visible until
 // the trade is settled (closed via update, withdrawal, or admin balance edit).
 export async function insertTrade(payload: TradePayload): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const traderName = await getAmiinFxName();
     const supabase = createAdminClient();
@@ -61,6 +64,8 @@ export async function insertTrade(payload: TradePayload): Promise<{ error?: stri
 }
 
 export async function updateTrade(id: string, payload: TradePayload): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
     const isClosing = payload.status === "closed";
@@ -105,6 +110,8 @@ export async function updateTrade(id: string, payload: TradePayload): Promise<{ 
 }
 
 export async function deleteTrade(id: string): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
     const { error } = await supabase.from("master_trades").delete().eq("id", id);

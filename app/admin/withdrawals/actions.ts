@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export async function approveWithdrawal(
@@ -8,6 +9,8 @@ export async function approveWithdrawal(
   userId: string,
   amount: number
 ): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
 
@@ -92,6 +95,8 @@ export async function approveWithdrawal(
 }
 
 export async function rejectWithdrawal(withdrawalId: string): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
     const { error } = await supabase
@@ -107,6 +112,8 @@ export async function rejectWithdrawal(withdrawalId: string): Promise<{ error?: 
 }
 
 export async function saveProfitTarget(value: number): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
     const { error } = await supabase

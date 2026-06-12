@@ -1,9 +1,12 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export async function updateBalance(userId: string, balance: number): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
 

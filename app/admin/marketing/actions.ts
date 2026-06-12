@@ -1,6 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 // ─── Name pools ───────────────────────────────────────────────────
@@ -89,6 +90,8 @@ const COLORS = ["green", "blue", "amber", "purple"] as const;
 // ─── Generate action ─────────────────────────────────────────────
 
 export async function generateMarketingAccounts(): Promise<{ error?: string }> {
+  const auth = await requireAdmin();
+  if (auth.error) return auth;
   try {
     const supabase = createAdminClient();
 
